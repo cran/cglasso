@@ -1,0 +1,43 @@
+useDynLib("cglasso", .registration = TRUE, .fixes = "C_")
+
+import(methods, igraph, MASS)
+
+importFrom("stats", "optim", "dnorm", "qnorm", "pnorm", "rnorm", "sd")
+importFrom("graphics", "abline", "plot", "matplot", "par")
+importFrom("grDevices", "dev.interactive")
+
+export(datacggm, glasso, glasso.fit, cglasso, cglasso.fit, parini,
+print.glasso, print.cglasso, print.loglik, plot.gof, coef.cglasso, coef.glasso,
+plot.glasso, plot.cglasso, to_graph, loglik, aic, bic, print.gof, summary.glasso, summary.cglasso,
+make_summary_table, mle, mle.glasso, mle.cglasso, ebic, ebic.glasso,
+ebic.cglasso, print.datacggm, as.character.datacggm, summary.datacggm,
+rdatacggm, is.datacggm, dim.datacggm, Math.datacggm, Ops.datacggm,
+as.matrix.datacggm, event, dimnames.datacggm)
+
+S3method(print, datacggm)
+S3method(summary, datacggm)
+S3method(as.character, datacggm)
+S3method('[', datacggm)
+S3method(is, datacggm)
+S3method(dim, datacggm)
+S3method(dimnames, datacggm)
+S3method("dimnames<-", datacggm)
+S3method(Math, datacggm)
+S3method(Ops, datacggm)
+S3method(as.matrix, datacggm)
+S3method(coef, glasso)
+S3method(coef, cglasso)
+S3method(print, glasso)
+S3method(print, cglasso)
+S3method(print, loglik)
+S3method(print, gof)
+S3method(summary, glasso)
+S3method(summary, cglasso)
+S3method(plot, gof)
+S3method(ebic, glasso)
+S3method(ebic, cglasso)
+S3method(plot, glasso)
+S3method(plot, cglasso)
+S3method(mle, glasso)
+S3method(mle, cglasso)
+
