@@ -1,5 +1,5 @@
 make_summary_table <- function(object, gof, par.gof, digits){
-    X <- object$X
+    X <- as.matrix(object$X)
     n <- dim(X)[1L]
     p <- dim(X)[2L]
     rho <- object$rho

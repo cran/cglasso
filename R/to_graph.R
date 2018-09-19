@@ -1,4 +1,4 @@
-to_graph <- function(object, nrho = 1L, weighted = FALSE) {
+to_graph <- function(object, nrho = 1L, weighted = FALSE, isolated = FALSE) {
     # checking 'nrho'
     if(!is.vector(nrho)) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))
     if(length(nrho) != 1) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))
@@ -12,7 +12,13 @@ to_graph <- function(object, nrho = 1L, weighted = FALSE) {
         weighted <- NULL
     }
     else Adj <- object$Tht[, , nrho]
+    # checking 'isoltated'
+    if(!is.logical(isolated)) stop(sQuote("isolated"), " is not an object of type ", dQuote("logical"))
     out <- graph_from_adjacency_matrix(adjmatrix = Adj, mode = "undirected", diag = FALSE, weighted = weighted)
     if(!is.null(weighted)) E(out)$lty <- ifelse(E(out)$weight > 0, "solid", "dashed")
+    if(!isolated) {
+        rmv <- degree(out) == 0
+        if(any(rmv) & sum(rmv) < vcount(out)) out <- delete.vertices(out, rmv)
+    }
     out
 }

@@ -1,4 +1,4 @@
-summary.glasso <- function(object, gof = c("BIC", "AIC", "eBIC"), par.gof, digits = 4L, ...){
+summary.glasso <- function(object, ..., gof = c("BIC", "AIC", "eBIC"), par.gof, digits = 4L){
     gof <- match.arg(gof)
     if(gof == "AIC" & missing(par.gof)) par.gof <- 2
     if(gof == "eBIC" & missing(par.gof)) par.gof <- 0.5

@@ -11,14 +11,14 @@
 
 \usage{
 glasso(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2,
-       maxit = 1.0E+4, thr = 1.0e-04, trace = 0L)
+       maxit = 1.0e+4, thr = 1.0e-04, trace = 0L)
 }
 
 \arguments{
 \item{X}{the \eqn{(n\times p)}{(n x p)}-dimensional matrix used to compute the covariance matrix.}
-\item{weights}{an optional symmetric matrix of non-negative weights. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights[i, j] = +Inf}}). See below for an example. By default, the glasso model is fitted without weights.}
+\item{weights}{an optional symmetric matrix of non-negative weights. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights[i, j] = +Inf}}). See below for an example. By default, glasso model is fitted without weights.}
 \item{pendiag}{flag used to specify if the diagonal elements of the concentration matrix are penalized (\sQuote{\code{pendiag = FALSE}}) or unpenalized (\sQuote{\code{pendiag = TRUE}}).}
-\item{nrho}{the integer specifying the number of tuning parameter used to fit the glasso model. Default is \sQuote{\code{nrho = 50L}}.}
+\item{nrho}{the integer specifying the number of tuning parameters used to fit the glasso model. Default is \sQuote{\code{nrho = 50L}}.}
 \item{rho.min.ratio}{the smallest value for the tuning parameter \eqn{\rho}{rho}, as a fraction of the smallest tuning parameter for which all the estimated partial correlation coefficients are zero. The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1.0E-4} otherwise the value \sQuote{1.0E-2} is used as default. A very small value of \sQuote{\code{rho.min.ratio}} will lead to a saturated fitted model in the \sQuote{\eqn{p < n}{p < n}} case.}
 \item{rho}{optional argument. A user supplied \code{rho} sequence. WARNING: avoid supplying a single value for the tuning parameter; supply instead a decreasing sequence of \eqn{\rho}{rho}-values.}
 \item{maxR2}{a value belonging to the interval \eqn{[0, 1]}{[0, 1]} specifying the largest value of the pseudo R-squared measure (see Section \bold{Details}). The regularization path is stopped when \eqn{R^2}{R2} exceeds \sQuote{\code{maxR2}}. The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1} otherwise the value \sQuote{0.9} is used as default.}
@@ -28,7 +28,7 @@ glasso(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2,
 }
 
 \details{
-For a fixed value of the tuning parameter, \code{glasso} solves the following maximization problem: \deqn{\max_{\Theta}\log det\Theta - tr\{S\Theta\}-\rho\|\Theta\|_1,}{max_{Tht} log det Tht - tr\{S Tht\} - rho ||Tht||_1,} where \eqn{\|\Theta\|_1 = \sum_{h,k}|\theta_{hk}|}{sum_{hk} |tht_{hk}|}. The previous maximization problem is solved effeciently combining the block-coordinate descent algorithm (Friedman \emph{and others}, 2008) with the screening rule proposed in Witten \emph{and others} (2011).
+For a fixed value of the tuning parameter, \code{glasso} solves the following maximization problem: \deqn{\max_{\Theta}\log det\Theta - tr\{S\Theta\}-\rho \sum_{h,k}w_{hk}|\theta_{hk}|,}{max_{Tht} log det Tht - tr\{S Tht\} - rho sum_{hk} w_{hk} |tht_{hk}|,} where \eqn{w_{hk}}{w_{hk}} is the non-negative weight for \eqn{\theta_{hk}}{tht_{hk}}. The previous maximization problem is solved effeciently combining the block-coordinate descent algorithm (Friedman \emph{and others}, 2008) with the screening rule proposed in Witten \emph{and others} (2011).
 
 In order to avoid the overfitting of the model, we use the following pseudo R-squared measure: \deqn{R^2 = 1 - \frac{\|S - \hat{\Sigma}^\rho\|_F}{\|S - \hat{\Sigma}^{\rho_{\max}}\|_F},}{R2 = 1 - ||S - Sgm^rho||_F / ||S - Sgm^{rho_max}||_F,} where \eqn{\|\cdot\|_F}{|| . ||_F} denotes the Frobenius norm and \eqn{\rho_{\max}}{rho_max} denotes the smallest value of the tuning parameter for which all the estimated partial correlation coefficients are zero. By straightforward algebra, it is easy to show that the proposed pseudo R-squared belongs to the closed interval \eqn{[0, 1]}{[0, 1]}: \eqn{R^2 = 0}{R2 = 0} when the tuning parameter is equal to \eqn{\rho_{\max}}{rho_max} and \eqn{R^2 = 1}{R2 = 1} when \eqn{\rho = 0}{rho = 0}. The regularization path is stopped when \eqn{R^2}{R2} exceeds \sQuote{\code{maxR2}}.
 }
@@ -72,7 +72,7 @@ Witten, D.M., Friedman, J.H, and Simon, N. (2011).
 }
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{mle}}, \code{\link{to_graph}} and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{aic}}, \code{\link{bic}} and \code{\link{ebic}}.
+\code{\link{mle}}, \code{\link{to_graph}} and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{aic}}, \code{\link{bic}} and \code{\link{ebic}}.
 }
 
 \examples{
@@ -93,7 +93,7 @@ out
 # the unpenalized partial correlation coefficients and the
 # structural zeros in the precision matrix
 
-w <- rep(1L, p * p)
+w <- rep(1, p * p)
 dim(w) <- c(p, p)
 
 # specifing the unpenalized partial correlation coefficients

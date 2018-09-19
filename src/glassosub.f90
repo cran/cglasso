@@ -103,7 +103,7 @@ do i = 1, k
                 S_k(m, m) = S_k(m, m) + rho_k(m, m)
             end do
         end if
-        Sgm_k = Sgm(idx1, idx1)
+        Sgm_k = S_k
         Tht_k = Tht(idx1, idx1)
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! fitting glasso model to the k-th connected component                   !

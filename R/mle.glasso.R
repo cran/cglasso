@@ -1,4 +1,4 @@
-mle.glasso <- function(object, maxit = 1.0e+04, thr = 1.0e-04, trace = 0L, ...) {
+mle.glasso <- function(object, ..., maxit = 1.0e+04, thr = 1.0e-04, trace = 0L) {
     this.call <- this.call <- match.call()
     # checking 'maxit'
     if(!is.vector(maxit)) stop(sQuote("maxit"), " is not a vector of length ", sQuote(1))

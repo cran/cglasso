@@ -8,7 +8,7 @@
 }
 
 \usage{
-\method{summary}{datacggm}(object, digits = max(3L, getOption("digits") - 3L), \dots)
+\method{summary}{datacggm}(object, \dots, digits = max(3L, getOption("digits") - 3L))
 }
 
 \arguments{

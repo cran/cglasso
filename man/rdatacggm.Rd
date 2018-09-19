@@ -19,7 +19,7 @@ rdatacggm(n, mu, Sigma, probl, probr, lo, up, \dots)
 \item{probr}{a vector giving the probabilities that the random variables are right-censored.}
 \item{lo}{a vector giving the left-censoring values.}
 \item{up}{a vector giving the right-censoring values.}
-\item{\dots}{futher arguments passed to \sQuote{\code{mvrnorm}}.}
+\item{\dots}{futher arguments passed to the function \sQuote{\code{mvrnorm}}.}
 }
 
 \details{
@@ -35,7 +35,7 @@ The user can specify the censoring values in two equivalent ways. The simplest w
 }
 
 \value{
-\code{rdatacggm} returns an object with class \sQuote{\code{datacggm}}.
+\code{rdatacggm} returns an object with class \sQuote{\code{datacggm}}. See \code{\link{datacggm}} for more details.
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
@@ -52,7 +52,6 @@ Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
 
 \examples{
 set.seed(123)
-library("cglasso")
 
 n <- 1000L
 p <- 3L

@@ -1,8 +1,6 @@
 \name{summary}
-
 \alias{summary}
 \alias{summary.glasso}
-\alias{summary.cglasso}
 
 \title{Summary Method}
 
@@ -11,9 +9,7 @@
 }
 
 \usage{
-\method{summary}{glasso}(object, gof = c("BIC", "AIC", "eBIC"), par.gof, digits = 4L, \dots)
-
-\method{summary}{cglasso}(object, gof = c("BIC", "AIC", "eBIC"), par.gof, digits = 4L, \dots)
+\method{summary}{glasso}(object, \dots, gof = c("BIC", "AIC", "eBIC"), par.gof, digits = 4L)
 }
 
 \arguments{
@@ -25,15 +21,15 @@
 }
 
 \details{
-The method functions \code{summary.glasso} and \code{summary.cglasso} give information about the sequence of fitted models. The outupt is divided in two sections.
+The method function \code{summary.glasso} gives information about the sequence of fitted models. The output is divided in two sections.
 
-First section shows the call that produced \code{object} followed by a \code{data.frame} reporting the values of the tuning parameter used to fit the model (\code{rho}), the number of non-zero estimates (\code{df}), the values of the pseudo R-squared (\code{R2}) describted in \code{\link{glasso}} and \code{\link{cglasso}}, the values of the measure of goodness-of-fit used to evaluate the fitted models and the ranking of the fitted models (\code{Rank}). The model with the lowest measure of goodness-of-fit is pointed out by an arrow.
+First section shows the call that produced \code{object} followed by a \code{data.frame} reporting the values of the tuning parameter used to fit the model (\code{rho}), the number of non-zero estimates (\code{df}), the values of the pseudo R-squared (\code{R2}) describted in \code{\link{glasso}}, \code{\link{mglasso}} and \code{\link{cglasso}}, the values of the measure of goodness-of-fit used to evaluate the fitted models and the ranking of the fitted models (\code{Rank}). The model with the lowest measure of goodness-of-fit is pointed out by an arrow.
 
 Second section shows the details of the selected model plus the number of connected components and the number of vertices per component.
 }
 
 \value{
-The functions \sQuote{\code{summary.glasso}} and \sQuote{\code{summary.cglasso}} compute and return a list of summary statistics with the following elements:
+The function \sQuote{\code{summary.glasso}} computes and returns a list of summary statistics with the following elements:
 \item{table}{a data.frame containing the summary statistics used to evaluate the sequence of fitted models.}
 \item{which.min}{the number of the model with the lowest measure of goodness-of-fit.}
 }
@@ -41,7 +37,7 @@ The functions \sQuote{\code{summary.glasso}} and \sQuote{\code{summary.cglasso}}
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\link{cglasso}, \link{glasso}, \link{mle}, \link{aic} \link{bic} and \link{ebic}.
+\code{link{glasso}}, \code{\link{mglasso}}, \code{\link{cglasso}}, \code{\link{mle}}, \code{\link{aic}} \code{\link{bic}} and \code{\link{ebic}}.
 }
 
 \examples{
@@ -62,6 +58,25 @@ summary(out, gof = "eBIC")
 
 ##############
 # cggm model #
+##############
+out_mle <- mle(out)
+summary(out_mle, gof = "AIC")
+summary(out_mle, gof = "BIC")
+summary(out_mle, gof = "eBIC")
+
+#################
+# cglasso model #
+#################
+R <- event(X)
+X <- as.matrix(X)
+X[R == 1L] <- NA
+out <- mglasso(X = X)
+summary(out, gof = "AIC")
+summary(out, gof = "BIC")
+summary(out, gof = "eBIC")
+
+##############
+# mggm model #
 ##############
 out_mle <- mle(out)
 summary(out_mle, gof = "AIC")

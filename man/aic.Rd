@@ -17,7 +17,7 @@ bic(object)
 }
 
 \arguments{
-\item{object}{an object with class \sQuote{\code{glasso}}, \sQuote{\code{ggm}}, \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}.}
+\item{object}{an object with class \sQuote{\code{glasso}}, \sQuote{\code{ggm}}, \sQuote{\code{mglasso}} or \sQuote{\code{mggm}} \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}.}
 \item{k}{the \emph{penalty} per parameter to be used; the default \code{k = 2} is the classical AIC.}
 }
 
@@ -26,9 +26,9 @@ The measure of goodness-of-fit (gof) returned by the functions \sQuote{\code{aic
 
 If \sQuote{\code{object}} has class \sQuote{\code{glasso}} or \sQuote{\code{ggm}}, then \sQuote{\code{aic}} computes the following measure of goodness-of-fit: \deqn{-2\,\mbox{log-likelihood} + k\,\mbox{df},}{-2*log-likelihood + k*df,} where \eqn{k}{k} is the \emph{penalty} per parameter and \eqn{\mbox{df}}{df} represents the number of parameters in the fitted model. The values of the log-likelihood function are computed using the function \code{\link{loglik}}. The usual Akaike Information Criterion (AIC) is computed letting \eqn{k = 2} (default value of the function \sQuote{\code{aic}}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is computed letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
 
-If \sQuote{\code{object}} has class \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}, then \sQuote{\code{aic}} computes the following measure of goodness-of-fit: \deqn{-2\,Q\mbox{-function} + k\,df,}{-2*Q-function + k df,} in other words the log-likelihood is replaced with the \eqn{Q}{Q}-function maximized in the M-step of the EM-like algorithm describted in \code{\link{cglasso}} and \code{\link{mle}}. This measure of goodness-of-fit was proposed in Ibrahim \emph{and others} (2008) for statistical model with missing-data.
+If \sQuote{\code{object}} has class \sQuote{\code{mglasso}} or \sQuote{\code{mggm}} \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}, then \sQuote{\code{aic}} computes the following measure of goodness-of-fit: \deqn{-2\,Q\mbox{-function} + k\,df,}{-2*Q-function + k*df,} in other words the log-likelihood is replaced with the \eqn{Q}{Q}-function maximized in the M-step of the EM-like algorithm describted in \code{\link{cglasso}}, \code{\link{mglasso}} and \code{\link{mle}}. This measure of goodness-of-fit was proposed in Ibrahim \emph{and others} (2008) for statistical model with missing-data.
 
-\sQuote{\code{aic}} and \sQuote{\code{bic}} return an object with S3 class \sQuote{\code{gof}} for which  are available the method functions \sQuote{\code{print.gof}} and \sQuote{\code{plot.gof}}. These method functions are developed with the aim of helping the user in finding the optimal value of the tuning parameter,  defined as the \eqn{\rho}{rho}-value minimizing the chosen measure of goodness-of-fit. For this reason, \sQuote{\code{print.gof}} shows also the ranking of the fitted models (the best model is pointed out with an arrow) whereas \sQuote{\code{plot.gof}} pointed out the optimal \eqn{\rho}{rho}-value by a vertical dashed line (see below for some examples).
+\sQuote{\code{aic}} and \sQuote{\code{bic}} return an object with S3 class \sQuote{\code{gof}} for which  are available the method functions \sQuote{\code{print.gof}} and \sQuote{\code{plot.gof}}. These method functions are developed with the aim of helping the user in finding the optimal value of the tuning parameter,  defined as the \eqn{\rho}{rho}-value minimizing the chosen measure of goodness-of-fit. For this reason, \sQuote{\code{print.gof}} shows also the ranking of the fitted models (the best model is pointed out with an arrow) whereas \sQuote{\code{plot.gof}} point out the optimal \eqn{\rho}{rho}-value by a vertical dashed line (see below for some examples).
 }
 
 \value{
@@ -56,7 +56,7 @@ D. Reidel Publishing Company.
 }
 
 \seealso{
-\code{\link{loglik}}, \code{\link{cglasso}}, \code{\link{glasso}}, \code{\link{mle}}, \code{\link{ebic}} and the method funtions \sQuote{\link{plot}} and \code{\link{summary}}.
+\code{\link{loglik}}, \code{\link{cglasso}}, \code{\link{mglasso}}, \code{\link{glasso}}, \code{\link{mle}}, \code{\link{ebic}} and the method funtions \sQuote{\link{plot}} and \code{\link{summary}}.
 }
 
 \examples{
@@ -92,9 +92,37 @@ out_bic
 plot(out_bic)
 
 #################
+# mglasso model #
+#################
+X <- rnorm(n * p)
+na.id <- sample(n * p, size = n * p * 0.05, replace = TRUE)
+X[na.id] <- NA
+dim(X) <- c(n, p)
+out <- mglasso(X)
+out_aic <- aic(out)
+out_aic
+plot(out_aic)
+
+out_bic <- bic(out)
+out_bic
+plot(out_bic)
+
+##############
+# mggm model #
+##############
+out_mle <- mle(out)
+out_aic <- aic(out_mle)
+out_aic
+plot(out_aic)
+
+out_bic <- bic(out_mle)
+out_bic
+plot(out_bic)
+
+#################
 # glasso model #
 #################
-X <- MASS::mvrnorm(n = n, mu = mu, Sigma = diag(p))
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)
 out <- glasso(X)
 out_aic <- aic(out)
 out_aic

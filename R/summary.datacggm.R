@@ -1,5 +1,5 @@
-summary.datacggm <- function(object, digits = max(3L, getOption("digits") - 3L), ...) {
-    R <- event(X)
+summary.datacggm <- function(object, ..., digits = max(3L, getOption("digits") - 3L)) {
+    R <- event(object)
     X <- object$X
     nm <- colnames(X)
     n <- dim(X)[1]

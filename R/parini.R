@@ -47,13 +47,18 @@ parini <- function(object){
         x <- X[R[, j] == 0 , j]
         if(length(x) != n){
             par.ini <- c(mean(x), sd(x))
-            out <- optim(par.ini, fn = fn, gr = grd, x = x, lo = lo[j], up = up[j], control = list(fnscale = -1))
-            if(out$conv != 0) stop("error in computing the starting values: optim does not converge for the variable ", j)
-            xm[j] <- out$par[1]
-            vm[j] <- out$par[2]^2
+            out <- optim(par.ini, fn = fn, gr = grd, x = x, lo = lo[j], up = up[j], control = list(fnscale = -1),
+                    method = "L-BFGS-B", lower = c(-Inf, 0), upper = c(+Inf, +Inf))
+            if(out$conv == 0) {
+                xm[j] <- out$par[1]
+                vm[j] <- out$par[2]^2
+            } else {
+                xm[j] <- mean(x)
+                vm[j] <- mean(x^2) - xm[j]^2
+            }
         } else {
             xm[j] <- mean(x)
-            vm[j] <- mean(x^2) -xm[j]^2
+            vm[j] <- mean(x^2) - xm[j]^2
         }
     }
     out <- list(xm = xm, vm = vm)

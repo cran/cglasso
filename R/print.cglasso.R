@@ -1,6 +1,6 @@
-print.cglasso <- function (x, digits = max(3, getOption("digits") - 3), ...){
+print.cglasso <- function (x, digits = max(3L, getOption("digits") - 3L), ...){
     X <- x$X$X
-    p <- dim(X)[2]
+    p <- dim(X)[2L]
     rho <- x$rho
     R2 <- x$R2
     df <- x$df + 2 * p

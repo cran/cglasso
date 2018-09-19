@@ -1,4 +1,4 @@
-print.glasso <- function (x, digits = max(3, getOption("digits") - 3), ...){
+print.glasso <- function (x, digits = max(3L, getOption("digits") - 3L), ...){
     p <- dim(x$X)[2]
     rho <- x$rho
     R2 <- x$R2

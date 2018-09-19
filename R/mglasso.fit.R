@@ -1,12 +1,10 @@
-cglasso.fit <- function(object, w, pendiag, xm, vm, nrho, rhoratio, rho, maxR2, maxit_em, thr_em, maxit_bcd, thr_bcd, trace){
+mglasso.fit <- function(object, w, pendiag, xm, nrho, rhoratio, rho, maxR2, maxit_em, thr_em, maxit_bcd, thr_bcd, trace){
     X <- object$X
-    up <- object$up
-    lo <- object$lo
     R <- object$R
     startmis <- object$startmis
     vnames <- colnames(X)
-    n <- dim(X)[1]
-    p <- dim(X)[2]
+    n <- dim(X)[1L]
+    p <- dim(X)[2L]
     mu <- matrix(0, p, nrho, dimnames = list(vnames, NULL))
     Xipt <- array(0, dim = c(n, p, nrho), dimnames = list(NULL, vnames, NULL))
     S <- array(0, dim = c(p, p, nrho), dimnames = list(vnames, vnames, NULL))
@@ -22,12 +20,8 @@ cglasso.fit <- function(object, w, pendiag, xm, vm, nrho, rhoratio, rho, maxR2, 
     storage.mode(X) <- "double"
     storage.mode(R) <- "integer"
     storage.mode(startmis) <- "integer"
-    storage.mode(lo) <- "double"
-    storage.mode(up) <- "double"
     storage.mode(w) <- "double"
     storage.mode(pendiag) <- "integer"
-    storage.mode(xm) <- "double"
-    storage.mode(vm) <- "double"
     storage.mode(nrho) <- "integer"
     storage.mode(rhoratio) <- "double"
     storage.mode(rho) <- "double"
@@ -51,18 +45,18 @@ cglasso.fit <- function(object, w, pendiag, xm, vm, nrho, rhoratio, rho, maxR2, 
     conv <- integer(1)
     subrout <- integer(1)
     storage.mode(trace) <- "integer"
-    out <- .Fortran(C_cglasso, n = n, p = p, X = X, R = R, startmis = startmis,
-                    lo = lo, up = up, w = w, pendiag = pendiag, xm = xm, vm = vm,
-                    nrho = nrho, rhoratio = rhoratio, rho = rho, maxR2 = maxR2,
-                    maxit_em = maxit_em, thr_em = thr_em, maxit_bcd = maxit_bcd,
-                    thr_bcd = thr_bcd, Xipt = Xipt, S = S, mu = mu, Sgm = Sgm,
-                    Tht = Tht, Adj = Adj, df = df, R2 = R2, ncomp = ncomp, Ck = Ck,
-                    pk = pk, nit = nit, conv = conv, subrout = subrout, trace = trace)
-    out$X <- object
+    out <- .Fortran(C_mglasso_algo1, n = n, p = p, X = X, R = R, startmis = startmis,
+                    w = w, pendiag = pendiag, nrho = nrho, rhoratio = rhoratio,
+                    rho = rho, maxR2 = maxR2, maxit_em = maxit_em, thr_em = thr_em,
+                    maxit_bcd = maxit_bcd, thr_bcd = thr_bcd, Xipt = Xipt, S = S,
+                    mu = mu, Sgm = Sgm, Tht = Tht, Adj = Adj, df = df, R2 = R2,
+                    ncomp = ncomp, Ck = Ck, pk = pk, nit = nit, conv = conv,
+                    subrout = subrout, trace = trace)
+    out$X[out$R[, -1L] == 1L] <- NA
     out$w[out$w == -1] <- 1
     out$pendiag <- as.logical(out$pendiag)
     # removing unused elements
-    out <- out[-c(1, 2, 4, 5, 6, 7)]
+    out <- out[-c(1, 2, 4, 5)]
     attributes(out)$names[c(2, 7)] <- c("weights", "rho.min.ratio")
     out
 }

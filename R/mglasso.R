@@ -1,14 +1,21 @@
-cglasso <- function(X, lo, up, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2, maxit_em = 1.0E+3, thr_em = 1.0e-4, maxit_bcd = 1.0e+4, thr_bcd = 1.0e-4, trace = 0L){
+mglasso <- function(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2, maxit_em = 1.0E+3, thr_em = 1.0E-4, maxit_bcd = 1.0E+4, thr_bcd = 1.0E-4, trace = 0L){
     this.call <- match.call()
     # checking 'X'
-    if(class(X) != "datacggm") X <- datacggm(X, lo = lo, up = up)
-    if(X$startmis == 0) {
+    R <- is.na(X)
+    if(!any(R)) {
         warning("the dataset is full observed; 'glasso' is called to fit the l1-penalized Gaussian graphical model")
         out <- glasso(X$X, weights = weights, pendiag = pendiag, nrho = nrho, rho.min.ratio, rho, maxR2, maxit = maxit_bcd, thr = thr_bcd)
         return(out)
     }
-    n <- dim(X$X)[1]
-    p <- dim(X$X)[2]
+    if(missing(X)) stop(sQuote("X"), " is missing")
+    if(!is.matrix(X)) stop(sQuote("X"), " is not a matrix")
+    if(any(!is.finite(X[!R]))) stop("some element in 'X' is not finite")
+    # for internal purposes, NA are treated as right-censored values
+    X[R] <- .Machine$double.xmax
+    X <- datacggm(X, up = .Machine$double.xmax)
+    X$R <- X$R[-1L, -1L]
+    n <- dim(X)[1L]
+    p <- dim(X)[2L]
     vnames <- colnames(X$X)
     # checking 'weights'
     if(missing(weights)) weights <- matrix(rep(-1, p * p), nrow = p, ncol = p, dimnames = list(vnames, vnames))
@@ -51,7 +58,7 @@ cglasso <- function(X, lo, up, weights, pendiag = FALSE, nrho = 50L, rho.min.rat
         if(length(maxR2) != 1) stop(sQuote("maxR2"), " is not a vector of length ", sQuote(1))
         if(maxR2 < 0 | maxR2 > 1) stop(sQuote("maxR2"), " does not belong to the interval [0, 1]")
     }
-    # checking 'maxi_emt'
+    # checking 'maxi_em'
     if(!is.vector(maxit_em)) stop(sQuote("maxit_em"), " is not a vector of length ", sQuote(1))
     if(length(maxit_em) != 1) stop(sQuote("maxit_em"), " is not a vector of length ", sQuote(1))
     if(abs(as.integer(maxit_em) - maxit_em) > 0) stop(sQuote("maxit_em"), " is not an object of type ", dQuote("integer"))
@@ -74,13 +81,9 @@ cglasso <- function(X, lo, up, weights, pendiag = FALSE, nrho = 50L, rho.min.rat
     if(length(trace) != 1) stop(sQuote("trace"), " is not a vector of length ", sQuote(1))
     if(abs(as.integer(trace) - trace) > 0) stop(sQuote("trace"), " is not an object of type ", dQuote("integer"))
     if(!is.element(trace, c(0L, 1L, 2L))) stop(sQuote("trace"), " can be equal to '0', '1' or '2'")
-    # computing marginal estimates
-    par.ini <- parini(X)
-    xm <- par.ini$xm
-    vm <- par.ini$vm
-    # calling cglasso.fit
-    out <- cglasso.fit(object = X, w = weights, pendiag = pendiag, xm = xm, vm = vm,
-                        nrho = nrho, rhoratio = rho.min.ratio, rho = rho, maxR2 = maxR2,
+    # calling mglasso.fit
+    out <- mglasso.fit(object = X, w = weights, pendiag = pendiag, nrho = nrho,
+                        rhoratio = rho.min.ratio, rho = rho, maxR2 = maxR2,
                         maxit_em = maxit_em, thr_em = thr_em, maxit_bcd = maxit_bcd,
                         thr_bcd = thr_bcd, trace = trace)
     # checking convergence
@@ -93,47 +96,48 @@ cglasso <- function(X, lo, up, weights, pendiag = FALSE, nrho = 50L, rho.min.rat
                      "3" = "matrix inversion failed")
         out$subrout <- switch(as.character(out$subrout),
                     "0" = "Ok",
-                    "1" = "Fit_MarginalDistributions",
-                    "2" = "update",
-                    "3" = "glasso",
-                    "4" = "cglasso")
-        if(nrho == 0) stop("cglasso does not congerce: ", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
-        msg <- paste("cglasso does not congerce at nrho =", nrho + 1, " with error code", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
+                    "1" = "impute",
+                    "2" = "glasso",
+                    "3" = "mglasso")
+        if(nrho == 0) stop("mglasso does not congerce: ", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
+        msg <- paste("mglasso does not congerce at nrho =", nrho + 1, " with error code", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
         msg <- paste(msg, ifelse(nrho == 1, "\n  The first solution is reported", paste("\n  The first", nrho, "solutions are reported")))
         warning(msg)
+        seq_id <- seq_len(nrho)
         out$rho <- out$rho[1:nrho]
-        out$Xipt <- out$Xipt[, , 1:nrho, drop = FALSE]
-        out$S <- out$S[, , 1:nrho, drop = FALSE]
-        out$mu <- out$mu[, 1:nrho, drop = FALSE]
-        out$Sgm <- out$Sgm[, , 1:nrho, drop = FALSE]
-        out$Tht <- out$Tht[, , 1:nrho, drop = FALSE]
-        out$Adj <- out$Adj[, , 1:nrho, drop = FALSE]
-        out$df <- out$df[1:nrho]
-        out$R2 <- out$R2[1:nrho]
-        out$ncomp <- out$ncomp[1:nrho]
-        out$Ck <- out$Ck[, 1:nrho, drop = FALSE]
-        out$pk <- out$pk[, 1:nrho, drop = FALSE]
-        out$nit <- out$nit[1:nrho, , drop = FALSE]
+        out$Xipt <- out$Xipt[, , seq_id, drop = FALSE]
+        out$S <- out$S[, , seq_id, drop = FALSE]
+        out$mu <- out$mu[, seq_id, drop = FALSE]
+        out$Sgm <- out$Sgm[, , seq_id, drop = FALSE]
+        out$Tht <- out$Tht[, , seq_id, drop = FALSE]
+        out$Adj <- out$Adj[, , seq_id, drop = FALSE]
+        out$df <- out$df[seq_id]
+        out$R2 <- out$R2[seq_id]
+        out$ncomp <- out$ncomp[seq_id]
+        out$Ck <- out$Ck[, seq_id, drop = FALSE]
+        out$pk <- out$pk[, seq_id, drop = FALSE]
+        out$nit <- out$nit[seq_id, , drop = FALSE]
     }
     # checking if R2 >= maxR2
     if(out$nrho != nrho) {
         nrho <- out$nrho
-        out$rho <- out$rho[1:nrho]
-        out$Xipt <- out$Xipt[, , 1:nrho, drop = FALSE]
-        out$S <- out$S[, , 1:nrho, drop = FALSE]
-        out$mu <- out$mu[, 1:nrho, drop = FALSE]
-        out$Sgm <- out$Sgm[, , 1:nrho, drop = FALSE]
-        out$Tht <- out$Tht[, , 1:nrho, drop = FALSE]
-        out$Adj <- out$Adj[, , 1:nrho, drop = FALSE]
-        out$df <- out$df[1:nrho]
-        out$R2 <- out$R2[1:nrho]
-        out$ncomp <- out$ncomp[1:nrho]
-        out$Ck <- out$Ck[, 1:nrho, drop = FALSE]
-        out$pk <- out$pk[, 1:nrho, drop = FALSE]
-        out$nit <- out$nit[1:nrho, , drop = FALSE]
+        seq_id <- seq_len(nrho)
+        out$rho <- out$rho[seq_id]
+        out$Xipt <- out$Xipt[, , seq_id, drop = FALSE]
+        out$S <- out$S[, , seq_id, drop = FALSE]
+        out$mu <- out$mu[, seq_id, drop = FALSE]
+        out$Sgm <- out$Sgm[, , seq_id, drop = FALSE]
+        out$Tht <- out$Tht[, , seq_id, drop = FALSE]
+        out$Adj <- out$Adj[, , seq_id, drop = FALSE]
+        out$df <- out$df[seq_id]
+        out$R2 <- out$R2[seq_id]
+        out$ncomp <- out$ncomp[seq_id]
+        out$Ck <- out$Ck[, seq_id, drop = FALSE]
+        out$pk <- out$pk[, seq_id, drop = FALSE]
+        out$nit <- out$nit[seq_id, , drop = FALSE]
     }
-    # preparing object with S3 class 'cglasso'
+    # preparing object with S3 class 'mglasso'
     out <- c(call = this.call, out)
-    class(out) <- c("cglasso", "mglasso", "glasso")
+    class(out) <- c("mglasso", "glasso")
     out
 }

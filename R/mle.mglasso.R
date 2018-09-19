@@ -1,4 +1,4 @@
-mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_bcd = 1.0e+4, thr_bcd = 1.0e-4, trace = 0L) {
+mle.mglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_bcd = 1.0e+4, thr_bcd = 1.0e-4, trace = 0L) {
     this.call <- this.call <- match.call()
     # checking 'maxi_emt'
     if(!is.vector(maxit_em)) stop(sQuote("maxit_em"), " is not a vector of length ", sQuote(1))
@@ -24,13 +24,15 @@ mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_
     if(abs(as.integer(trace) - trace) > 0) stop(sQuote("trace"), " is not an object of type ", dQuote("integer"))
     if(!is.element(trace, c(0L, 1L, 2L))) stop(sQuote("trace"), " can be equal to '0', '1' or '2'")
     # extracting elements from 'object'
-    X <- object$X$X
+    X <- object$X
+    R <- is.na(X)
+    X[R] <- .Machine$double.xmax
+    X <- datacggm(X, up = .Machine$double.xmax)
+    R <- X$R[-1L, -1L]
+    startmis <- X$startmis
+    X <- X$X
     n <- dim(X)[1L]
     p <- dim(X)[2L]
-    R <- object$X$R
-    startmis <- object$X$startmis
-    lo <- object$X$lo
-    up <- object$X$up
     nrho <- object$nrho
     Xipt <- object$Xipt
     S <- object$S
@@ -47,8 +49,6 @@ mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_
     storage.mode(X) <- "double"
     storage.mode(R) <- "integer"
     storage.mode(startmis) <- "integer"
-    storage.mode(lo) <- "double"
-    storage.mode(up) <- "double"
     storage.mode(nrho) <- "integer"
     storage.mode(maxit_em) <- "integer"
     storage.mode(thr_em) <- "double"
@@ -64,15 +64,15 @@ mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_
     conv <- integer(1L)
     subrout <- integer(1L)
     storage.mode(trace) <- "integer"
-    out <- .Fortran(C_mlecglasso, n = n, p = p, X = X, R = R, startmis = startmis,
-                    lo = lo, up = up, nrho = nrho, maxit_em = maxit_em, thr_em = thr_em,
+    out <- .Fortran(C_mlemglasso, n = n, p = p, X = X, R = R, startmis = startmis,
+                    nrho = nrho, maxit_em = maxit_em, thr_em = thr_em,
                     maxit_bcd = maxit_bcd, thr_bcd = thr_bcd, Xipt = Xipt, S = S, mu = mu,
                     Sgm = Sgm, Tht = Tht, R2 = R2, nit = nit, conv = conv, subrout = subrout,
                     trace = trace)
     # removing unused elements
-    out <- out[-c(1L, 2L, 4L, 5L, 6L, 7L)]
+    out <- out[-c(1L, 2L, 4L, 5L)]
     # adding elements form 'object'
-    out$X <- object$X
+    out$X[R[, -1L] == 1L] <- NA
     out$Adj <- object$Adj
     out$rho <- object$rho
     out$Ck <- object$Ck
@@ -84,19 +84,16 @@ mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_
         nrho <- out$nrho
         out$subrout <- switch(as.character(out$subrout),
                         "0" = "Ok",
-                        "1" = "Fit_MarginalDistributions",
-                        "2" = "update",
-                        "3" = "glasso",
-                        "4" = "cglasso",
-                        "5" = "mlecglasso")
+                        "1" = "impute",
+                        "2" = "glasso",
+                        "3" = "mlemglasso")
         out$conv <- switch(as.character(out$conv),
                         "-1" = "memory allocation error",
                         "1" = "maximum number of iterations has been exceeded",
                         "2" = "error in computing the coditional moments",
                         "3" = "matrix inversion failed")
-                        
-        if(nrho == 0) stop("mle.cglasso does not congerce: ", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
-        msg <- paste("mle.cglasso does not congerce at nrho =", nrho + 1L, " with error code", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
+        if(nrho == 0) stop("mle.mglasso does not congerce: ", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
+        msg <- paste("mle.mglasso does not congerce at nrho =", nrho + 1L, " with error code", sQuote(out$conv), "\n  Error in subroutine ", sQuote(out$subrout))
         msg <- paste(msg, ifelse(nrho == 1, "\n  The first solution is reported", paste("\n  The first", nrho, "solutions are reported")))
         warning(msg)
         out$rho <- out$rho[1:nrho]
@@ -114,6 +111,6 @@ mle.cglasso <- function(object, ..., maxit_em = 1.0e+03, thr_em = 1.0e-4, maxit_
         out$nit <- out$nit[1:nrho, , drop = TRUE]
     }
     out <- c(call = this.call, out)
-    class(out) <- c("cggm", "cglasso", "mglasso", "glasso")
+    class(out) <- c("mggm", "mglasso", "glasso")
     out
 }

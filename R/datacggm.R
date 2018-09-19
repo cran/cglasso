@@ -4,6 +4,7 @@ datacggm <- function(X, lo, up) {
     # checking 'X'
     if(missing(X)) stop(sQuote("X"), " is missing")
     if(!is.matrix(X)) stop(sQuote("X"), " is not a matrix")
+    if(any(!is.finite(X))) stop("some element in 'X' is not finite")
     n <- dim(X)[1]
     p <- dim(X)[2]
     if(is.null(colnames(X))) {
@@ -16,7 +17,7 @@ datacggm <- function(X, lo, up) {
     else {
         if(!is.vector(lo)) stop(sQuote("lo"), " is not a vector")
         if(length(lo) == 1) lo <- rep(lo, p)
-        id <- -big <= lo & lo <= -thr
+        id <- -big < lo & lo <= -thr
         if(any(id)) {
             lo[id] <- -big
             warning("some elements in 'lo' are below the tolerance. These values are treated as -Inf")
@@ -29,7 +30,7 @@ datacggm <- function(X, lo, up) {
     else {
         if(!is.vector(up)) stop(sQuote("up"), " is not a vector")
         if(length(up) == 1) up <- rep(up, p)
-        id <- thr <= up & up <= big
+        id <- thr <= up & up < big
         if(any(id)) {
             up[id] <- big
             warning("some elements in 'up' are over the tolerance. These values are treated as +Inf")

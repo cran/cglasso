@@ -27,7 +27,7 @@ datacggm(X, lo, up)
 \details{
 The function \sQuote{\code{datacggm}} returns a named list with class \sQuote{\code{datacggm}} containing the elements needed to fit a censored graphical lasso (cglasso) model. In output, the matrix \code{X} is ordered according to the patter of censoring values.
 
-There are specific method functions developed to help the user to deal with the censored values. The \sQuote{\code{print.datacggm}} method function print out the left and right-censored values using the following rules: a right-censored value is labeld adding the symbol \sQuote{\code{+}} at the end of the value, whereas the symbol \sQuote{\code{-}} is used for the left-censored values (see examples bellow). The summary statistics about the censored values can be obtained using the method function \sQuote{\code{\link{summary.datacggm}}}.
+There are specific method functions developed to help the user to deal with the censored values. The \sQuote{\code{print.datacggm}} method function print out the left and right-censored values using the following rules: a right-censored value is labeld adding the symbol \sQuote{\code{+}} at the end of the value, whereas the symbol \sQuote{\code{-}} is used for the left-censored values (see examples bellow). The summary statistics about the censored values can be obtained using the method function \sQuote{\code{\link{summary.datacggm}}}. The original \code{X} matrix is returned using the method function \sQuote{\code{as.matrix}}.
 
 Finally, the status indicator matrix, denoted by \code{R}, can be obtained by the function \code{\link{event}}. The elements of this matrix specify the status of an observation as follows:
 \itemize{
@@ -56,7 +56,7 @@ Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
 }
 
 \seealso{
-\code{\link{event}}, \code{\link{rdatacggm}}, \code{\link{cglasso}} and the method function \code{\link{summary.datacggm}}.
+\code{\link{event}}, \code{\link{rdatacggm}}, \code{\link{cglasso}} and the method functions \code{\link{scale.datacggm}} and \code{\link{summary.datacggm}}.
 }
 
 \examples{
@@ -71,6 +71,7 @@ lo <- -1
 X[X <= lo] <- lo
 X <- datacggm(X, lo = lo)
 X
+as.matrix(X)
 
 # a dataset from a right-censored Gaussian graphical model
 n <- 100L
@@ -80,6 +81,7 @@ up <- 1
 X[X >= up] <- up
 X <- datacggm(X, up = up)
 X
+as.matrix(X)
 
 # a dataset from a censored Gaussian graphical model
 n <- 100L
@@ -91,6 +93,7 @@ X[X >= up] <- up
 X[X <= lo] <- lo
 X <- datacggm(X, lo = lo, up = up)
 X
+as.matrix(X)
 }
 
 \keyword{datagen}

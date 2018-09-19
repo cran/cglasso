@@ -1,4 +1,4 @@
-plot.cglasso <- function(x, typeplot = c("path", "graph"), gof, diag = FALSE, nrho, weighted = FALSE, ...) {
+plot.mglasso <- function(x, typeplot = c("path", "graph"), gof, diag = FALSE, nrho, weighted = FALSE, isolated = FALSE, ...) {
     typeplot <- match.arg(typeplot)
     # checking 'gof'
     if(!missing(gof)) {
@@ -44,7 +44,7 @@ plot.cglasso <- function(x, typeplot = c("path", "graph"), gof, diag = FALSE, nr
             if(!missing(nrho)) warning("argument 'nrho' is overwritten using 'gof'")
             nrho <- nrho_opt
         }
-        out_graph <- to_graph(x, nrho = nrho, weighted = weighted)
+        out_graph <- to_graph(x, nrho = nrho, weighted = weighted, isolated = isolated)
         plot(out_graph, ...)
         invisible(out_graph)
     }

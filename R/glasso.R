@@ -1,8 +1,9 @@
 glasso <- function(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2, maxit = 1.0E+4, thr = 1.0e-04, trace = 0L){
-    this.call <- this.call <- match.call()
+    this.call <- match.call()
     # checking 'X'
     if(missing(X)) stop(sQuote("X"), " is missing")
     if(!is.matrix(X)) stop(sQuote("X"), " is not a matrix")
+    if(any(!is.finite(X))) stop("some element in 'X' is not finite")
     if(is.null(colnames(X))) {
         vnames <- paste("X", 1:p, sep = "")
         colnames(X) <- vnames

@@ -1,4 +1,4 @@
-coef.cglasso <- function(object, nrho = 1L, type = c("theta", "sigma", "mu"), print.info = FALSE, digits = 3L, ...){
+coef.mglasso <- function(object, ..., nrho = 1L, type = c("theta", "sigma", "mu"), print.info = FALSE, digits = 3L){
     # checkin 'nrho'
     if(!is.vector(nrho)) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))
     if(length(nrho) != 1) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))
@@ -16,15 +16,15 @@ coef.cglasso <- function(object, nrho = 1L, type = c("theta", "sigma", "mu"), pr
     msg <- out[[2]]
     if(print.info) {
         # extracting elements from 'object'
-        X <- object$X$X
-        p <- dim(X)[2]
+        X <- as.matrix(object$X)
+        p <- dim(X)[2L]
         Ck <- object$Ck[, nrho]
         pk <- object$pk[, nrho]
         ncomp <- object$ncomp[nrho]
         rho <- object$rho[nrho]
         R2 <- round(object$R2[nrho], digits = digits)
         # printing first part
-        cat("\nResults of the estimated", sQuote(class(object)[1]), "model")
+        cat("\nResults of the estimated", sQuote(class(object)[1L]), "model")
         cat("\n\n",
         apply(cbind(format(c("rho:", "R2:", "Number of connected components:", "Number of vertices per component:"), justify = "right"),
         c(rho, R2, ncomp, paste(pk[1:ncomp], collapse = " ")), rep("\n", 4L)), 1L, paste, collapse = " "), "\n")

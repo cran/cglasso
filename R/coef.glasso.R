@@ -1,4 +1,4 @@
-coef.glasso <- function(object, nrho = 1L, type = c("theta", "sigma"), print.info = FALSE, digits = 3L, ...){
+coef.glasso <- function(object, ..., nrho = 1L, type = c("theta", "sigma"), print.info = FALSE, digits = 3L){
     # checkin 'nrho'
     if(!is.vector(nrho)) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))
     if(length(nrho) != 1) stop(sQuote("nrho"), " is not a vector of length ", sQuote(1))

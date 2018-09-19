@@ -1,0 +1,13 @@
+version 1.1.0
+data: 2019-09-19
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+
+* bug fixed in 'parini'
+* bug fixed in ‘summary.datacggm’
+* bug fixed in 'glasso_bcd' when pendiag = TRUE
+* added dataset 'MKMEP'
+* added argument 'pendiag' to the function 'cglasso'
+* added method function 'scale.datacggm'
+* added check in 'datacggm'
+* added missglasso model and corresponding method functions
+* defined new hierarchical structure: 'glasso < mglasso < cglasso'

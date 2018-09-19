@@ -4,7 +4,7 @@
 ! webpage: http://dssm.unipa.it/augugliaro
 !
 ! version: 1.0.0
-! Data: July 13, 2018
+! Data: September 13, 2018
 !
 ! DESCRIPTION
 !
@@ -12,18 +12,15 @@
 ! n = sample size                                                       (integer)
 ! p = number of variables                                               (integer)
 ! X = n x p dimensional matrix                                          (double)
-! R = (0:n) x (-1:p) dimensional matrix used to encode the              (integer)
-!       patterns of non-observed values (see 'setup.f90').
-! startmis = the starting row of the censored values                    (integer)
-! lo = p dimensional vector of left censoring values                    (double)
-! up = p dimensional vector of right censoring values                   (double)
+! R = n x (0:p) dimensional matrix used to encode the                   (integer)
+!       patterns of non-observed values
+! startmis = the starting row of the missing values                     (integer)
 ! w = p x p dimensional matrix of positive weights                      (double)
 ! pendiag = integer specifying if the diagonal elements                 (integer)
 !           of the concentration matrix are penalized
 !           '0' unpenalized
 !           '1' penalized
 ! xm = starting values of the marginal expected values                  (double)
-! vm = starting values of the marginal variances                        (double)
 ! nrho = number of tuning values                                        (double)
 ! rhoratio = smallest value for the tuning parameter                    (double)
 !            is defined as fraction of maxrho, i.e.
@@ -65,24 +62,30 @@
 !           '2' update
 !           '3' glasso
 !           '4' cglasso
-subroutine cglasso(n,p,X,R,startmis,lo,up,w,pendiag,xm,vm,nrho,rhoratio,rho,maxR2,maxit_em,thr_em,maxit_bcd,thr_bcd,&
+subroutine mglasso_algo1(n,p,X,R,startmis,w,pendiag,nrho,rhoratio,rho,maxR2,maxit_em,thr_em,maxit_bcd,thr_bcd,&
 Xipt,S,mu,Sgm,Tht,Adj,df,R2,ncomp,Ck,pk,nit,conv,subrout,trace)
 implicit none
-integer :: n,p,R(0:n,-1:p),startmis,pendiag,nrho,maxit_em,maxit_bcd,Adj(p,p,nrho),df(nrho),ncomp(nrho),Ck(p,nrho),pk(p,nrho)
+integer :: n,p,R(n,0:p),startmis,pendiag,nrho,maxit_em,maxit_bcd,Adj(p,p,nrho),df(nrho),ncomp(nrho),Ck(p,nrho),pk(p,nrho)
 integer :: nit(nrho,2),conv,subrout,trace
-double precision :: X(n,p),lo(p),up(p),w(p,p),xm(p),vm(p),rhoratio,rho(nrho),maxR2,thr_em,thr_bcd
+double precision :: X(n,p),w(p,p),rhoratio,rho(nrho),maxR2,thr_em,thr_bcd
 double precision :: Xipt(n,p,nrho),S(p,p,nrho),mu(p,nrho),Sgm(p,p,nrho),Tht(p,p,nrho),R2(nrho)
 ! internal variables
-integer :: i,j,k,ii,nnit
-double precision, parameter :: tol = 0.001d0
-double precision :: minrho,maxrho,T1o(p),T2o(p,p),Xipt_k(n,p),S_k(p,p),mu_k(p),Sgm_k(p,p),Tht_k(p,p)
+integer :: no,i,j,k,ii,nnit
+double precision :: minrho,maxrho,T1o(p),T2o(p,p),xm(p),Xipt_k(n,p),S_k(p,p),mu_k(p),Sgm_k(p,p),Tht_k(p,p)
 double precision :: ratio,T1(p),T2(p,p),mu_o(p),Sgm_o(p,p),Tht_o(p,p),dmu,dTht,rho_gl(p,p),R2num,R2den
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! computing the observed statistics T1o and T2o !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 T1o = 0.d0
+no = 0
 do j = 1, p
-    T1o(j) = sum(X(:, j), mask = R(1:n, j).eq.0)
+    do i = 1, n
+        if(R(i, j).eq.0) then
+            no = no + 1
+            T1o(j) = T1o(j) + X(i, j)
+        end if
+    end do
+    xm(j) = T1o(j) / no
 end do
 T2o = 0.d0
 do i = 1, p
@@ -96,14 +99,14 @@ do i = 1, p
     end do
 end do
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Fitting marginal distributions          !
+! computing Xipt_k                        !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-call Fit_MarginalDistributions(n, p, X, lo, up, R, T1o, T2o, maxit_em, thr_em, tol, xm, vm, Xipt_k, conv)
-if(conv.ne.0) then
-    subrout = 1
-    nrho = 0
-    return
-end if
+Xipt_k = X
+do j = 1, p
+    do i = 1, n
+        if(R(i, j).eq.1) Xipt_k(i, j) = xm(j)
+    end do
+end do
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! computing the Sbar matrix and maxrho   !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -164,7 +167,7 @@ end do
 ! Starting optimization                  !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 do k = 1, nrho
-    if(trace.eq.2) call cglasso_trace2_1(k, rho(k))
+    if(trace.eq.2) call mglasso_trace2_1(k, rho(k))
     if(rho(k).lt.maxrho) then
         mu_o = mu_k
         Sgm_o = Sgm_k
@@ -173,12 +176,12 @@ do k = 1, nrho
         if(w(1, 1).ge.0.d0) rho_gl = rho_gl * w
         do ii = 1, maxit_em
             if(trace.eq.2) call cglasso_trace2_2(ii)
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            ! updating summary statistics T1 and T2  !
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            call update(startmis, n, p, X, lo, up, R, T1o, T2o, mu_o, Tht_o, tol, Xipt_k, T1, T2, conv)
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            ! updating summary statistics T1 and T2 imputing missing values !
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            call impute(startmis, n, p, X, R, T1o, T2o, mu_o, Tht_o, Xipt_k, T1, T2, conv)
             if(conv.ne.0) then
-                subrout = 2
+                subrout = 1
                 exit
             end if
             !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -208,7 +211,7 @@ do k = 1, nrho
             nnit = 0
             call glassosub(p,S_k,pendiag,rho_gl,maxit_bcd,thr_bcd,Sgm_k,Tht_k,ncomp(k),Ck(:,k),pk(:,k),nnit,conv,trace)
             if(conv.ne.0) then
-                subrout = 3
+                subrout = 2
                 exit
             end if
             if(trace.eq.2) call cglasso_trace2_5()
@@ -233,7 +236,7 @@ do k = 1, nrho
         end do
         if(ii.ge.maxit_em) then
             conv = 1
-            subrout = 4
+            subrout = 3
         end if
     else
         rho_gl = rho(k)
@@ -246,7 +249,7 @@ do k = 1, nrho
         end if
     end if
     if(conv.eq.0) then
-        if(trace.eq.1) call cglasso_trace1(k, rho(k), nit(k, 1), nit(k, 2))
+        if(trace.eq.1) call mglasso_trace1(k, rho(k), nit(k, 1), nit(k, 2))
         Xipt(:, :, k) = Xipt_k
         S(:, :, k) = S_k
         mu(:, k) = mu_k
@@ -278,4 +281,4 @@ do k = 1, nrho
         exit
     end if
 end do
-end subroutine cglasso
+end subroutine mglasso_algo1

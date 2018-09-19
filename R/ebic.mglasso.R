@@ -1,4 +1,4 @@
-ebic.glasso <- function(object, g = 0.5){
+ebic.mglasso <- function(object, g = 0.5){
     # checking 'g'
     if(!is.vector(g)) stop(sQuote("g"), " is not a vector of length ", sQuote(1))
     if(length(g) != 1) stop(sQuote("g"), " is not a vector of length ", sQuote(1))
@@ -7,13 +7,13 @@ ebic.glasso <- function(object, g = 0.5){
     n <- dim(object$X)[1L]
     p <- dim(object$X)[2L]
     # computing mle estimates
-    if(class(object)[1] == "glasso") {
+    if(class(object)[1L] == "mglasso") {
         out_mle <- mle(object)
-        cl <- "glasso"
+        cl <- "mglasso"
     }
-    if(class(object)[1] == "ggm") {
+    if(class(object)[1L] == "mggm") {
         out_mle <- object
-        cl <- "ggm"
+        cl <- "mggm"
     }
     out_loglik <- loglik(out_mle)
     df <- out_loglik$df
