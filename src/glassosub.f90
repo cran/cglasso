@@ -82,7 +82,7 @@ do i = 1, k
         Tht(idx1, idx1) = 1.d0 / Sgm(idx1, idx1)
         if(trace.eq.2) then
             call glasso_trace2_3_1()
-            call glasso_trace2_3_2(1, 0, 0)
+            call glasso_trace2_3_2(1, 0, 0.d0)
         end if
     else
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

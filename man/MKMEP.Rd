@@ -22,11 +22,11 @@ Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
 \emph{Biostatistics} (to appear).
 
 Pipelers, P., Clement, L., Vynck, M., Hellemans, J., Vandesompele, J. and Thas, O. (2017).
-\href{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0182832}{A unified censored normal regression model for qPCR differential gene expression analysis}.
+A unified censored normal regression model for qPCR differential gene expression analysis.
 \emph{PLoS One} \bold{12}, e0182832.
 
 Psaila, B., Barkas, N., Iskander, D., Roy, A., Anderson, S., Ashley, N., Caputo, V. S., Lichtenberg, J., Loaiza, S., Bodine, D. M. \emph{and others}. (2016).
-\href{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0939-7}{Single-cell profiling of human megakaryocyte-erythroid progenitors identifies distinct megakaryocyte and erythroid differentiation pathways}.
+Single-cell profiling of human megakaryocyte-erythroid progenitors identifies distinct megakaryocyte and erythroid differentiation pathways.
 \emph{Genome Biology} \bold{17}, 83--102.
 }
 

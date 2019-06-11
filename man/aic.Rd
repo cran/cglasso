@@ -47,11 +47,11 @@ If \sQuote{\code{object}} has class \sQuote{\code{mglasso}} or \sQuote{\code{mgg
 
 \references{
 Ibrahim, J.G., Zhu, H. and Tang, N. (2008).
-\href{https://amstat.tandfonline.com/doi/abs/10.1198/016214508000001057#.W4eujC1aYmI}{Model selection criteria for missing-data problems using the EM algorithm}.
+Model selection criteria for missing-data problems using the EM algorithm.
 \emph{Journal of the American Statistical Association} \bold{103}, 1648--1658.
 
 Sakamoto, Y., Ishiguro, M., and Kitagawa, G. (1986).
-\href{https://www.springer.com/gb/book/9789027722539}{\emph{Akaike Information Criterion Statistics}}.
+\emph{Akaike Information Criterion Statistics}.
 D. Reidel Publishing Company.
 }
 

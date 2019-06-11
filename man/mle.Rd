@@ -149,7 +149,7 @@ Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2018).
 \emph{Biostatistics} (to appear).
 
 Stadler N., and Buhlmann P. (2012) <DOI:10.1007/s11222-010-9219-7>.
-\href{https://link.springer.com/article/10.1007/s11222-010-9219-7}{Missing values: sparse inverse covariance estimation and an extension to sparse regression}.
+Missing values: sparse inverse covariance estimation and an extension to sparse regression.
 \emph{Statistics and Computing} \bold{22}, 219--235.
 }
 

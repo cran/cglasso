@@ -1,3 +1,8 @@
+version 1.1.1
+data: 2019-06-09
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+* bug fixed in 'glassosub'
+
 version 1.1.0
 data: 2019-09-19
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>

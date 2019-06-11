@@ -94,15 +94,15 @@ Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
 \emph{Biostatistics} (to appear).
 
 Friedman, J.H., Hastie, T., and Tibshirani, R. (2008).
-\href{https://academic.oup.com/biostatistics/article/9/3/432/224260}{Sparse inverse covariance estimation with the graphical lasso}.
+Sparse inverse covariance estimation with the graphical lasso.
 \emph{Biostatistics} \bold{9}, 432--441.
 
 Guo, J., Levina, E., Michailidis, G. and Zhu, J. (2015).
-\href{https://www.tandfonline.com/doi/abs/10.1080/10618600.2014.889023}{Graphical models for ordinal data}.
+Graphical models for ordinal data.
 \emph{Journal of Computational and Graphical Statistics} \bold{24}, 183--204.
 
 Yuan, M. and Lin, Y. (2007).
-\href{https://academic.oup.com/biomet/article-abstract/94/1/19/228821?redirectedFrom=fulltext}{Model selection and estimation in the Gaussian graphical model}.
+Model selection and estimation in the Gaussian graphical model.
 \emph{Biometrika} \bold{94}, 19--35.
 }
 

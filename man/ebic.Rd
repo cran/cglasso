@@ -51,7 +51,7 @@ For the remaining models, eBIC is defined as: \deqn{\mbox{eBIC} = -2\,Q\mbox{-fu
 
 \references{
 Foygel, R. and Drton, M. (2010).
-\href{https://papers.nips.cc/paper/4087-extended-bayesian-information-criteria-for-gaussian-graphical-models}{Extended Bayesian Information Criteria for Gaussian Graphical Models}.
+Extended Bayesian Information Criteria for Gaussian Graphical Models.
 In: Lafferty, J., Williams, C., Shawe-taylor, J., Zemel, R.s. and Culott, A. (editors),
 \emph{Advances in Neural Information Processing Systems 23}. pp. 604--612.
 }

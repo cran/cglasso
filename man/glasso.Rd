@@ -63,11 +63,11 @@ In order to avoid the overfitting of the model, we use the following pseudo R-sq
 
 \references{
 Friedman, J.H., Hastie, T., and Tibshirani, R. (2008).
-\href{https://academic.oup.com/biostatistics/article/9/3/432/224260}{Sparse inverse covariance estimation with the graphical lasso}.
+Sparse inverse covariance estimation with the graphical lasso.
 \emph{Biostatistics} \bold{9}, 432--441.
 
 Witten, D.M., Friedman, J.H, and Simon, N. (2011).
-\href{https://www.tandfonline.com/doi/abs/10.1198/jcgs.2011.11051a}{New insights and faster computations for the graphical lasso}.
+New insights and faster computations for the graphical lasso.
 \emph{Journal of Computational and Graphical Statistics} \bold{20}, 892--900.
 }
 

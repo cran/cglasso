@@ -1,6 +1,6 @@
 Package: cglasso
-Version: 1.1.0
-Date: 2018-09-19
+Version: 1.1.1
+Date: 2019-06-09
 Type: Package
 Title: L1-Penalized Censored Gaussian Graphical Models
 Author: Luigi Augugliaro
@@ -12,5 +12,5 @@ License: GPL (>= 2)
 LazyLoad: yes
 NeedsCompilation: yes
 Repository: CRAN
-Packaged: 2018-09-19 06:38:47 UTC; luigiaugugliaro
-Date/Publication: 2018-09-19 07:30:12 UTC
+Packaged: 2019-06-09 10:37:26 UTC; luigiaugugliaro
+Date/Publication: 2019-06-11 07:20:03 UTC

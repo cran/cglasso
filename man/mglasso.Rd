@@ -84,15 +84,15 @@ following components:
 
 \references{
 Friedman, J.H., Hastie, T., and Tibshirani, R. (2008) <DOI:10.1093/biostatistics/kxm045>.
-\href{https://academic.oup.com/biostatistics/article/9/3/432/224260}{Sparse inverse covariance estimation with the graphical lasso}.
+Sparse inverse covariance estimation with the graphical lasso.
 \emph{Biostatistics} \bold{9}, 432--441.
 
 Stadler N., and Buhlmann P. (2012) <DOI:10.1007/s11222-010-9219-7>.
-\href{https://link.springer.com/article/10.1007/s11222-010-9219-7}{Missing values: sparse inverse covariance estimation and an extension to sparse regression}.
+Missing values: sparse inverse covariance estimation and an extension to sparse regression.
 \emph{Statistics and Computing} \bold{22}, 219--235.
 
 Yuan, M., and Lin, Y. (2007) <DOI:10.1093/biomet/asm018>.
-\href{https://academic.oup.com/biomet/article-abstract/94/1/19/228821?redirectedFrom=fulltext}{Model selection and estimation in the Gaussian graphical model}.
+Model selection and estimation in the Gaussian graphical model.
 \emph{Biometrika} \bold{94}, 19--35.
 }
 

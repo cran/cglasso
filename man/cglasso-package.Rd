@@ -11,8 +11,8 @@
 \tabular{ll}{
 Package: \tab cglasso\cr
 Type: \tab Package\cr
-Version: \tab 1.1.0\cr
-Date: \tab 2018-09-19\cr
+Version: \tab 1.1.1\cr
+Date: \tab 2019-06-09\cr
 License: \tab GPL (>=2)
 }
 }
@@ -28,11 +28,11 @@ Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2018) <DOI:10.1093/biostatistic
 \emph{Biostatistics} (to appear).
 
 Friedman, J.H., Hastie, T., and Tibshirani, R. (2008) <DOI:10.1093/biostatistics/kxm045>.
-\href{https://academic.oup.com/biostatistics/article/9/3/432/224260}{Sparse inverse covariance estimation with the graphical lasso}.
+Sparse inverse covariance estimation with the graphical lasso.
 \emph{Biostatistics} \bold{9}, 432--441.
 
 Yuan, M., and Lin, Y. (2007) <DOI:10.1093/biomet/asm018>.
-\href{https://academic.oup.com/biomet/article-abstract/94/1/19/228821?redirectedFrom=fulltext}{Model selection and estimation in the Gaussian graphical model}.
+Model selection and estimation in the Gaussian graphical model.
 \emph{Biometrika} \bold{94}, 19--35.
 }
 
