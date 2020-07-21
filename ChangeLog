@@ -1,3 +1,8 @@
+version 1.1.2
+data: 2020-07-20
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+* bug fixed in 'mglasso_algo1.f90'
+
 version 1.1.1
 data: 2019-06-09
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>

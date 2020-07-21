@@ -4,7 +4,7 @@ mglasso <- function(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho,
     R <- is.na(X)
     if(!any(R)) {
         warning("the dataset is full observed; 'glasso' is called to fit the l1-penalized Gaussian graphical model")
-        out <- glasso(X$X, weights = weights, pendiag = pendiag, nrho = nrho, rho.min.ratio, rho, maxR2, maxit = maxit_bcd, thr = thr_bcd)
+        out <- glasso(X, weights = weights, pendiag = pendiag, nrho = nrho, rho.min.ratio, rho, maxR2, maxit = maxit_bcd, thr = thr_bcd)
         return(out)
     }
     if(missing(X)) stop(sQuote("X"), " is missing")

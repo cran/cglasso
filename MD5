@@ -1,5 +1,5 @@
-614e686646ddca632af206c064b4756d *ChangeLog
-ff1b2f208b782917d88943b26161ab29 *DESCRIPTION
+2e29c68dcfe27eec60067b33f913c9f6 *ChangeLog
+542a8db62ec03efc8059e5bf2519eb29 *DESCRIPTION
 41a518eaf3f6b6e32c89385263b921eb *NAMESPACE
 88480512c10c35f082ae46a54d152f37 *R/aic.R
 94c4601dd6b7876a84248235089d9dea *R/as.character.cggmdata.R
@@ -18,7 +18,7 @@ b67aae2be4412e19e5ceea23165f1333 *R/glasso.R
 53e4dac6731a57d3937b6e9bacaebf65 *R/glasso.fit.R
 83404af4de7e8a0d7c8075a02cb8037c *R/loglik.R
 3df1adabaabfc4bb7b84c4fdfdea0811 *R/make_summary_table.R
-a02b2def950b88ff7ab41a4666f11bab *R/mglasso.R
+7f25d4df426d0317b8a4f124a69ce2c6 *R/mglasso.R
 20881641102c5b85f4ef8a8a863fb1f2 *R/mglasso.fit.R
 4c7c1100e2e64fc01f60c58cdb9822f4 *R/mle.R
 63500400b33fff1d3ac638b77aa21b63 *R/mle.cglasso.R
@@ -43,15 +43,15 @@ cef84ab4e2967dcf3693ca0c441668aa *data/datalist
 d82a326799c175164a4f18614f527653 *man/MKMEP.Rd
 92fa0dcc5030e51a937da2b5c1f812d7 *man/aic.Rd
 114ccfebe87699c30332735564603025 *man/cglasso-internal.Rd
-f2862962c3b5c0bf8283dd5c79425379 *man/cglasso-package.Rd
-5be8147a530416a8bc803c6d54955c53 *man/cglasso.Rd
+fa99ed799fb77f87d7cd1a96bb94753f *man/cglasso-package.Rd
+8eabe2ef28f8599e69f0122e7bd55c94 *man/cglasso.Rd
 8b1f205aa18d7d184c3e660bed7b4ac2 *man/coef.Rd
 e3356a2f218afe814f931c35f7161e03 *man/datacggm.Rd
 77cbf1f28c4de80823d87b1c5c7ff119 *man/ebic.Rd
 596ed03e5d71ec62168a325ccf38d6a2 *man/event.Rd
-68a81c40dc27ae96b75274890b284bf2 *man/glasso.Rd
+7b59c73b20027365514959dba151ce04 *man/glasso.Rd
 343a986acf51a57929dc7c0f7ebb9f61 *man/loglik.Rd
-b0a36f46ff9a60a10f84bc9dea7089e2 *man/mglasso.Rd
+4100b5ebbe96c6b7d72ec1caf8fbcd87 *man/mglasso.Rd
 3944e7c69e5ae14dd952291d51f97b77 *man/mle.Rd
 a8bec736858777efb1e50bad544d6b22 *man/plot.Rd
 1a902463d2e51c2e369828874265a101 *man/rdatacggm.Rd
@@ -73,7 +73,7 @@ f7a01fe12744f1022d96560b6f7ebabb *src/impute.f90
 eb4f80161d2dc7b2dc6a2e1f650ecae2 *src/init.c
 4883517f0240da17dc04b668345ba3ae *src/inv.f90
 0468eef9af9523a8092a23167f095182 *src/lasso.f90
-f07af049aae0efd6d9d8618ce34e25b9 *src/mglasso_algo1.f90
+65d4a49ede3acf82db852d3f62039822 *src/mglasso_algo1.f90
 93c145ef1826df2a842cf61c410ccb92 *src/mlecglasso.f90
 c86d7150a797785eaae63209a36c3dac *src/mleglasso.f90
 a22ce01e18fc515fe3815f6b3cb98a73 *src/mlemglasso.f90

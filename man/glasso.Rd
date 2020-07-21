@@ -17,7 +17,7 @@ glasso(X, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio, rho, maxR2,
 \arguments{
 \item{X}{the \eqn{(n\times p)}{(n x p)}-dimensional matrix used to compute the covariance matrix.}
 \item{weights}{an optional symmetric matrix of non-negative weights. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights[i, j] = +Inf}}). See below for an example. By default, glasso model is fitted without weights.}
-\item{pendiag}{flag used to specify if the diagonal elements of the concentration matrix are penalized (\sQuote{\code{pendiag = FALSE}}) or unpenalized (\sQuote{\code{pendiag = TRUE}}).}
+\item{pendiag}{flag used to specify if the diagonal elements of the concentration matrix are penalized (\sQuote{\code{pendiag = TRUE}}) or unpenalized (\sQuote{\code{pendiag = FALSE}}).}
 \item{nrho}{the integer specifying the number of tuning parameters used to fit the glasso model. Default is \sQuote{\code{nrho = 50L}}.}
 \item{rho.min.ratio}{the smallest value for the tuning parameter \eqn{\rho}{rho}, as a fraction of the smallest tuning parameter for which all the estimated partial correlation coefficients are zero. The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1.0E-4} otherwise the value \sQuote{1.0E-2} is used as default. A very small value of \sQuote{\code{rho.min.ratio}} will lead to a saturated fitted model in the \sQuote{\eqn{p < n}{p < n}} case.}
 \item{rho}{optional argument. A user supplied \code{rho} sequence. WARNING: avoid supplying a single value for the tuning parameter; supply instead a decreasing sequence of \eqn{\rho}{rho}-values.}
@@ -49,9 +49,9 @@ In order to avoid the overfitting of the model, we use the following pseudo R-sq
 \item{Sgm}{an array of dimension \eqn{(p\times p\times\texttt{nrho})}{p x p x nrho)}. \code{Sgm[, , k]} is the estimate of the covariance matrix of the glasso model fitted using \code{rho[k]}.}
 \item{Tht}{an array of dimension \eqn{(p\times p\times\texttt{nrho})}{(p x p x nrho)}. \code{Tht[, , k]} is the estimate of the precision matrix of the glasso model fitted using \code{rho[k]}.}
 \item{Adj}{an array of dimension \eqn{(p\times p\times\texttt{nrho})}{(p x p x nrho)}. \code{Adj[, , k]} is the adjacency matrix associated to \code{Tht[, , k]}, i.e. \code{Adj[i, j, k] }\eqn{= 1}{= 1} iff \code{Tht[i, j, k] }\eqn{\neq 0}{!= 0} and \code{0} otherwise.}
-\item{df}{the \eqn{p}{p}-dimensional vector reporting the number of non-zero partial correlation coefficients.}
-\item{R2}{the \eqn{p}{p}-dimensional vector reporting the values of the measure \eqn{R^2}{R2} described in the section \bold{Details}.}
-\item{ncomp}{the \eqn{p}{p}-dimensional vector reporting the number of connected components (for internal purposes only).}
+\item{df}{the \eqn{nrho}{nrho}-dimensional vector reporting the number of non-zero partial correlation coefficients.}
+\item{R2}{the \eqn{nrho}{nrho}-dimensional vector reporting the values of the measure \eqn{R^2}{R2} described in the section \bold{Details}.}
+\item{ncomp}{the \eqn{nrho}{nrho}-dimensional vector reporting the number of connected components (for internal purposes only).}
 \item{Ck}{the \eqn{(p\times\texttt{nrho})}{(p x nrho)}-dimensional matrix encoding the connected components (for internal purposes only).}
 \item{pk}{the \eqn{(p\times\texttt{nrho})}{(p x nrho)}-dimensional matrix reporting the number of vertices per connected component (for internal purposes only).}
 \item{nit}{the \eqn{p}{p}-dimensional vector reporting the number of iterations.}

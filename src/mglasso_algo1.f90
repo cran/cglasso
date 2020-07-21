@@ -77,8 +77,8 @@ double precision :: ratio,T1(p),T2(p,p),mu_o(p),Sgm_o(p,p),Tht_o(p,p),dmu,dTht,r
 ! computing the observed statistics T1o and T2o !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 T1o = 0.d0
-no = 0
 do j = 1, p
+    no = 0
     do i = 1, n
         if(R(i, j).eq.0) then
             no = no + 1
