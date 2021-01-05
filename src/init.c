@@ -5,13 +5,14 @@
 #include "cglasso.h"
 
 static const R_FortranMethodDef FortEntries[] = {
-    {"setup", (DL_FUNC) &F77_SUB(setup), 7},
-    {"glasso", (DL_FUNC) &F77_SUB(glasso), 21},
-    {"cglasso", (DL_FUNC) &F77_SUB(cglasso), 34},
-    {"mglasso_algo1", (DL_FUNC) &F77_SUB(mglasso_algo1), 30},
-    {"mleglasso", (DL_FUNC) &F77_SUB(mleglasso), 11},
-    {"mlemglasso", (DL_FUNC) &F77_SUB(mlemglasso), 20},
-    {"mlecglasso", (DL_FUNC) &F77_SUB(mlecglasso), 22},
+    {"setup", (DL_FUNC) &F77_SUB(setup), 9},
+    {"fitmcgm", (DL_FUNC) &F77_SUB(fitmcgm), 11},
+    {"cglasso_v1", (DL_FUNC) &F77_SUB(cglasso_v1), 36},
+    {"cglasso_v2", (DL_FUNC) &F77_SUB(cglasso_v2), 43},
+    {"predict", (DL_FUNC) &F77_SUB(predict), 10},
+    {"impute", (DL_FUNC) &F77_SUB(impute), 11},
+    {"cggm_v1", (DL_FUNC) &F77_SUB(cggm_v1), 29},
+    {"cggm_v2", (DL_FUNC) &F77_SUB(cggm_v2), 33},
     {NULL, NULL, 0}
 };
 

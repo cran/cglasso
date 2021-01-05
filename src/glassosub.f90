@@ -1,7 +1,6 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Author: Luigi Augugliaro
 ! e-mail: luigi.augugliaro@unipa.it
-! webpage: http://dssm.unipa.it/augugliaro
 !
 ! version: 1.0.0
 ! Data: July 12, 2018
@@ -34,7 +33,7 @@
 ! Ck = output of the subroutine 'Find_ConnectedComp'; 'Ck' is a p-dimensional       (integer)
 !       vector of integers used to indentify the connected components
 ! pk = output of the subroutine 'Find_ConnectedComp'; 'pk' is a p-dimensional       (integer)
-!       vector of integers pencifying the number of verices belinging to a 
+!       vector of integers pencifying the number of verices belonging to a
 !       connected component, i.e., 'pk(i)' is the number of vertices of the
 !       i-th component
 ! nit = number of steps of the bcd algorithm                                        (integer)
@@ -42,13 +41,14 @@
 !          '-1' error in memory allocation
 !           '0' convergence is met
 !           '1' maximum number of steps is reached
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine glassosub(p,S,pendiag,rho,maxit,thr,Sgm,Tht,k,Ck,pk,nit,conv,trace)
 implicit none
 integer :: p,pendiag,maxit,k, Ck(p),pk(p),nit,conv,trace
 double precision :: S(p,p),rho(p,p),thr,Sgm(p,p),Tht(p,p)
 ! internal variables
 integer :: i,m,p_k1,p_k2,nnit
-integer, dimension(:), allocatable :: idx1,idx2
+integer, dimension(:), allocatable :: idx1, idx2
 double precision, dimension(:,:), allocatable :: rho_k,S_k,Sgm_k,Tht_k
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Finding the connected components             !
@@ -60,7 +60,9 @@ call Find_ConnectedComp(p, S, rho, k, Ck, pk)
 nit = 0
 conv = 0
 do i = 1, k
-    if(trace.eq.2) call glasso_trace2_2(i, k)
+    call rchkusr()
+
+    if(trace.eq.2) call glasso_trace_2_2(i, k)
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! extraction of the indices associated with the k-th connected component !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -72,7 +74,9 @@ do i = 1, k
         return
     end if
     idx1 = Ck(1:p_k1)
-    idx2 = Ck((p_k1 + 1):p)
+    if (p_k2.ne.0) then
+        idx2 = Ck((p_k1 + 1):p)
+    end if
     if(p_k1 .eq. 1) then
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! if p_k1 is equal to 1 then we are working with an isolated vertix      !
@@ -81,8 +85,8 @@ do i = 1, k
         if(pendiag.eq.1) Sgm(idx1, idx1) = Sgm(idx1, idx1) + rho(idx1, idx1)
         Tht(idx1, idx1) = 1.d0 / Sgm(idx1, idx1)
         if(trace.eq.2) then
-            call glasso_trace2_3_1()
-            call glasso_trace2_3_2(1, 0, 0.d0)
+            call glasso_trace_2_3_1()
+            call glasso_trace_2_3_2(1, 0, 0)
         end if
     else
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -119,17 +123,19 @@ do i = 1, k
             return
         end if
     end if
-    Sgm(idx1,idx2) = 0.d0
-    Sgm(idx2,idx1) = 0.d0
-    Tht(idx1,idx2) = 0.d0
-    Tht(idx1,idx2) = 0.d0
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! shifting Ck and pk vectors                                             !
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    Ck(1:(p_k2)) = idx2
-    Ck((p_k2 + 1):p) = idx1
-    pk(1:(k - 1)) = pk(2:k)
-    pk(k) = p_k1
+    if (p_k2.ne.0) then
+        Sgm(idx1, idx2) = 0.d0
+        Sgm(idx2, idx1) = 0.d0
+        Tht(idx1, idx2) = 0.d0
+        Tht(idx2, idx1) = 0.d0
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ! shifting Ck and pk vectors                                             !
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        Ck(1:(p_k2)) = idx2
+        Ck((p_k2 + 1):p) = idx1
+        pk(1:(k - 1)) = pk(2:k)
+        pk(k) = p_k1
+    end if
     deallocate(idx1, idx2, stat = conv)
     if(conv.ne.0) then
         conv = -1

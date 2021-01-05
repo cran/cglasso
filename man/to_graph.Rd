@@ -1,123 +1,75 @@
 \name{to_graph}
 \alias{to_graph}
 
-\title{Create Undirected Graphs}
+\title{Create Graphs from cglasso or cggm Objects}
 
 \description{
-\sQuote{\code{to_graph}} function is used to create an undirected graph from a fitted model object.
+\sQuote{\code{to_graph}} returns a named list of graphs using the results of an \R object of class \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}. 
 }
 
 \usage{
-to_graph(object, nrho = 1L, weighted = FALSE, isolated = FALSE)
+to_graph(object, GoF = aic, lambda.id, rho.id, weighted = FALSE, simplify = TRUE, 
+         ...)
 }
 
 \arguments{
-\item{object}{a fitted model object.}
-\item{nrho}{integer specifying the model used to create the undireced graph. Default is \code{1L}.}
-\item{weighted}{flag specifying whether to create a weighted graph from the adjacency matrix. Default is \code{FALSE}.}
-\item{isolated}{flag specifying whether the isolated vertices are removed from the graph. Default is \code{FALSE}, i.e. the isolated vertices are removed.}
+\item{object}{an \R object inheriting class \sQuote{\code{cglasso}}, that is, the output of the model-fitting functions \code{\link{cglasso}} and \code{\link{cggm}}.}
+\item{GoF}{a valid goodness-of-fit function, such as \code{\link{aic}} or \code{\link{bic}}, or an \R object of class \sQuote{\code{GoF}}.}
+\item{lambda.id}{optional. If \code{object} has class \sQuote{\code{cglasso}}, this argument is an integer used to identify a specific fitted cglasso model, otherwise (i.e. if the \code{object} has class \sQuote{\code{cggm}}) this argument can be omitted. See section \sQuote{Details} for more details.}
+\item{rho.id}{optional. If \code{object} has class \sQuote{\code{cglasso}}, this argument is an integer used to identify a specific fitted cglasso model, otherwise (i.e. if \code{object} has class \sQuote{\code{cggm}}) this argument can be omitted. See section \sQuote{Details} for more details.}
+\item{weighted}{logical. Should weighted graphs be created? Default is \code{FALSE}.}
+\item{simplify}{logical. Should isolated vertices be removed from the graph? Default is \code{TRUE}, i.e., isolated vertices are removed.}
+\item{\ldots}{further arguments passed to the chosen goodness-of-fit function (argument \sQuote{\code{GoF}}).}
 }
 
 \details{
-The adjacency matrix \sQuote{\code{object$Adj[, , nrho]}} is passed to \code{\link[igraph]{graph_from_adjacency_matrix}}, available in the \R package \pkg{igraph}, to create the undirected graph estimated by the glasso, mglasso, cglasso model or using the function \code{\link{mle}}. If \sQuote{\code{weighted = TRUE}} then the precision matrix \sQuote{\code{object$Tht[, , nrho]}} is used to create a weighted undirected graph. In this case, an edge associated to a negative partial correlation coefficient is plotted using a dashed line (see examples below).
+\sQuote{\code{to_graph}} returns a named list of graphs using the results of an \R object of class \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}. 
+
+If \code{object} has class \sQuote{\code{cglasso}}, then the goodness-of-fit function passed through the argument \code{GoF} is used to identify the adjacency matrix (\code{object$InfoStructure$Adj_yy}) describing the undirected edges among the \eqn{p}{p} response variables. If the model is fitted using \eqn{q}{q} predictors, then the matrix  describing the effects of the predictors onto the response variables (see object$InfoStructure$Adj_xy) is also returned. Finally, these matrices are used to return an undirected and directed graph. Opionally, the user can identify a specific fitted model using the arguments \code{lambda.id} and \code{rho.id}.
+
+If \code{object} has class \sQuote{\code{cggm}}, then \code{GoF}, \code{lambda.id} and \code{rho.id} can be omitted.
+
+If argument weighted is set equal to \sQuote{\code{TRUE}}, then the estimated precision matrix and, if available, the estimated regression coefficient matrix are used to return weighted graphs. In this case, edges associated with positive estimates are shown using a solid line. Otherwise, a dashed line is used.
 }
 
 \value{
-\sQuote{\code{to_graph}} returns an \link[igraph]{igraph} object.
+\sQuote{\code{to_graph}} returns an \R object of S3 class \dQuote{\code{cglasso2igraph}}, i.e., a named list containing the
+following components:
+\item{Gyy}{an undirected graph representing the conditional dependence structure among the \eqn{p}{p} response variables.}
+\item{Gxy}{a directed graph representing the effetcs of the \eqn{q}{q} predictors onto the \eqn{p}{p} response variables.}
+Each component is an \R object of class \code{\link[igraph]{igraph}}.
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
-\references{
-Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
-\eqn{\ell_1}{l1}-Penalized gaussian graphical model.
-\emph{Biostatistics} (to appear).
-}
-
 \seealso{
-\code{\link{glasso}}, code{\link{mglasso}} and code{\link{cglasso}}. For more details about the object of class \sQuote{\code{igraph}}, the interested reader is referred to the package \pkg{\link[igraph]{igraph}}.
+\code{\link{cglasso}}, \code{\link{cggm}} and \code{\link{plot.cglasso2igraph}}. For more details about the object of class \sQuote{\code{igraph}}, the interested reader is referred to the package \pkg{\link[igraph]{igraph}}.
 }
 
 \examples{
-library("cglasso")
-set.seed(123)
-
-#################
-# cglasso model #
-#################
+# Y ~ N(0, Sigma) and probability of left/right censored values equal to 0.05
 n <- 100L
-p <- 10L
-mu <- rep.int(0L, times = p)
-X <- rdatacggm(n = n, mu = mu, probr = 0.05)
-out <- cglasso(X)
-out
+p <- 3L
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
+out <- cglasso(Z)
+out.graph <- to_graph(out)
+out.graph
 
-# creating the undirected graph associated to the fitted
-# model number 3
-graph_cglasso <- to_graph(out, nrho = 3L)
-graph_cglasso
-V(graph_cglasso)
-E(graph_cglasso)
-plot(graph_cglasso, layout = layout_in_circle(graph_cglasso))
-
-# creating the weighted graph associated to the fitted
-# model number 3
-graph_cglasso <- to_graph(out, nrho = 3L, weighted = TRUE)
-graph_cglasso
-E(graph_cglasso)
-E(graph_cglasso)$weight
-plot(graph_cglasso, layout = layout_in_circle(graph_cglasso))
-
-#################
-# mglasso model #
-#################
-R <- event(X)
-X <- as.matrix(X)
-X[R == 1L] <- NA
-out <- mglasso(X)
-out
-
-# creating the undirected graph associated to the fitted
-# model number 3
-graph_mglasso <- to_graph(out, nrho = 3L)
-graph_mglasso
-V(graph_mglasso)
-E(graph_mglasso)
-plot(graph_mglasso, layout = layout_in_circle(graph_mglasso))
-
-# creating the weighted graph associated to the fitted
-# model number 3
-graph_mglasso <- to_graph(out, nrho = 3L, weighted = TRUE)
-graph_mglasso
-E(graph_mglasso)
-E(graph_mglasso)$weight
-plot(graph_mglasso, layout = layout_in_circle(graph_mglasso))
-
-#################
-# glasso model #
-#################
+# Y ~ N(b0 + XB, Sigma)  and probability of left/right censored values equal to 0.05
 n <- 100L
-p <- 10L
-X <- matrix(rnorm(n * p), nrow = n, ncol = p)
-out <- glasso(X)
-out
-
-# creating the undirected graph associated to the fitted
-# model number 3
-graph_cglasso <- to_graph(out, nrho = 3L)
-graph_cglasso
-V(graph_cglasso)
-E(graph_cglasso)
-plot(graph_cglasso, layout = layout_in_circle(graph_cglasso))
-
-# creating the weighted graph associated to the fitted
-# model number 3
-graph_cglasso <- to_graph(out, nrho = 3L, weighted = TRUE)
-graph_cglasso
-E(graph_cglasso)
-E(graph_cglasso)$weight
-plot(graph_cglasso, layout = layout_in_circle(graph_cglasso))
+p <- 3L
+q <- 2L
+b0 <- runif(p)
+B <- matrix(runif(q * p), nrow = q, ncol = p)
+X <- matrix(rnorm(n * q), nrow = n, ncol = q)
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
+out <- cglasso(Z)
+out.graph <- to_graph(out, lambda.id = 3, rho.id = 3, weighted = TRUE)
+out.graph
 }
 
-\keyword{multivariate}
 \keyword{graphs}

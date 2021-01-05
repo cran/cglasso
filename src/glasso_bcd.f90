@@ -60,8 +60,10 @@ end do
 ! starting bcd algorithm       !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 nit = 0
-if(trace.eq.2) call glasso_trace2_3_1()
+if(trace.eq.2) call glasso_trace_2_3_1()
 do
+    call rchkusr()
+
     nit = nit + 1
     dSgm12 = 0.d0
     do m = 1, p
@@ -78,15 +80,22 @@ do
         Sgm11 = Sgm(idx, idx)
         rhom = rho(idx, m)
         lnit = 0
-        call lasso(p_1, Sgm11, Sgm12, rhom, maxit, thr, b, lnit, conv)
+        call lasso(p_1, Sgm11, Sgm12, rhom, maxit, thr / p_1, b, lnit, conv)
         if(conv.eq.1) return
         bmat(:, m) = b
         Sgm(idx, m) = S(idx, m) - Sgm12
         Sgm(m, idx) = Sgm(idx, m)
-        dSgm12 = max(dSgm12, sum(abs(Sgm(idx, m) - Sgm12o)))
+        dSgm12 = max(dSgm12, sum(abs(Sgm(idx, m) - Sgm12o)) / p_1)
+! code_conv     
+!        dSgm12 = dSgm12 + sum((Sgm(idx, m) - Sgm12o)**2)
     end do
-    if(trace.eq.2) call glasso_trace2_3_2(nit, lnit, dSgm12)
-    if(dSgm12.lt.shr) exit
+! code_conv     
+!    dSgm12 = sqrt(dSgm12) / (p * (p - 1))
+    if(trace.eq.2) call glasso_trace_2_3_2(nit, lnit, dSgm12)
+    if(dSgm12.lt.shr) then
+        if(trace.eq.2) call glasso_trace_2_3_3(shr)
+        exit
+    end if
     if(nit.eq.maxit) then
         conv = 1
         return

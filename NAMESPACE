@@ -2,51 +2,50 @@ useDynLib("cglasso", .registration = TRUE, .fixes = "C_")
 
 import(methods, igraph, MASS)
 
-importFrom("stats", "optim", "dnorm", "qnorm", "pnorm", "rnorm", "sd")
-importFrom("graphics", "abline", "plot", "matplot", "par")
-importFrom("grDevices", "dev.interactive")
+importFrom("stats", "optim", "dnorm", "qnorm", "pnorm", "rnorm", "rbinom", "sd", "ppoints", "uniroot", "var", "coef", "terms")
+importFrom("graphics", "abline", "plot", "matplot", "par", "hist", "points", "polygon", "segments", "image", "axis", "legend", "contour", "mtext", "title", "matpoints", "text")
+importFrom("grDevices", "dev.interactive", "adjustcolor", "dev.flush", "dev.hold", "n2mfrow", "dev.off", "devAskNewPage", "pdf", "gray.colors", "dev.list")
+importFrom("utils", "head", "tail", "setTxtProgressBar", "txtProgressBar")
 
-export(datacggm, glasso, glasso.fit, cglasso, cglasso.fit, parini,
-print.glasso, print.cglasso, print.loglik, plot.gof, coef.mglasso, coef.glasso,
-plot.glasso, plot.mglasso, to_graph, loglik, aic, bic, print.gof, summary.glasso,
-make_summary_table, mle, mle.glasso, mle.cglasso, ebic, ebic.glasso,
-ebic.cglasso, print.datacggm, as.character.datacggm, summary.datacggm,
-rdatacggm, is.datacggm, dim.datacggm, Math.datacggm, Ops.datacggm,
-as.matrix.datacggm, event, dimnames.datacggm, scale.datacggm,
-mglasso, mglasso.fit, mle.mglasso, ebic.mglasso)
+export(datacggm, is.datacggm, dim.datacggm, dimnames.datacggm, "dimnames<-.datacggm", Math.datacggm, Ops.datacggm, 
+	fit_matrix, as.character.datacggm, print.datacggm, summary.datacggm, getMatrix, event, rowNames, colNames, "rowNames<-", 
+	"colNames<-", lower, upper, ColMeans, ColVars, nObs, nResp, nPred, rcggm, qqcnorm, hist.datacggm, ShowStructure, 
+	cglasso, cglasso.fit, print.cglasso, coef.cglasso, fitted.cglasso, residuals.cglasso, predict.cglasso, 
+	summary.cglasso, plot.cglasso, impute, function2xy, cggm, cggm.fit, print.cggm, predict.cggm, plot.cggm, QFun, 
+	aic, bic, select.cglasso, print.QFun, print.GoF, plot.GoF, to_graph, is.cglasso2igraph, print.cglasso2igraph, 
+	plot.cglasso2igraph, getGraph)
 
-S3method(print, datacggm)
-S3method(summary, datacggm)
-S3method(as.character, datacggm)
-S3method('[', datacggm)
 S3method(is, datacggm)
 S3method(dim, datacggm)
 S3method(dimnames, datacggm)
 S3method("dimnames<-", datacggm)
 S3method(Math, datacggm)
 S3method(Ops, datacggm)
-S3method(as.matrix, datacggm)
-S3method(scale, datacggm)
-
-S3method(coef, glasso)
-S3method(print, glasso)
-S3method(plot, glasso)
-S3method(ebic, glasso)
-S3method(mle, glasso)
-S3method(summary, glasso)
-
-S3method(coef, mglasso)
-S3method(plot, mglasso)
-S3method(mle, mglasso)
-S3method(ebic, mglasso)
+S3method(as.character, datacggm)
+S3method(print, datacggm)
+S3method(summary, datacggm)
+S3method(hist, datacggm)
 
 S3method(print, cglasso)
-S3method(mle, cglasso)
-S3method(ebic, cglasso)
+S3method(coef, cglasso)
+S3method(fitted, cglasso)
+S3method(residuals, cglasso)
+S3method(predict, cglasso)
+S3method(plot, cglasso)
+S3method(summary, cglasso)
 
-S3method(print, loglik)
-S3method(print, gof)
-S3method(plot, gof)
+S3method(print, cggm)
+S3method(predict, cggm)
+S3method(plot, cggm)
+
+S3method(print, QFun)
+S3method(print, GoF)
+S3method(plot, GoF)
+
+S3method(print, cglasso2igraph)
+S3method(is, cglasso2igraph)
+S3method(plot, cglasso2igraph)
+
 
 
 

@@ -23,7 +23,7 @@
 subroutine lasso(p, Sgm11, Sgm12, rhom, niter, thr, b, lnit, conv)
 implicit none
 integer :: p, niter, lnit, conv
-double precision :: Sgm11(p,p), Sgm12(p), rhom(p), thr, b(p)
+double precision :: Sgm11(p,p), Sgm12(p), rhom(p), thr, b(p), temp(p)
 !internal variables
 double precision, parameter :: fac = 0.2
 integer :: i,m,card
@@ -33,13 +33,16 @@ do m = 1, p
     if(abs(b(m)).gt.0.d0) card = card + 1
 end do
 if(card.le.int(fac * p)) then
-    Sgm12 = Sgm12 - matmul(Sgm11, b)
+    call DGEMV('N', p, p, 1.d0, Sgm11, p, b, 1, 0.d0, temp, 1)
+    Sgm12 = Sgm12 - temp !matmul(Sgm11, b)
 else
     do m = 1, p
         if(abs(b(m)).gt.0.d0) Sgm12 = Sgm12 - Sgm11(:, m) * b(m)
     end do
 end if
 do i = 1, niter
+    call rchkusr()
+
     lnit = i
     dbm_max = 0.d0
     do m = 1, p
@@ -49,8 +52,12 @@ do i = 1, niter
         if(abs(y).gt.rhom(m)) b(m) = sign(abs(y) - rhom(m), y) / Sgm11(m,m)
         dbm = b(m) - bm
         dbm_max = max(dbm_max, abs(dbm))
+! code_conv    
+!        dbm_max = dbm_max + (dbm)**2
         Sgm12 = Sgm12 - dbm * Sgm11(:,m)
     end do
+! code_conv    
+!    dbm_max = sqrt(dbm_max / p)
     if(dbm_max.lt.thr) exit
 end do
 if(i.eq.niter) conv = 1

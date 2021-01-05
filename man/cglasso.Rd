@@ -1,155 +1,170 @@
 \name{cglasso}
 \alias{cglasso}
-\alias{cglasso.fit}
-\alias{print.cglasso}
 
-\title{Censored Graphical Lasso Estimator}
+\title{Conditional Graphical Lasso Estimator}
 
 \description{
-\sQuote{\code{cglasso}} function is used to fit an l1-penalized censored Gaussian graphical model.
+\sQuote{\code{cglasso}} fits the conditional graphical lasso model to datasets with censored and/or missing values.
 }
 
 \usage{
-cglasso(X, lo, up, weights, pendiag = FALSE, nrho = 50L, rho.min.ratio,
-        rho, maxR2, maxit_em = 1.0e+3, thr_em = 1.0e-4, maxit_bcd = 1.0e+4,
-        thr_bcd = 1.0e-4, trace = 0L)
+cglasso(Z, diagonal = FALSE, weights.B = NULL, weights.Tht = NULL, nlambda, 
+        lambda.min.ratio, lambda, nrho, rho.min.ratio, rho, maxit.em = 1.0E+4, 
+        thr.em = 1.0E-3, maxit.bcd = 1.0E+5, thr.bcd = 1.0E-4, trace = 0L)
 }
 
 \arguments{
-\item{X}{an object with S3 class \sQuote{\code{datacggm}}, usually the output of the function \code{\link{datacggm}}. Optionally, this argument can be a matrix of dimension \eqn{n\times p}{n x p}; in this case, the matrix \sQuote{\code{X}} and the arguments \sQuote{\code{lo}} and \sQuote{\code{up}} are passed to \code{\link{datacggm}} to create the object with class \sQuote{\code{datacggm}}.}
-\item{lo}{optional argument. If the argument \sQuote{\code{X}} is a matrix then \sQuote{\code{lo}} is used to create an object with class \sQuote{\code{datacggm}}.}
-\item{up}{optional argument. If the argument \sQuote{\code{X}} is a matrix then \sQuote{\code{up}} is used to create an object with class \sQuote{\code{datacggm}}.}
-\item{weights}{an optional symmetric matrix of non-negative weights. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights[i, j] = +Inf}}). See below for an example. By default, cglasso model is fitted without weights.}
-\item{pendiag}{flag used to specify if the diagonal elements of the concentration matrix are penalized (\sQuote{\code{pendiag = TRUE}}) or unpenalized (\sQuote{\code{pendiag = FALSE}}).}
-\item{nrho}{the integer specifying the number of tuning parameters used to fit the cglasso model. Default is \sQuote{\code{nrho = 50}}.}
-\item{rho.min.ratio}{the smallest value for the tuning parameter \eqn{\rho}{rho}, as a fraction of the smallest tuning parameter for which all the estimated partial correlation coefficients are zero. The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1.0E-4} otherwise the value \sQuote{1.0E-2} is used as default. A very small value of \sQuote{\code{rho.min.ratio}} will lead to a saturated fitted model in the \sQuote{\eqn{p < n}{p < n}} case.}
-\item{rho}{optional argument. A user supplied \code{rho} sequence. WARNING: avoid supplying a single value for the tuning parameter; supply instead a decreasing sequence of \eqn{\rho}{rho}-values.}
-\item{maxR2}{a value belonging to the interval \eqn{[0, 1]}{[0, 1]} specifying the largest value of the pseudo R-squared measure (see Section \bold{Details}). The regularization path is stopped when \eqn{R^2}{R2} exceeds \sQuote{\code{maxR2}}. Default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1} otherwise the value \sQuote{0.9} is used as default.}
-\item{maxit_em}{maximum number of iterations of the EM algorithm. Default is \code{1.0E+3}.}
-\item{thr_em}{threshold for the convergence of the EM algorithm. Default value is \code{1.0E-4}.}
-\item{maxit_bcd}{maximum number of iterations of the glasso algorithm. Default is \code{1.0E+4}.}
-\item{thr_bcd}{threshold for the convergence of the glasso algorithm. Default is \code{1.0E-4}.}
-\item{trace}{integer for printing out information as iterations proceed: \code{trace = 0} no information is printed out on video; \code{trace = 1} basic information is printed out on video; \code{trace = 2} detailed information is printed out on video.}
+\item{Z}{an \R object of S3 class \sQuote{\code{datacggm}}, that is, the output of the function \code{\link{datacggm}}. See section \sQuote{Description} for more details.}
+\item{diagonal}{logical. Should diagonal entries of the concentration matrix be penalized? Default is \sQuote{\code{diagonal = FALSE}}.}
+\item{weights.B}{an optional \eqn{q\times p}{q x p} dimensional matrix of non-negative weights used to penalize the regression coefficients (intercepts are unpenalized). This matrix can be also used to specify the unpenalized regression coefficients (\sQuote{\code{weights.B[i, j] = 0}}) or the structural zeros (\sQuote{\code{weights.B[i, j] = +Inf}}). By default, all weights are set equal to 1, meaning that the penalized regression coefficients are unweighted.}
+\item{weights.Tht}{an optional symmetric matrix of non-negative weights used to penalize the partial regression coefficients. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights.Tht[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights.Tht[i, j] = +Inf}}). By default, the off-diagonal entries of the matrix \sQuote{\code{weights.Tht}}  are set equal to 1, meaning that the partial correlation coefficients are unweighted, whereas the diagonal entries are equal to 0, that is the diagonal entries of the precision matrix are unpenalized.}
+\item{nlambda}{integer. The number of \eqn{\lambda}{lambda}-values used to penalize the regression coefficients. By default \sQuote{\code{nlambda = 10}}.}
+\item{lambda.min.ratio}{the smallest \eqn{\lambda}{lambda}-value is defined as a fraction of \sQuote{\code{lambda.max}} (i.e., the smallest \eqn{\lambda}{lambda}-value for which all the estimated regression coefficients are equal to zero). The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of predictors \sQuote{\eqn{q}{q}}. If \sQuote{\eqn{q < n}{q < n}}, default is \sQuote{1.0E-6} otherwise the value \sQuote{1.0E-2} is used as default. A very small value of \sQuote{\code{lambda.min.ratio}} will lead to a saturated fitted model in the \sQuote{\eqn{q < n}{q < n}} case.}
+\item{lambda}{an optional user-supplied decreasing sequence of \eqn{\lambda}{lambda}-values. By default \code{cglasso} computes a sequence of \eqn{\lambda}{lambda}-values using \code{nlambda} and \code{lambda.min.ratio}. If \code{lambda} is supplied then \code{nlambda} and \code{lambda.min.ratio} are overwritten. WARNING: use with care and avoid supplying a single \eqn{\lambda}{lambda}-value; supply instead a decreasing sequence.}
+\item{nrho}{integer. The number of \eqn{\rho}{rho}-values used to penalize the partial correlation coefficients. By default \sQuote{\code{nrho = 10}}.}
+\item{rho.min.ratio}{the smallest \eqn{\rho}{rho}-value is defined as a fraction of \sQuote{\code{rho.max}} (i.e., the smallest \eqn{\rho}{rho}-value for which all the estimated partial correlation coefficients are equal to zero). The default depends on the sample size \sQuote{\eqn{n}{n}} relative to the number of response variables \sQuote{\eqn{p}{p}}. If \sQuote{\eqn{p < n}{p < n}}, the default is \sQuote{1.0E-6} otherwise the value \sQuote{1.0E-2} is used as default. A very small value of \sQuote{\code{rho.min.ratio}} will lead to a saturated fitted model in the \sQuote{\eqn{p < n}{p < n}} case.}
+\item{rho}{an optional user supplied decreasing sequence of \eqn{\rho}{rho}-values. By default \code{cglasso} computes a sequence of \eqn{\rho}{rho}-values using \code{nrho} and \code{rho.min.ratio}. If \code{rho} is supplied then \code{nrho} and \code{rho.min.ratio} are overwritten. WARNING: use with care and avoid supplying a single \eqn{\rho}{rho}-value; supply instead a decreasing sequence.}
+\item{maxit.em}{maximum number of iterations of the EM algorithm. Default is \code{1.0E+4}.}
+\item{thr.em}{threshold for the convergence of the EM algorithm. Default value is \code{1.0E-4}.}
+\item{maxit.bcd}{maximum number of iterations of the glasso algorithm. Default is \code{1.0E+5}.}
+\item{thr.bcd}{threshold for the convergence of the glasso algorithm. Default is \code{1.0E-4}.}
+\item{trace}{integer for printing information out as iterations proceed: \code{trace = 0} no information is printed out; \code{trace = 1} minimal information is printed on screen; \code{trace = 2} detailed information is printed on screen.}
 }
-
 \details{
-The censored graphical lasso (cglasso) estimator (Augugliaro \emph{and other}, 2018) is an extension of the classical graphical lasso (glasso) estimator (Yuan \emph{and other}, 2007) developed to fit a sparse censored Gaussian graphical model (see Section 2 in Augugliaro \emph{and other} (2018) for a formal definition).
+\code{cglasso} is the main model-fitting function and can be used to fit a broad range of extensions of the glasso estimator (Friedman \emph{and other}, 2008). It is specifically proposed to study datasets with censored and/or missing response values. To help the user, the \code{cglasso} function has been designed to automatically select the most suitable extension by using the information stored in the \sQuote{\code{\link{datacggm}}} object passed through \code{Z}. 
 
-\code{cglasso} function fits the model using the following EM-like algorithm:
-\tabular{cl}{
-Step \tab Description \cr
-1.  \tab Let \eqn{\{\hat{\mu}^\rho_{ini};\hat{\Theta}^\rho_{ini}\}}{\{hat{mu}^{rho}_{ini}; hat{Tht}^{rho}_{ini}\}} be initial estimates;\cr
-2.  \tab \bold{E-step}\cr
-    \tab use the moments of the truncated normal distribution to compute the current estimates of the \cr
-    \tab marginal means, denoted by \eqn{\bar{x}^\rho}{bar{x}^rho}, and to complete the empirical covariance matrix \eqn{S^\rho}{S^rho};\cr
-3.  \tab \bold{M-step}\cr
-    \tab let \eqn{\hat{\mu}^\rho = \bar{x}^\rho}{hat{mu}^{rho} = bar{x}^\rho}; \cr
-    \tab compute \eqn{\hat{\Theta}^\rho}{hat{Tht}^{rho}} using \eqn{S^\rho}{S^rho} and the glasso algorithm (Friedman \emph{and other}, 2008);\cr
-4.  \tab repeat steps 2. and 3. until a convergence criterion is met.
+Below we sum up the available extenions:
+\itemize{
+\item if only left/right-censored are observed in the response matrix \code{Y} (without missing values) and no predictor matrix is stored in \code{Z}, then \code{cglasso} computes the censored glasso estimator (Augugliaro \emph{and other}, 2020a);
+\item if only left/right-censored are observed in the response matrix \code{Y} (without missing values) and and a predictor matrix \code{X} is stored in \code{Z}, then \code{cglasso} computes the conditional censored glasso estimator (Augugliaro \emph{and other}, 2020b);
+\item if only missing values are stored in the response matrix \code{Y} (without censored values), then \code{cglasso} computes the missglasso estimator (Stadler \emph{and other}, 2012);
+\item starting with version 2.0.0, \code{cglasso} can also handle datasets with both missing and censored response values.
 }
-In order to reduce the computational burdern of the algorithm, in Step 2. the matrix \eqn{S^\rho} is approximated using the method proposed in  Guo \emph{and others} (2015).
+See section \sQuote{Examples} for some example.
 
-In order to avoid the overfitting of the model, we use the following pseudo R-squared measure: \deqn{R^2 = 1 - \frac{\|S^\rho - \hat{\Sigma}^\rho\|_F}{\|S^{\rho_{\max}} - \hat{\Sigma}^{\rho_{\max}}\|_F},}{R2 = 1 - ||S^rho - Sgm^rho||_F / ||S^{rho_max} - Sgm^{rho_max}||_F,} where \eqn{\|\cdot\|_F}{|| . ||_F} denotes the Frobenius norm and \eqn{\rho_{\max}}{rho_max} denotes the smallest value of the tuning parameter for which all the estimated partial correlation coefficients are zero. By straightforward algebra, it is easy to show that the proposed pseudo R-squared belongs to the closed interval \eqn{[0, 1]}{[0, 1]}: \eqn{R^2 = 0}{R2 = 0} when the tuning parameter is equal to \eqn{\rho_{\max}}{rho_max} and \eqn{R^2 = 1}{R2 = 1} when \eqn{\rho = 0}{rho = 0}. The regularization path is stopped when \eqn{R^2}{R2} exceeds the threshold specify by  \sQuote{\code{maxR2}}.
+The model-fitting function \code{cglasso} returns an \R object of S3 class \sQuote{\code{cglasso}} for which there are available a set of accessor functions, a set of functions designed to evaluate the goodness-of-fit of the fitted models and, finally, a set of functions developed to analyze the selected network. The function \code{\link{ShowStructure}} can be used to show the structure of the package.
+
+The accessor functions \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}} and \code{\link{impute}} can be used to extract various useful features of the object fitted by \code{cglasso}.
+
+For an \R object returned by \code{cglasso}, the functions \code{\link{aic}} and \code{\link{bic}} can be used to evaluate the goodness-of-fit of the fitted models. Usually, these functions are used together with the function \code{\link{summary.cglasso}}, which gives more information about the sequence of fitted models. The plotting function \code{\link{plot.GoF}} can be used to graphically identify the optimal pair of the tuning parameters.
+
+Given a pair of the tuning paremeters, the functions \code{\link{to_graph}} and \code{\link{plot.cglasso2igraph}} can be used to analyze and show the selected network. Finally, the function \code{\link{cggm}} can be used to produce post-hoc maximum likelihood refitting of the selected graphical model.  
 }
 
 \value{
-\code{cglasso} returns an object with S3 class \dQuote{\code{cglasso}}, i.e., a list containing the
+\code{cglasso} returns an object of S3 class \dQuote{\code{cglasso}}, i.e., a named list containing the
 following components:
 \item{call}{the call that produced this object.}
-\item{X}{the object with S3 class \sQuote{\code{datacggm}} used to fit the cglasso model.}
-\item{weights}{the weights used to fit the cglasso model.}
-\item{pendiag}{flag used to specify if the diagonal elements of the concentration matrix are penalized.}
-\item{xm}{the \eqn{p}{p}-dimensional vector reporting the estimates of the marginal expected values under the assumption that the precision matrix is diagonal.}
-\item{vm}{the \eqn{p}{p}-dimensional vector reporting the estimates of the marginal variances under the assumption that the precision matrix is diagonal.}
-\item{nrho}{the number of fitted cglasso model.}
-\item{rho.min.ratio}{the scale factor used to compute the smallest value of the tuning parameter.}
-\item{rho}{the \eqn{p}{p}-dimensional vector reporting the values of the tuning parameter used to fit the cglasso model.}
-\item{maxR2}{the threshold value used to stop the regularization path.}
-\item{maxit_em}{the maximum number of iterations of the EM algorithm.}
-\item{thr_em}{the threshold for the convergence of the EM algorithm.}
-\item{maxit_bcd}{the maximum number of iterations of the glasso algorithm.}
-\item{thr_bcd}{the threshold for the convergence of the glasso algorithm.}
-\item{Xipt}{an array of dimension \eqn{n\times p\times\texttt{nrho}}{n x p x nrho}. \code{Xipt[, , k]} is the matrix where the censored values are replaced with the conditional expected values computed in the E-step of the algorithm describted in section \bold{Details}.}
-\item{S}{an array of dimension \eqn{p\times p\times\texttt{nrho}}{p x p x nrho}. \code{S[, , k]} is the matrix \eqn{S^\rho} used to fit the glasso model in the M-step of the algorithm describted in section \bold{Details}.}
-\item{mu}{a matrix of dimension \eqn{p\times\texttt{nrho}}{p x nrho}. The \eqn{k}{k}th column is the estimate of the expected values of the cglasso model fitted using \code{rho[k]}.}
-\item{Sgm}{an array of dimension \eqn{p\times p\times\texttt{nrho}}{p x p x nrho}. \code{Sgm[, , k]} is the estimate of the covariance matrix of the cglasso model fitted using \code{rho[k]}.}
-\item{Tht}{an array of dimension \eqn{p\times p\times\texttt{nrho}}{p x p x nrho}. \code{Tht[, , k]} is the estimate of the precision matrix of the cglasso model fitted using \code{rho[k]}.}
-\item{Adj}{an array of dimension \eqn{p\times p\times\texttt{nrho}}{p x p x nrho}. \code{Adj[, , k]} is the adjacency matrix associated to \code{Tht[, , k]}, i.e. \code{Adj[i, j, k] }\eqn{= 1}{= 1} iff \code{Tht[i, j, k] }\eqn{\neq 0}{!= 0} and \code{0} otherwise.}
-\item{df}{the \eqn{nrho}{nrho}-dimensional vector reporting the number of non-zero partial correlation coefficients.}
-\item{R2}{the \eqn{nrho}{nrho}-dimensional vector reporting the values of the measure \eqn{R^2}{R2} described in section \bold{Details}.}
-\item{ncomp}{the \eqn{nrho}{nrho}-dimensional vector reporting the number of connected components (for internal purposes only).}
-\item{Ck}{the \eqn{(p\times\texttt{nrho})}{(p x nrho)}-dimensional matrix encoding the connected components (for internal purposes only).}
-\item{pk}{the \eqn{(p\times\texttt{nrho})}{(p x nrho)}-dimensional matrix reporting the number of vertices per connected component (for internal purposes only).}
-\item{nit}{the \eqn{(\texttt{nrho}\times 2)}{(nrho x 2)}-dimensional matrix reporting the number of iterations.}
+\item{Yipt}{an array of dimension \sQuote{\code{n x p x nlambda x nrho}} storing the \sQuote{working response matrices}, that is, \code{Yipt[, , i, j]} is used as response matrix to compute the multilasso estimator (Augugliaro \emph{and other}, 2020b). The accessor function \sQuote{\code{\link{impute}}} can be used to extract the desidered imputed matrix.}
+\item{B}{an array of dimension \sQuote{\code{(q + 1) x p x nlambda x nrho}} storing the penalized estimate of the regression coefficient matrices. The accessor function \sQuote{\code{\link{coef.cglasso}}} can be used to extract the desired estimates.}
+\item{mu}{an array of dimension \sQuote{\code{n x p x nlambda x nrho}} storing the fitted values. The accessor function \sQuote{\code{\link{fitted.cglasso}}} can be used to extract the desired fitted values.}
+\item{R}{an array of dimension \sQuote{\code{n x p x nlambda x nrho}} storing the \sQuote{working residuals}, that is, \code{R[, , i, j]} is defined as the difference between \code{Yipt[, , i, j]} and \code{mu[, , i, j]}. The accessor function \sQuote{\code{\link{residuals.cglasso}}} can be used to extract the desidered residual matrix.}
+\item{S}{an array of dimension \sQuote{\code{p x p x nlambda x nrho}} storing the \sQuote{working empirical covariance matrices}, that is, \sQuote{\code{S[, , i, j]}} is used to compute the glasso estimator.}
+\item{Sgm}{an array of dimension \sQuote{\code{p x p x nlambda x nrho}} storing the estimated covariance matrices. The accessor function  \sQuote{\code{\link{coef}}} can be used to extract the desired estimates.}
+\item{Tht}{an array of dimension \sQuote{\code{p x p x nlambda x nrho}} storing the estimated precision matrices. The accessor funtion \sQuote{\code{\link{coef}}} can be used to extract the desired estimates.}
+\item{dfB}{a matrix of dimension \sQuote{\code{(p + 1) x nlambda x nrho}} storing the number of estimated non-zero regression coefficients. Only for internal purpose.}
+\item{dfTht}{a matrix of dimension \sQuote{\code{nlambda x nrho}} storing the number of estimated non-zero (off-diagonal) partial correlation coefficients. Only for internal purpose.}
+\item{InfoStructure}{a named list whose elements contain information about the estimated networks. Only for internal purpose.}
+\item{nit}{an array of dimension \sQuote{\code{2 x nlambda x nrho}} storing the number of EM steps.}
+\item{Z}{the \sQuote{\code{datacggm}} object used to compute the censored graphical lasso estimator.}
+\item{diagonal}{the flag used to specify if the diagonal entries of the precision matrix are penalized.}
+\item{weights.B}{the matrix of non-negative weights used for the regression coefficients.}
+\item{weights.Tht}{the matrix of non-negative weights used for the precision matrix.}
+\item{nlambda}{the number of \eqn{\lambda}{\lambda}-values used.}
+\item{lambda.min.ratio}{the value used to compute the smallest \eqn{\lambda}{lambda}-value.}
+\item{lambda}{the sequence of \eqn{\lambda}{lambda}-values used to fit the model.}
+\item{nrho}{the number of \eqn{\rho}{\rho}-values used.}
+\item{rho.min.ratio}{the value used to compute the smallest \eqn{\rho}{rho}-value.}
+\item{rho}{the sequence of \eqn{\rho}{rho}-values used to fit the model.}
+\item{model}{a description of the fitted model.}
+\item{maxit.em}{maximum number of iterations of the EM algorithm.}
+\item{thr.em}{threshold for the convergence of the EM algorithm.}
+\item{maxit.bcd}{maximum number of iterations of the glasso algorithm.}
+\item{thr.bcd}{threshold for the convergence of the glasso algorithm.}
 \item{conv}{a description of the error that has occurred.}
 \item{subrout}{the name of the Fortran subroutine where the error has occurred (for internal debug only).}
-\item{trace}{the integer used for printing out information.}
+\item{trace}{the integer used for printing information on screen.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \references{
-Augugliaro, L., Abbruzzo, A. and Vinciotti, V. (2018).
-\eqn{\ell_1}{l1}-Penalized gaussian graphical model.
-\emph{Biostatistics} (to appear).
+Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020a) <\doi{10.1093/biostatistics/kxy043}>.
+\eqn{\ell_1}{l1}-Penalized censored Gaussian graphical model.
+\emph{Biostatistics} \bold{21}, e1--e16.
 
-Friedman, J.H., Hastie, T., and Tibshirani, R. (2008).
+Augugliaro, L., Sottile, G., and Vinciotti, V. (2020b) <\doi{10.1007/s11222-020-09945-7}>.
+The conditional censored graphical lasso estimator.
+\emph{Statistics and Computing} \bold{30}, 1273--1289.
+
+Friedman, J.H., Hastie, T., and Tibshirani, R. (2008) <\doi{10.1093/biostatistics/kxm045}>.
 Sparse inverse covariance estimation with the graphical lasso.
 \emph{Biostatistics} \bold{9}, 432--441.
 
-Guo, J., Levina, E., Michailidis, G. and Zhu, J. (2015).
-Graphical models for ordinal data.
-\emph{Journal of Computational and Graphical Statistics} \bold{24}, 183--204.
-
-Yuan, M. and Lin, Y. (2007).
-Model selection and estimation in the Gaussian graphical model.
-\emph{Biometrika} \bold{94}, 19--35.
+Stadler, N. and Buhlmann, P. (2012) <\doi{10.1007/s11222-010-9219-7}>.
+Missing values: sparse inverse covariance estimation and an extension to sparse regression.
+\emph{Statistics and Computing} \bold{22}, 219--235.
 }
 
 \seealso{
-\code{\link{datacggm}}, \code{\link{glasso}}, \code{\link{to_graph}}, \code{\link{mle}} and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{aic}}, \code{\link{bic}}, \code{\link{ebic}}.
+\code{\link{datacggm}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}}, \code{\link{impute}}, \code{\link{aic}}, \code{\link{bic}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}}, \code{\link{plot.GoF}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}}, \code{\link{cggm}} and \code{\link{ShowStructure}}.
 }
 
 \examples{
-library("cglasso")
-set.seed(123)
-
-p <- 5L
-n <- 100L
-mu <- rep(0L, p)
-Tht <- diag(p)
-diag(Tht[-1L, -p]) <- diag(Tht[-p, -1L]) <- 0.3
-Sgm <- solve(Tht)
-X <- rdatacggm(n = n, mu = mu, Sigma = Sgm, probr = 0.05)
-out <- cglasso(X = X)
+# Model 1: censored glasso estimator (Augugliaro \emph{and other}, 2020a)
+# Y ~ N(0, Sigma) and probability of left/right censored values equal to 0.05
+n <- 1000L
+p <- 3L
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
+out <- cglasso(Z)
 out
 
-# in this example we use the argument 'weights' to specify
-# the unpenalized partial correlation coefficients and the
-# structural zeros in the precision matrix
+# Model 2: conditional censored glasso estimator (Augugliaro \emph{and other}, 2020b)
+# Y ~ N(b0 + XB, Sigma)  and probability of left/right censored values equal to 0.05
+n <- 1000L
+p <- 3L
+q <- 2L
+b0 <- runif(p)
+B <- matrix(runif(q * p), nrow = q, ncol = p)
+X <- matrix(rnorm(n * q), nrow = n, ncol = q)
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
+out <- cglasso(Z)
+out
 
-w <- rep(1L, p * p)
-dim(w) <- c(p, p)
+# Model 3: missglasso estimator (Stadler \emph{and other}, 2012)
+# Y ~ N(b0 + XB, Sigma)  and probability of missing-at-random values equal to 0.05
+n <- 1000L
+p <- 3L
+q <- 2L
+b0 <- runif(p)
+B <- matrix(runif(q * p), nrow = q, ncol = p)
+X <- matrix(rnorm(n * q), nrow = n, ncol = q)
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probna = 0.05)
+out <- cglasso(Z)
+out
 
-# specifing the unpenalized partial correlation coefficients
-diag(w) <- diag(w[-1L, -p]) <- diag(w[-p, -1L]) <- 0L
-
-# specifing the structural zeros
-w[1L, 4L:5L] <- w[4L:5L, 1L] <- +Inf
-w[2L, 5L] <- w[5L, 2L] <- +Inf
-w
-
-out <- cglasso(X = X, weights = w)
-
-# checking structural zeros
-out$Tht[, , out$nrho][w == +Inf]
-
-# checking stationarity conditions of the MLE estimators
-# (the unpenalized partial correlation coefficients)
-(out$Sgm[, , out$nrho] - out$S[, , out$nrho])[w == 0]
+# Model 4: mixed estimator
+# Y ~ N(b0 + XB, Sigma)  and
+# 1. probability of left/right censored values equal to 0.05
+# 2. probability of missing-at-random values equal to 0.05
+n <- 1000L
+p <- 3L
+q <- 2L
+b0 <- runif(p)
+B <- matrix(runif(q * p), nrow = q, ncol = p)
+X <- matrix(rnorm(n * q), nrow = n, ncol = q)
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, X = X, b0 = b0, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05,
+           probna = 0.05)
+out <- cglasso(Z)
+out
 }
 
-\keyword{multivariate}
-\keyword{models}
-\keyword{graphs}
-
+\keyword{regression}

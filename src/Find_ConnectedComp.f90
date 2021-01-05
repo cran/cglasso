@@ -60,6 +60,7 @@ maxncount = (p - 1) * p / 2
 if(ncount.eq.maxncount) then
     k = 1
     pk(k) = p
+    pk(2:p) = 0
     Ck = (/ (i, i = 1, p) /)
     return
 end if
@@ -70,6 +71,7 @@ connected = .false.
 k = 0
 nc(0) = 0
 Ck_k = 0
+pk = 0
 do v = 1, p
     if(.not.connected(v)) then
         call dfs(v,p,Adj,Ck_k,pk_k)

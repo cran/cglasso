@@ -1,15 +1,51 @@
-version 1.1.2
-data: 2020-07-20
+************************************************************************
+version 2.0.0
+data: 2020-09-21
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
-* bug fixed in 'mglasso_algo1.f90'
+        Gianluca Sottile <gianluca.sottile@unipa.it>
 
-version 1.1.1
-data: 2019-06-09
-Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
-* bug fixed in 'glassosub'
+* added dataset MM
+* bic function was generalized to handle the extended BIC criterion
+* added functions nobs, nresp, npred
+* added function select.cglasso 
+* functions cglasso.cggm was updated to fit conditional GGM to fully observed datasets.
+* added function getGraph
+* added function is.cglasso2igraph
+* function plot.cglasso2igraph was updated to handle models with predictors
+* added function 'print.cglasso2igraph'
+* function 'to_graph' was updated to handle conditioned Gaussian graphical models
+* function 'rcggm' was updated in order to simulate samples with missing-at-random response values
+* added function 'residuals' for objects of class 'cglasso' and 'cggm'
+* added function 'fitted' for objects of class 'cglasso' and 'cggm'
+* function 'mle' was renamed 'cggm'
+* added function 'impute' for missing data imputation
+* added method function 'predict.cglasso'
+* function 'summary.cglasso' was updated in order to handle the output from cglasso function
+* functions 'QFun', 'print.QFun', 'aic', 'bic', 'print.GoF' and 'plot.GoF' were 
+	updated in order to handle the output from cglasso function
+* Title was changed in order to be coherent with the new class of graphical models
+* function 'cglasso' was updated in order to handle the objects of class 'datacggm'
+* added functions 'ColMeans' and 'ColVars'
+* added function 'ShowStructure'
+* added functions 'lower' and 'upper'
+* added function 'getMatrix'
+* removed functions 'mglasso' and 'glasso'
+* removed method function 'as.matrix.datacggm' 
+* removed method function 'scale.datacggm'
+* functions 'datacggm', 'rcggm', 'dim.datacggm', 'dimnames.datacggm', 'event'
+	'print.datacggm' and 'summary.datacggm' were updated in 
+	order to handle the dataset from conditional censored gaussian graphical models
+* added method function 'print.summary.datacggm'
+* added class 'summary.datacggm'
+* added methods functions 'hist.datacggm' and 'plot.datacggm'
+* added 'conditional cglasso model'
+* added 'conditional graphical lasso model'
+* added 'multilasso' algorithm
+************************************************************************
 
+************************************************************************
 version 1.1.0
-data: 2019-09-19
+data: 2018-09-19
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
 
 * bug fixed in 'parini'
@@ -21,3 +57,4 @@ Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
 * added check in 'datacggm'
 * added missglasso model and corresponding method functions
 * defined new hierarchical structure: 'glasso < mglasso < cglasso'
+************************************************************************

@@ -1,148 +1,89 @@
 \name{aic}
 \alias{aic}
-\alias{bic}
-\alias{print.gof}
-\alias{plot.gof}
 
-\title{Akaike's An Information Criterion}
+\title{Akaike Information Criterion}
 
 \description{
-\sQuote{\code{aic}} computes the \sQuote{Akaike Information Criterion} whereas \sQuote{\code{bic}} computes the \sQuote{Bayesian Information Criterion}.
+\sQuote{\code{aic}} computes the \sQuote{Akaike Information Criterion}.
 }
 
 \usage{
-aic(object, k = 2)
-
-bic(object)
+aic(object, k = 2, mle, ...)
 }
 
 \arguments{
-\item{object}{an object with class \sQuote{\code{glasso}}, \sQuote{\code{ggm}}, \sQuote{\code{mglasso}} or \sQuote{\code{mggm}} \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}.}
-\item{k}{the \emph{penalty} per parameter to be used; the default \code{k = 2} is the classical AIC.}
+\item{object}{an \R object inheriting class \sQuote{\code{cglasso}}, that is, the output of the model-fitting functions \code{\link{cglasso}} and \code{\link{cggm}}.}
+\item{k}{the \emph{penalty} parameter to be used; the default \code{k = 2} is the classical AIC.}
+\item{mle}{logical. TRUE if the measure of goodness-of-fit should be computed using the maximum likelihood estimates. Default depends on the class of the argument \code{object}: \code{mle = FALSE} for objects of class \code{cglasso} and \code{mle = TRUE} for objects of class \code{cggm}.}
+\item{\ldots}{further arguments passed to \code{\link{cggm}}.}
 }
 
 \details{
-The measure of goodness-of-fit (gof) returned by the functions \sQuote{\code{aic}} and \sQuote{\code{bic}} depends on the class of the fitted model.
+\sQuote{\code{aic}} computes the following measure of goodness-of-fit (Ibrahim \emph{and other}, 2008): \deqn{-2\,\mbox{Q-function} + k\,\mbox{df},}{-2*Q-function + k*df,} where \eqn{k}{k} is the \emph{penalty} parameter and \eqn{\mbox{df}}{df} represents the number of unique non-zero parameters in the fitted model. 
 
-If \sQuote{\code{object}} has class \sQuote{\code{glasso}} or \sQuote{\code{ggm}}, then \sQuote{\code{aic}} computes the following measure of goodness-of-fit: \deqn{-2\,\mbox{log-likelihood} + k\,\mbox{df},}{-2*log-likelihood + k*df,} where \eqn{k}{k} is the \emph{penalty} per parameter and \eqn{\mbox{df}}{df} represents the number of parameters in the fitted model. The values of the log-likelihood function are computed using the function \code{\link{loglik}}. The usual Akaike Information Criterion (AIC) is computed letting \eqn{k = 2} (default value of the function \sQuote{\code{aic}}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is computed letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
+The values of the Q-function function are computed using \code{\link{QFun}}. By default, for an object of class \code{cglasso} these values are computed using the penalized estimates whereas maximum likelihood estimates are used if the \code{object} is of class \code{cggm} (see argument \sQuote{\code{mle}} in \code{\link{QFun}}).
 
-If \sQuote{\code{object}} has class \sQuote{\code{mglasso}} or \sQuote{\code{mggm}} \sQuote{\code{cglasso}} or \sQuote{\code{cggm}}, then \sQuote{\code{aic}} computes the following measure of goodness-of-fit: \deqn{-2\,Q\mbox{-function} + k\,df,}{-2*Q-function + k*df,} in other words the log-likelihood is replaced with the \eqn{Q}{Q}-function maximized in the M-step of the EM-like algorithm describted in \code{\link{cglasso}}, \code{\link{mglasso}} and \code{\link{mle}}. This measure of goodness-of-fit was proposed in Ibrahim \emph{and others} (2008) for statistical model with missing-data.
+The Akaike Information Criterion (AIC) is returned by letting \eqn{k = 2} (default value of the function \code{aic}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is returned by letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
 
-\sQuote{\code{aic}} and \sQuote{\code{bic}} return an object with S3 class \sQuote{\code{gof}} for which  are available the method functions \sQuote{\code{print.gof}} and \sQuote{\code{plot.gof}}. These method functions are developed with the aim of helping the user in finding the optimal value of the tuning parameter,  defined as the \eqn{\rho}{rho}-value minimizing the chosen measure of goodness-of-fit. For this reason, \sQuote{\code{print.gof}} shows also the ranking of the fitted models (the best model is pointed out with an arrow) whereas \sQuote{\code{plot.gof}} point out the optimal \eqn{\rho}{rho}-value by a vertical dashed line (see below for some examples).
+Function \code{aic} can be passed to the functions \code{\link{select.cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
+
+The function \code{\link{plot.GoF}} can be used to graphically evaluate the behaviour of the fitted models in terms of goodness-of-fit.
 }
 
 \value{
-\sQuote{\code{aic}} and \sQuote{\code{bic}} return an object with S3 class \dQuote{\code{gof}}, i.e. a list containing the following components:
-\item{value_gof}{the values of the measure of goodness-of-fit used to evaluate the fitted models.}
-\item{rho}{the values of the tuning parameter used to fit the model.}
-\item{value}{the values of the log-likelihood function or the Q-function.}
-\item{df}{the number of the estimated non-zero parameters, i.e. the number of non-zero partial correlations plus \eqn{2p}{2p}.}
+\sQuote{\code{aic}} return an \R object of S3 class \dQuote{\code{GoF}}, i.e., a named list containing the following components:
+\item{value_gof}{a matrix storing the values of the measure of goodness-of-fit used to evaluate the fitted models.}
+\item{df}{a matrix storing the number of the estimated non-zero parameters.}
+\item{dfB}{a matrix storing the number of estimated non-zero regression coefficients.}
+\item{dfTht}{a matrix storing the number of estimated non-zero partial correlation coefficients.}
+\item{value}{a matrix storing the values of the Q-function.}
 \item{n}{the sample size.}
-\item{p}{the number of variables.}
-\item{model}{the name of the fitted models.}
-\item{type}{the measure of goodness-of-fit used to evaluate the fitted models.}
+\item{p}{the number of response variables.}
+\item{q}{the number of predictors.}
+\item{lambda}{the \eqn{\lambda}{lambda}-values used to fit the model.}
+\item{nlambda}{the number of \eqn{\lambda}{lambda}-values used.}
+\item{rho}{the \eqn{\rho}{rho}-values used to fit the model.}
+\item{nrho}{the number of \eqn{\rho}{rho}-values used.}
+\item{type}{a description of the computed measure of goodness-of-fit.}
+\item{model}{a description of the fitted model passed through the argument \code{object}.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \references{
-Ibrahim, J.G., Zhu, H. and Tang, N. (2008).
+Ibrahim, J.G., Zhu, H. and Tang, N. (2008) <\doi{10.1198/016214508000001057}>.
 Model selection criteria for missing-data problems using the EM algorithm.
 \emph{Journal of the American Statistical Association} \bold{103}, 1648--1658.
 
 Sakamoto, Y., Ishiguro, M., and Kitagawa, G. (1986).
 \emph{Akaike Information Criterion Statistics}.
 D. Reidel Publishing Company.
+
+Wit, E., Heuvel, E. V. D., & Romeijn, J. W. (2012) <\doi{10.1111/j.1467-9574.2012.00530.x}>.
+All models are wrong...?: an introduction to model uncertainty.
+\emph{Statistica Neerlandica}, 66(3), 217-236.
 }
 
 \seealso{
-\code{\link{loglik}}, \code{\link{cglasso}}, \code{\link{mglasso}}, \code{\link{glasso}}, \code{\link{mle}}, \code{\link{ebic}} and the method funtions \sQuote{\link{plot}} and \code{\link{summary}}.
+\code{\link{bic}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{QFun}}, \code{\link{plot.GoF}} and \code{\link{summary.cglasso}}  
 }
 
 \examples{
-library("cglasso")
-set.seed(123)
-
-#################
-# cglasso model #
-#################
+# Y ~ N(b0 + XB, Sigma) and probability of left/right censored values equal to 0.05
 n <- 100L
-p <- 5L
-mu <- rep.int(0L, times = p)
-X <- rdatacggm(n = n, mu = mu, probr = 0.05)
-out <- cglasso(X = X)
-out_aic <- aic(out)
-out_aic
-plot(out_aic)
+p <- 3L
+q <- 2L
+b0 <- runif(p)
+B <- matrix(runif(q * p), nrow = q, ncol = p)
+X <- matrix(rnorm(n * q), nrow = n, ncol = q)
+rho <- 0.3
+Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
+Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
+out <- cglasso(Z)
+aic(out)
 
-out_bic <- bic(out)
-out_bic
-plot(out_bic)
-
-##############
-# cggm model #
-##############
-out_mle <- mle(out)
-out_aic <- aic(out_mle)
-out_aic
-plot(out_aic)
-
-out_bic <- bic(out_mle)
-out_bic
-plot(out_bic)
-
-#################
-# mglasso model #
-#################
-X <- rnorm(n * p)
-na.id <- sample(n * p, size = n * p * 0.05, replace = TRUE)
-X[na.id] <- NA
-dim(X) <- c(n, p)
-out <- mglasso(X)
-out_aic <- aic(out)
-out_aic
-plot(out_aic)
-
-out_bic <- bic(out)
-out_bic
-plot(out_bic)
-
-##############
-# mggm model #
-##############
-out_mle <- mle(out)
-out_aic <- aic(out_mle)
-out_aic
-plot(out_aic)
-
-out_bic <- bic(out_mle)
-out_bic
-plot(out_bic)
-
-#################
-# glasso model #
-#################
-X <- matrix(rnorm(n * p), nrow = n, ncol = p)
-out <- glasso(X)
-out_aic <- aic(out)
-out_aic
-plot(out_aic)
-
-out_bic <- bic(out)
-out_bic
-plot(out_bic)
-
-#############
-# ggm model #
-#############
-out_mle <- mle(out)
-out_aic <- aic(out_mle)
-out_aic
-plot(out_aic)
-
-out_bic <- bic(out_mle)
-out_bic
-plot(out_bic)
+out.mle <- cggm(out, lambda.id = 3L, rho.id = 3L)
+aic(out.mle)
 }
 
 \keyword{models}
