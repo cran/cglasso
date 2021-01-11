@@ -76,7 +76,6 @@ Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020) <\doi{10.1093/biostatisti
 
 \examples{
 set.seed(123)
-library("cglasso")
 
 # a dataset from a right-censored Gaussian graphical model
 n <- 1000L

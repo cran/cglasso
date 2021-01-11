@@ -39,6 +39,7 @@ If the cglasso model is fitted using both a sequence of \eqn{\rho}{rho} and \eqn
 }
 
 \examples{
+set.seed(123)
 n <- 1000L
 p <- 3L
 q <- 2

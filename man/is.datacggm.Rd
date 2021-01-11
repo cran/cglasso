@@ -32,6 +32,7 @@ Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020b) <\doi{10.1093/biostatist
 }
 
 \examples{
+set.seed(123)
 n <- 100L
 p <- 3L
 b0 <- rep(0, p)

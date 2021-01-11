@@ -81,7 +81,6 @@ Related to the \R objects of class \dQuote{\code{datacggm}} there are the access
 
 \examples{
 set.seed(123)
-library("cglasso")
 
 # a dataset from a right-censored Gaussian graphical model
 n <- 100L

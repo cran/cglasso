@@ -109,7 +109,7 @@ do h = 2, ntp
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! solving the glasso problem !
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if(trace.eq.2) call trace_cglasso_v1_2_4(rho(h))
+        if(trace.eq.2) call trace_cglasso_v1_2_4()
         call glassosub(p,S_n,pendiag,rho_gl,maxit_bcd,thr_bcd,Sgm_n,Tht_n,ncomp_n,Ck_n,pk_n,nnit,conv,trace)
         if(conv.ne.0) then
             subrout = 3

@@ -46,7 +46,7 @@ F77_SUB(impute)(double *newrho, double *newlambda, int *nrho, double *rho, int *
 void
 F77_SUB(cggm_v1)(int *n, int *p, double *Y, int *Id, int *nP,
                  int *InfoP, double *lo, double *up, double *ym, double *yv,
-                 double *pendiag, double *wTht, int *ntp, double *rho, int *maxit_em,
+                 int *pendiag, double *wTht, int *ntp, double *rho, int *maxit_em,
                  double *thr_em, int *maxit_bcd, double *thr_bcd, double *Yipt, double *B,
                  double *mu, double *R, double *S, double *Sgm, double *Tht,
                  int *nit, int *conv, int *subrout, int *trace);

@@ -74,6 +74,7 @@ following components:
 }
 
 \examples{
+set.seed(123)
 # Y ~ N(XB, Sigma)  and
 # 1. probability of left/right censored values equal to 0.05
 # 2. probability of missing-at-random values equal to 0.05

@@ -28,6 +28,7 @@ getGraph(x, type = c("Gyy", "Gxy", "both"))
 }
 
 \examples{
+set.seed(123)
 # Y ~ N(0, Sigma) and probability of left/right censored values equal to 0.05
 n <- 100L
 p <- 3L

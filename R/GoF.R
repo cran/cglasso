@@ -170,6 +170,7 @@ select.cglasso <- function(object, GoF = aic, ...){
                         bic = do.call(function(...) bic(object, ...), dots))
     }
     val <- which(GoF$value_gof == min(GoF$value_gof), arr.ind = TRUE)
+    if (is.matrix(val)) val <- val[dim(val)[1L], ]
     lambda.id <- val[1L]
     rho.id <- val[2L]
     # reshape cglasso object

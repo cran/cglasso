@@ -33,6 +33,7 @@ Model-fitting functions \code{\link{cglasso}}, \code{\link{cggm}} and the access
 }
 
 \examples{
+set.seed(123)
 # Y ~ N(0, Sigma) and probability of left/right censored values equal to 0.05
 n <- 1000L
 p <- 3L

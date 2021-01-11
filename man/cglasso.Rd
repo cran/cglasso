@@ -111,6 +111,8 @@ Missing values: sparse inverse covariance estimation and an extension to sparse 
 }
 
 \examples{
+set.seed(123)
+
 # Model 1: censored glasso estimator (Augugliaro \emph{and other}, 2020a)
 # Y ~ N(0, Sigma) and probability of left/right censored values equal to 0.05
 n <- 1000L

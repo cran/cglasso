@@ -31,6 +31,7 @@ For an \R object \sQuote{\code{x}} of class \sQuote{\code{datacggm}}, \code{dimn
 }
 
 \examples{
+set.seed(123)
 # a dataset from a censored Gaussian graphical model
 n <- 100L
 p <- 3L

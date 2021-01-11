@@ -1,4 +1,14 @@
 ************************************************************************
+version 2.0.1
+data: 2021-01-08
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+* bugs fixed:
+*   1. mismach declaration in 'subglasso.f90'
+*   2. mismach declaration in 'cglasso_v1.f90'
+*   3. mismach declaration in 'cggm_v1.f90'
+*   4. subscript out of bounds in 'select.cglasso'
+
+************************************************************************
 version 2.0.0
 data: 2020-09-21
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>

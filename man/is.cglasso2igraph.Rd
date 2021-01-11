@@ -22,6 +22,7 @@ is.cglasso2igraph(x)
 }
 
 \examples{
+set.seed(123)
 n <- 100L
 p <- 3L
 rho <- 0.3

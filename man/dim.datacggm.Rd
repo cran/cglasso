@@ -31,6 +31,7 @@ For an object of class \sQuote{\code{datacggm}}, \code{dim} retrieves a named li
 }
 
 \examples{
+set.seed(123)
 # a dataset from a censored Gaussian graphical model
 n <- 100L
 p <- 3L

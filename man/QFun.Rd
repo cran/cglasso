@@ -49,6 +49,7 @@ The function \sQuote{\code{print.QFun}} is used the improve the readability of t
 }
 
 \examples{
+set.seed(123)
 # Y ~ N(b0+ XB, Sigma)  and
 # 1. probability of left/right censored values equal to 0.05
 # 2. probability of missing-at-random values equal to 0.05

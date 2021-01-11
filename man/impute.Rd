@@ -39,6 +39,7 @@ Model-fitting functions \code{\link{cglasso}}, \code{\link{cggm}} and the access
 }
 
 \examples{
+set.seed(123)
 # Y ~ N(0, Sigma) and 
 # 1. probability of left/right censored values equal to 0.05
 # 2. probability of missing-at-random values equal to 0.05

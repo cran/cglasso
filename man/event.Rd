@@ -48,7 +48,6 @@ Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020) <\doi{10.1093/biostatisti
 
 \examples{
 set.seed(123)
-library("cglasso")
 
 # Y ~ N(b0 + XB, Sigma) and
 # 1. probability of left/right censored values equal to 0.05

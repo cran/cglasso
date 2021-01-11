@@ -124,6 +124,7 @@ plot.GoF <- function(x, add.line = TRUE, arg.line = list(lty = 2L, lwd = 2L, col
         val <- x$value_gof[nlambda:1, nrho:1]
         minval <- min(val)
         rc.cord <- drop(which(val == minval, arr.ind = TRUE))
+        if (is.matrix(rc.cord)) rc.cord <- rc.cord[dim(rc.cord)[1L], ]
         if (is.null(dots$main)) dots$main <- "Tuning Parameters Selection"
         if (is.null(dots$xlab)) dots$xlab <- expression(lambda)
         if (is.null(dots$ylab)) dots$ylab <- expression(rho)

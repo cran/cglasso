@@ -32,6 +32,7 @@ For an \R object \code{x} of class \sQuote{\code{datacggm}}, \code{ColMeans} (\c
 }
 
 \examples{
+set.seed(123)
 n <- 1000L
 p <- 3L
 b0 <- rep(0, p)

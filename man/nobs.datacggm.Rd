@@ -27,6 +27,7 @@ Extract the number of observations, response variables and predictors from an ob
 }
 
 \examples{
+set.seed(123)
 n <- 100
 p <- 3
 q <- 2

@@ -63,7 +63,6 @@ To evaluate the distributional assumption underlying the censored Gaussian distr
 
 \examples{
 set.seed(123)
-library("cglasso")
 
 # a dataset from a right-censored Gaussian graphical model
 n <- 1000L

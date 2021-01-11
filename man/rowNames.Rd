@@ -34,6 +34,7 @@ For an \R object of class \sQuote{\code{datacggm}}, \code{rowNames} (\code{colNa
 }
 
 \examples{
+set.seed(123)
 # a dataset from a censored Gaussian graphical model
 n <- 100L
 p <- 3L
