@@ -1,5 +1,5 @@
-e398d3f6f2d48daed62d8b1c91332873 *ChangeLog
-0b5b273a2ed61a03e4e3a07b0f874b02 *DESCRIPTION
+80008ae3c1196846e7bbdc4c2a9ebebb *ChangeLog
+1758e3dd4eddee1f14f2f7cd647f4482 *DESCRIPTION
 6489d7dd92e3eb7c927e1d64992202f7 *NAMESPACE
 dfcb430725f28314088df40ab59dbc91 *R/GoF.R
 b4ae2c0527b2ecaa1de6ba2050e24713 *R/GoF_S3methods.R
@@ -15,7 +15,7 @@ ba4138da44518b8272064a69e3517141 *R/datacggm_tools.R
 bdb1df9639b6df74380fd5c46f890a74 *R/to_graph.R
 98222f0fd3d225541098a78d8cc6ad8a *R/to_graph_S3methods.R
 f2fbf6b108789a6a04e8e72167c8dbdb *R/to_graph_tools.R
-f55d1cb2d89c7ad87cb3014b910e8da4 *build/partial.rdb
+f76974f88efd12bc4bdfb95bf77cdc5d *build/partial.rdb
 67fad92a45deadcbbafe8c777841b9c2 *data/MKMEP.RData
 c6d7f81c13be752fc00a3c6651717f45 *data/MM.RData
 3077a9d478b6a30b17cd5c5cc236d2dd *data/datalist
@@ -23,12 +23,12 @@ c6d7f81c13be752fc00a3c6651717f45 *data/MM.RData
 66cbbc36285d7c299a8a7ec13d359059 *man/MKMEP.Rd
 85557a843bb34d6e9d38008b812d2d30 *man/MM.Rd
 ce8e53db909ec712ca8645a8694aaeba *man/QFun.Rd
-e463e27a0e2a5d3936c62594f5e76ea2 *man/ShowStructure.Rd
+31e55e8f9aa4f2c73ff0675cc99b5f5f *man/ShowStructure.Rd
 aea8b3044faade5f9cc262d18f6f7b9f *man/aic.Rd
 d0d540b0367c4a0f162c1c252c56ccae *man/bic.Rd
 ef2e776622a549c9d83ccc31b9ff6922 *man/cggm.Rd
 40862f04f7d27700647198a9ce685cb9 *man/cglasso-internal.Rd
-ab85296c6d96fa4af33a4c6b27822739 *man/cglasso-package.Rd
+30b4102f57fdd0238ecb32742a78e709 *man/cglasso-package.Rd
 7b464a4a793a39fb612b887b8fc9abce *man/cglasso.Rd
 7ee60f3aa9cb8bea3a36c38736dc2e71 *man/coef.cglasso.Rd
 0ce1b0c226f02aee5e8346a242ac83eb *man/datacggm.Rd

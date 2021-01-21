@@ -1,4 +1,11 @@
 ************************************************************************
+version 2.0.2
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+
+data: 2021-01-11
+* bugs fixed in 'ShowStructure'
+
+************************************************************************
 version 2.0.1
 data: 2021-01-08
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>

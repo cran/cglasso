@@ -26,8 +26,4 @@ ShowStructure(module = c("ALL", "DM", "MF", "MS", "NA"), description = TRUE,
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
-\examples{
-ShowStructure()
-}
-
 \keyword{package}
