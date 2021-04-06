@@ -19,7 +19,7 @@ qqcnorm(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grdev.arg,
 \item{x}{an object of class \sQuote{\code{datacggm}}.}
 \item{which}{a vector of integers used to specify the response variables for which the histogram is required.}
 \item{max.plot}{the maximum number of plots drawn in a single figure.}
-\item{save.plot}{logical; if \sQuote{\code{TRUE}} the required plots are saved on external files.}
+\item{save.plot}{a logical variable or a string specifying the path of the directory where plots will be saved. Letting \sQuote{\code{save.plot = TRUE}}, the required plots will be saved as external files inside the current working directory. User can save these files on a specific working directory passing the absolute path through the argument \code{save.plot}. On exit, working directory will be always set the previous one.}
 \item{grdev}{the graphics device used to save the required histograms on external files. See \sQuote{\code{\link[grDevices]{device}}} for more details.}
 \item{grdev.arg}{additional parameters passed to the graphics device specified by \sQuote{\code{grdev}}.}
 \item{main, xlab, ylab}{plot labels.}

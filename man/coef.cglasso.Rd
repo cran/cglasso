@@ -40,7 +40,7 @@ p <- 3L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 coef(out, type = "Theta", rho.id = 1:4)
 coef(out, type = "Theta", rho.id = 3, drop = TRUE)
 
@@ -54,7 +54,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 coef(out, type = "B", lambda.id = 3, rho.id = 1:4)
 coef(out, type = "B", lambda.id = 3, rho.id = 3, drop = TRUE)
 }

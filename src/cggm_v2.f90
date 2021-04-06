@@ -171,7 +171,7 @@ do h = 2, ntp
 !        dB = maxval(abs(B_o - B_n))
 ! code_conv
         !dB = sqrt(sum((B_o - B_n)**2.0d0) / (p * (q + 1)))
-        dB = sqrt(sum((B_o - B_n)**2.0d0))
+        dB = sqrt(sum((B_o - B_n)**2.0d0)) / (dfB(p + 1) + p)
         dSgm = 0.0d0
         count = 0
         do j = 1, p
@@ -179,18 +179,18 @@ do h = 2, ntp
 !                dSgm = max(dSgm, abs(Sgm_o(i, j) - Sgm_n(i, j)))
 ! code_conv
                 dSgm = dSgm + (Sgm_o(i, j) - Sgm_n(i, j))**2.0d0
-                if(abs(Tht_n(j, i)).gt.0.d0) count = count + 1
+                if(abs(Sgm_n(j, i)).gt.0.d0) count = count + 1
             end do
         end do
 ! code_conv
         !dSgm = sqrt(dSgm / (p * (p + 1) * 0.5d0))
-        dSgm = sqrt(dSgm)
-        count = count + dfB(p + 1) + p
-        if(trace.eq.2) call trace_cglasso_v2_2_7(thr_em, dB, dSgm, (dB + dSgm) / count)
+        dSgm = sqrt(dSgm) / count
+        !count = count + dfB(p + 1) + p
+        if(trace.eq.2) call trace_cglasso_v2_2_7(thr_em, dB, dSgm, max(dB, dSgm))
 !        if(max(dB, dSgm).le.thr_em) exit
 ! code_conv        
         !if((0.5d0 * (dB + dSgm)).le.thr_em) exit
-        if(((dB + dSgm) / count).le.thr_em) exit
+        if(max(dB, dSgm).le.thr_em) exit
     end do
     if(ii.ge.maxit_em) then
         conv = 1

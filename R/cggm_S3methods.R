@@ -1,6 +1,6 @@
 print.cggm <- function (x, digits = 3L, ...){
-    p <- nResp(x$Z)
-    q <- nPred(x$Z)
+    p <- nresp(x$Z)
+    q <- npred(x$Z)
     dots <- list(...)
     if (is.null(dots$print.gap)) dots$print.gap <- 2L
     if (is.null(dots$quote)) dots$quote <- FALSE
@@ -16,10 +16,11 @@ print.cggm <- function (x, digits = 3L, ...){
     names(tbl) <- c("df", "", "N. Comp.")
     cat("\nCall:  ", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
     do.call(function(...) print.data.frame(tbl, digits = digits, ...), dots)
+    cat("\n")
 }
 
 predict.cggm <- function(object, X.new, ...) {
-    q <- nPred(object$Z)
+    q <- npred(object$Z)
     if (q == 0L) stop(sQuote("X.new"), " can not be used because no predictors are available in ", sQuote("object"))
     if (missing(X.new)) stop(sQuote("X.new"), " is missing")
     else {

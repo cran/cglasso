@@ -8,13 +8,13 @@
 }
 
 \usage{
-to_graph(object, GoF = aic, lambda.id, rho.id, weighted = FALSE, simplify = TRUE, 
+to_graph(object, GoF = AIC, lambda.id, rho.id, weighted = FALSE, simplify = TRUE,
          ...)
 }
 
 \arguments{
 \item{object}{an \R object inheriting class \sQuote{\code{cglasso}}, that is, the output of the model-fitting functions \code{\link{cglasso}} and \code{\link{cggm}}.}
-\item{GoF}{a valid goodness-of-fit function, such as \code{\link{aic}} or \code{\link{bic}}, or an \R object of class \sQuote{\code{GoF}}.}
+\item{GoF}{a valid goodness-of-fit function, such as \code{\link{AIC.cglasso}} or \code{\link{BIC.cglasso}}, or an \R object of class \sQuote{\code{GoF}}.}
 \item{lambda.id}{optional. If \code{object} has class \sQuote{\code{cglasso}}, this argument is an integer used to identify a specific fitted cglasso model, otherwise (i.e. if the \code{object} has class \sQuote{\code{cggm}}) this argument can be omitted. See section \sQuote{Details} for more details.}
 \item{rho.id}{optional. If \code{object} has class \sQuote{\code{cglasso}}, this argument is an integer used to identify a specific fitted cglasso model, otherwise (i.e. if \code{object} has class \sQuote{\code{cggm}}) this argument can be omitted. See section \sQuote{Details} for more details.}
 \item{weighted}{logical. Should weighted graphs be created? Default is \code{FALSE}.}
@@ -54,7 +54,7 @@ p <- 3L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out.graph <- to_graph(out)
 out.graph
 
@@ -68,7 +68,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out.graph <- to_graph(out, lambda.id = 3, rho.id = 3, weighted = TRUE)
 out.graph
 }

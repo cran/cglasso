@@ -8,14 +8,14 @@
 }
 
 \usage{
-cggm(object, GoF = aic, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 100L,
+cggm(object, GoF = AIC, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 100L,
      maxit.em = 1.0E+4, thr.em = 1.0E-3, maxit.bcd = 1.0E+5, thr.bcd = 1.0E-4, 
      trace = 0L, \ldots)
 }
 
 \arguments{
 \item{object}{an \R object of S3 class \sQuote{\code{cglasso}}, that is, the output of the function \code{\link{cglasso}}.}
-\item{GoF}{a valid goodness-of-fit function, such as \code{\link{aic}} or \code{\link{bic}}, or an \R object of class \sQuote{\code{GoF}}.}
+\item{GoF}{a valid goodness-of-fit function, such as \code{\link{AIC.cglasso}} or \code{\link{BIC.cglasso}}, or an \R object of class \sQuote{\code{GoF}}.}
 \item{lambda.id}{an optional integer used to identify a \eqn{\lambda}{lambda}-value stored in \code{object}. See section \sQuote{Details} for more details.}
 \item{rho.id}{an optional integer used to identify a \eqn{\rho}{rho}-value stored in \code{object}. See section \sQuote{Details} for more details.}
 \item{tp.min}{the smallest \eqn{\lambda}{lambda} and \eqn{\rho}{rho} value. See section \sQuote{Details} for more details.}
@@ -65,12 +65,15 @@ following components:
 \item{conv}{a description of the error that has occurred.}
 \item{subrout}{the name of the Fortran subroutine where the error has occurred (for internal debug only).}
 \item{trace}{the integer used for printing information on screen.}
+\item{nobs}{the sample size}
+\item{nresp}{the number of response variables used to fit the model.}
+\item{npred}{the number of predictors used to fit the model.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cggm}}, \code{\link{impute}}, \code{\link{aic}}, \code{\link{bic}}, \code{\link{summary.cglasso}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}} and \code{\link{ShowStructure}}.
+\code{\link{cglasso}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cggm}}, \code{\link{impute}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}} and \code{\link{ShowStructure}}.
 }
 
 \examples{
@@ -87,10 +90,10 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.5, probna = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 
-# MLE of the censored Gaussian graphical model identified by 'bic'
-out.mle <- cggm(out, GoF = bic)
+# MLE of the censored Gaussian graphical model identified by 'BIC'
+out.mle <- cggm(out, GoF = BIC)
 out.mle
 
 # accessor functions
@@ -100,8 +103,8 @@ residuals(out.mle, type = "working", drop = TRUE)
 impute(out.mle, type = "both")
 
 # goodness-of-fit functions
-aic(out.mle)
-bic(out.mle)
+AIC(out.mle)
+BIC(out.mle)
 summary(out.mle)
 
 # network analysis

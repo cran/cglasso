@@ -105,29 +105,63 @@ lower <- function(x) {
 
 ColMeans <- function(x) {
     if (!is.datacggm(x)) stop(sQuote("x"), " is not a ", sQuote("datacggm")," object")
-    out <- if(x$Info$q != 0L) list(Y = x$Info$ym, X = colMeans(x$X)) else list(Y = x$Info$ym, X = NULL)
+#    out <- if(x$Info$q != 0L) list(Y = x$Info$ym, X = colMeans(x$X)) else list(Y = x$Info$ym, X = NULL)
+    if (npred(x) != 0L) {
+        X <- getMatrix(x, "X")
+        id.numeric <- sapply(X, is.numeric)
+        mx.num <- if (any(id.numeric)) {
+            colMeans(X[, id.numeric, drop = FALSE])
+        } else NULL
+        mx.cat <- if (any(!id.numeric)) {
+            # statistical mode
+            apply(X[, !id.numeric, drop = FALSE], 2L, FUN = function(x) names(which.max(table(x))))
+        } else NULL
+        out <- list(Y = x$Info$ym, X.numeric = mx.num, X.categorical = mx.cat)
+#        out <- list(Y = x$Info$ym, X = sapply(x$X, FUN = function(x) if (!is.numeric(x)) NA else mean(x)))
+    } else {
+        out <- list(Y = x$Info$ym, X.numeric = NULL, X.categorical = NULL)
+    }
     out
 }
 
 ColVars <- function(x) {
     if (!is.datacggm(x)) stop(sQuote("x"), " is not a ", sQuote("datacggm")," object")
-    out <- if(x$Info$q != 0L) list(Y = x$Info$yv, X = apply(x$X, 2L, var)) else list(Y = x$Info$yv, X = NULL)
+#    out <- if(x$Info$q != 0L) list(Y = x$Info$yv, X = apply(x$X, 2L, var)) else list(Y = x$Info$yv, X = NULL)
+    if (npred(x) != 0L) {
+        X <- getMatrix(x, "X")
+        id.numeric <- sapply(X, is.numeric)
+        vx.num <- if (any(id.numeric)) {
+            apply(X[, id.numeric, drop = FALSE], 2L, var)
+        } else NULL
+        vx.cat <- if (any(!id.numeric)) {
+            # Gini-Simpson Index (GSI)
+            apply(X[, !id.numeric, drop = FALSE], 2L, FUN = function(x) 1 - sum(prop.table(table(x))^2))
+        } else NULL
+        out <- list(Y = x$Info$yv, X.numeric = vx.num, X.categorical = vx.cat)
+    } else {
+        out <- list(Y = x$Info$yv, X.numeric = NULL, X.categorical = NULL)
+    }
     out
 }
 
-nObs <- function(x) {
-    if (!is.datacggm(x)) stop(sQuote("x"), " is not a ", sQuote("datacggm")," object")
-    x$Info$n
+nobs.datacggm <- function(object, ...) {
+    object$Info$n
 }
 
-nResp <- function(x) {
-    if (!is.datacggm(x)) stop(sQuote("x"), " is not a ", sQuote("datacggm")," object")
-    x$Info$p
+nresp <- function(object, ...) {
+    UseMethod("nresp")
 }
 
-nPred <- function(x) {
-    if (!is.datacggm(x)) stop(sQuote("x"), " is not a ", sQuote("datacggm")," object")
-    x$Info$q
+nresp.datacggm <- function(object, ...) {
+    object$Info$p
+}
+
+npred <- function(object, ...) {
+    UseMethod("npred")
+}
+
+npred.datacggm <- function(object, ...) {
+    object$Info$q
 }
 
 rcggm <- function(n, p, b0, X, B, Sigma, probl, probr, probna, ...) {
@@ -137,7 +171,6 @@ rcggm <- function(n, p, b0, X, B, Sigma, probl, probr, probna, ...) {
     if (ismissing["X"] & !ismissing["B"]) stop(sQuote("X"), " is missing")
     if (!ismissing["X"] & ismissing["B"]) stop(sQuote("B"), " is missing")
     if (all(ismissing[c("p", "b0", "B", "Sigma")])) stop("Please, specify at least one of the following arguments: 'p', 'b0', or 'Sigma'")
-#    if (all(ismissing[c("probl", "probr", "probna")])) stop("Please, specify at least one of the following arguments: 'probl', 'probr' or 'probna'")
     #########################
     # testing arguments
     if (!ismissing["n"]) {
@@ -238,10 +271,9 @@ rcggm <- function(n, p, b0, X, B, Sigma, probl, probr, probna, ...) {
         }
         if (probna > 0) {
             id.obs <- lo[m] < Y[, m] & Y[, m] < up[m]
-            nobs <- sum(id.obs)
-            if (nobs > 0) {
- #               id.na <- rbinom(nobs, size = 1L, prob = probna * n / nobs)
-                id.na <- rbinom(nobs, size = 1L, prob = probna / (1 - probl[m] - probr[m]))
+            NOBS <- sum(id.obs)
+            if (NOBS > 0) {
+                id.na <- rbinom(NOBS, size = 1L, prob = probna / (1 - probl[m] - probr[m]))
                 Y[id.obs, m][id.na == 1L] <- NA
             }
         }
@@ -251,11 +283,11 @@ rcggm <- function(n, p, b0, X, B, Sigma, probl, probr, probna, ...) {
 }
 
 qqcnorm <- function(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grdev.arg,
-    main = "Censored Normal Q-Q Plot", xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-    plot.it = TRUE, plot.pch = c(2L, 20L), plot.col = c(2L, 1L), plot.cex = c(2L, 1L), abline = FALSE,
-    line.col = "gray50", line.lwd = 1L, line.lty = 2L, ...) {
+                    main = "Censored Normal Q-Q Plot", xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
+                    plot.it = TRUE, plot.pch = c(2L, 20L), plot.col = c(2L, 1L), plot.cex = c(2L, 1L), abline = FALSE,
+                    line.col = "gray50", line.lwd = 1L, line.lty = 2L, ...) {
     # testing 'which'
-    p <- nResp(x)
+    p <- nresp(x)
     if (missing(which)) which <- seq_len(p)
     else {
         if (!is.vector(which)) stop (sQuote("which"), "is not a vector")
@@ -269,24 +301,32 @@ qqcnorm <- function(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grd
     if (abs(as.integer(max.plot) - max.plot) > 0) stop(sQuote("max.plot"), " is not an object of type ", dQuote("integer"))
     if (max.plot <= 0L) stop(sQuote("max.plot"), " is not a positive integer")
     # testing 'save.plot'
-    if (!is.logical(save.plot)) stop(sQuote(save.plot), " is not an object of type ", sQuote("logical"))
     if (length(save.plot) != 1L) stop(sQuote(save.plot), " is not an object of length ", sQuote("1"))
+    if (!inherits(save.plot, c("logical", "character"))) stop(sQuote(save.plot), " is not an object of type ", sQuote("logical"), "or ", , sQuote("character"))
+    if(inherits(save.plot, "character")) {
+        oldPath <- getwd()
+        newPath <- save.plot
+        setwd(newPath)
+        on.exit(setwd(oldPath), add = TRUE, after = TRUE)
+        save.plot <- TRUE
+    }
     # testing 'grdev'
     if (!is.function(grdev)) stop(sQuote("grdev"), " is not a function")
     else {
         grdev.name <- deparse(substitute(grdev))
         if (!is.element(grdev.name, c("pdf", "postscript", "svg", "bmp", "jpeg", "png", "tiff")))
             stop(sQuote(grdev.name), " is not a valid graphics device for exporting plots. Please, use one of the following functions:\n",
-                sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
-                sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
+                 sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
+                 sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
         if (grdev.name == "postscript") grdev.name <- "ps"
     }
     # testing 'grdev.arg'
-    if (missing(grdev.arg)) grdev.arg <- NULL
-    else {
+    if (missing(grdev.arg)) {
+        grdev.arg <- NULL
+    } else {
         if (!is.list(grdev.arg)) stop(sQuote("grdev.arg"), " is not an object of type ", sQuote("list"))
     }
-    n <- nObs(x)
+    n <- nobs(x)
     R <- event(x)
     Y <- getMatrix(x, "Y")
     lo <- lower(x)
@@ -300,17 +340,16 @@ qqcnorm <- function(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grd
     op <- par(no.readonly = TRUE)
     op$new <- FALSE
     on.exit(par(op), add = TRUE)
-    if(is.null(dev.list()) & save.plot) on.exit(dev.off(), add = TRUE)
-    grp <- rep(seq_len(ngrp), each = max.plot, length = nwhich)
-    if (save.plot) {
-        file.names <- paste0("qqcnorm_group_", formatC(seq_len(ngrp), width = nchar(ngrp),
-                             format = "d", flag = "0"), ".", grdev.name)
+    if(save.plot) {
         cat("Exporting plots\n")
         pb <- txtProgressBar(min = 0L, max = nwhich, style = 3L)
-    } else {
-        if (ngrp > 1L) devAskNewPage(TRUE)
+        on.exit(close(pb), add = TRUE, after = TRUE)
     }
     hh <- 0
+    if (ngrp > 1L) devAskNewPage(TRUE)
+    grp <- rep(seq_len(ngrp), each = max.plot, length = nwhich)
+    if (save.plot)
+        file.names <- paste0("qqcnorm_group_", formatC(seq_len(ngrp), width = nchar(ngrp), format = "d", flag = "0"), ".", grdev.name)
     for(h in seq_len(ngrp)) {
         if (save.plot) {
             if (is.null(grdev.arg)) grdev(file = file.names[h])
@@ -334,7 +373,7 @@ qqcnorm <- function(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grd
                 col <- ifelse (status != 0, plot.col[1L], plot.col[2L])
                 cex <- ifelse (status != 0, plot.cex[1L], plot.cex[2L])
                 plot(y.q, y, main = main, xlab = xlab, ylab = ylab, pch = pch,
-                    col = col, cex = cex, ...)
+                     col = col, cex = cex, ...)
                 if (abline)
                     abline(0, 1, col = line.col, lwd = line.lwd, lty = line.lty)
             }
@@ -344,7 +383,7 @@ qqcnorm <- function(x, which, max.plot = 1L, save.plot = FALSE, grdev = pdf, grd
             if (save.plot)  setTxtProgressBar(pb, hh)
         }
         if(ngrp > 1L) dev.flush()
-        if (save.plot) dev.off()
+        if(save.plot) dev.off()
     }
     invisible(out)
 }

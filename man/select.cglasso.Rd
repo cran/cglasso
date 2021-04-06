@@ -8,19 +8,19 @@
 }
 
 \usage{
-select.cglasso(object, GoF = aic, \dots)
+select.cglasso(object, GoF = AIC, \dots)
 }
 
 \arguments{
 \item{object}{an \R object of class \code{cglasso}.}
-\item{GoF}{a valid goodness-of-fit function, such as \code{\link{aic}} or \code{\link{bic}}, or an \R object of class \sQuote{\code{GoF}}.}
+\item{GoF}{a valid goodness-of-fit function, such as \code{\link{AIC.cglasso}} or \code{\link{BIC.cglasso}}, or an \R object of class \sQuote{\code{GoF}}.}
 \item{\dots}{further arguments passed to the chosen goodness-of-fit function (argument \sQuote{\code{GoF}}).}
 }
 
 \details{
 The function \code{select.cglasso} evaluates the goodness-of-fit of the models fitted by \code{cglasso} and extracts the selected model.
 
-Model evaluation can be made in two ways. The easiest way is to use a valid goodness-of-fit function, such as \code{\link{aic}} or \code{\link{bic}}. In this case, further arguments are passed to these functions by \sQuote{\dots}. The second way consists on passing the output of a goodness-of-fit function, that is, an \R object of class \sQuote{\code{GoF}}. Usually, this approach is preferable when the computation of the  chosen goodness-of-fit measure is time-consuming, such as when the sample size is small relative to the number of parameters and the \code{aic} or \code{bic} functions are used to evaluate a long sequence of fitted models. In these cases, we suggest the computation of several measures of goodness-of-fit in a preliminary step and then the use of the \code{select.cglasso} function in a subsequent step to select the optimal fitted model.
+Model evaluation can be made in two ways. The easiest way is to use a valid goodness-of-fit function, such as \code{\link{AIC.cglasso}} or \code{\link{BIC.cglasso}}. In this case, further arguments are passed to these functions by \sQuote{\dots}. The second way consists on passing the output of a goodness-of-fit function, that is, an \R object of class \sQuote{\code{GoF}}. Usually, this approach is preferable when the computation of the  chosen goodness-of-fit measure is time-consuming, such as when the sample size is small relative to the number of parameters and the \code{AIC} or \code{BIC} functions are used to evaluate a long sequence of fitted models. In these cases, we suggest the computation of several measures of goodness-of-fit in a preliminary step and then the use of the \code{select.cglasso} function in a subsequent step to select the optimal fitted model.
 }
 
 \value{
@@ -30,7 +30,7 @@ Model evaluation can be made in two ways. The easiest way is to use a valid good
 \author{Gianluca Sottile (\email{gianluca.sottile@unipa.it})}
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{aic}} and \code{\link{bic}}.
+\code{\link{cglasso}}, \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}.
 }
 
 \examples{
@@ -42,10 +42,10 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
 
-out <- cglasso(Z)
-select.cglasso(out)                                    # models selection by aic
-select.cglasso(out, GoF = bic)                         # models selection by bic
-select.cglasso(out, GoF = bic, mle = TRUE, g = 0.5)    # models selection by ebic
+out <- cglasso(. ~ ., data = Z)
+select.cglasso(out)                                    # models selection by AIC
+select.cglasso(out, GoF = BIC)                         # models selection by BIC
+select.cglasso(out, GoF = BIC, mle = TRUE, g = 0.5)    # models selection by eBIC
 
 # Y ~ N(b0 + XB, Sigma)  and probability of left/right censored values equal to 0.05
 n <- 100L
@@ -58,20 +58,20 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
 
-out <- cglasso(Z, lambda = 0.01)
-select.cglasso(out)                                    # models selection by aic
-select.cglasso(out, GoF = bic)                         # models selection by bic
-select.cglasso(out, GoF = bic, mle = TRUE, g = 0.5)    # models selection by ebic
+out <- cglasso(. ~ ., data = Z, lambda = 0.01)
+select.cglasso(out)                                    # models selection by AIC
+select.cglasso(out, GoF = BIC)                         # models selection by BIC
+select.cglasso(out, GoF = BIC, mle = TRUE, g = 0.5)    # models selection by eBIC
 
-out <- cglasso(Z, rho = 0.01)
-select.cglasso(out)                                    # models selection by aic
-select.cglasso(out, GoF = bic)                         # models selection by bic
-select.cglasso(out, GoF = bic, mle = TRUE, g = 0.5)    # models selection by ebic
+out <- cglasso(. ~ ., data = Z, rho = 0.01)
+select.cglasso(out)                                    # models selection by AIC
+select.cglasso(out, GoF = BIC)                         # models selection by BIC
+select.cglasso(out, GoF = BIC, mle = TRUE, g = 0.5)    # models selection by eBIC
 
-out <- cglasso(Z)
-select.cglasso(out)                                    # models selection by aic
-select.cglasso(out, GoF = bic)                         # models selection by bic
-select.cglasso(out, GoF = bic, mle = TRUE, g = 0.5)    # models selection by ebic
+out <- cglasso(. ~ ., data = Z)
+select.cglasso(out)                                    # models selection by AIC
+select.cglasso(out, GoF = BIC)                         # models selection by BIC
+select.cglasso(out, GoF = BIC, mle = TRUE, g = 0.5)    # models selection by eBIC
 }
 
 \keyword{regression}

@@ -13,7 +13,6 @@ datacggm <- function(Y, lo = -Inf, up = +Inf, X = NULL, control = list(maxit = 1
     } else vnames <- colnames(Y)
     if (is.null(rownames(Y))) rownames(Y) <- seq_len(n)
     # checking 'lo' and 'up'
-#    if (missing(lo) & missing(up)) stop("arguments ", sQuote("lo"), " and ", sQuote("up"), " are missing")
     if (missing(lo)) lo <- rep(-big, p)
     else {
         if (!is.vector(lo)) stop(sQuote("lo"), " is not a vector")
@@ -42,11 +41,14 @@ datacggm <- function(Y, lo = -Inf, up = +Inf, X = NULL, control = list(maxit = 1
     names(up) <- vnames
     if (!all(lo < up)) stop(sQuote("lo"), " is not less than ", sQuote("up"))
     if (!is.null(X)) {
-        if (!is.numeric(X)) stop(sQuote("X"), " is not numeric")
+#        if (!is.numeric(X)) stop(sQuote("X"), " is not numeric")
+        if (any(is.na(X))) stop("Missing values in ", sQuote("X"), " are not allowed")
         if (is.vector(X)) X <- matrix(X, ncol = 1)
-        if (dim(Y)[1L] != dim(X)[1L]) stop("Matrices ", sQuote("X"), " and ", sQuote("Y"), " have a different number of rows")
+        if (length(dim(X)) != 2L) stop(sQuote("X"), "is not a matrix like object")
+        if (dim(Y)[1L] != dim(X)[1L]) stop(sQuote("X"), " and ", sQuote("Y"), " have a different number of rows")
         if (is.null(colnames(X))) colnames(X) <- paste0("X", seq_len(dim(X)[2L]), sep = "")
         if (is.null(rownames(X))) rownames(X) <- seq_len(n)
+        if (!is.data.frame(X)) X <- as.data.frame(X)
         q <- dim(X)[2L]
     } else q <- 0L
     # Testing control

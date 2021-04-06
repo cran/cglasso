@@ -14,7 +14,7 @@ Gutierrez \emph{and others} (2010) investigated the expression level of a set of
 Formally, \code{MM} is a list with containing a subset of the date studied in Gutierrez \emph{and others} (2010). Its components are:
 \itemize{
 \item \code{Y}: the response matrix containing the cycle-threshold of the measured 49 miRNAs;
-\item \code{X}: the predictor matrix containing the expression levels of 15 endogenous internal reference genes, called housekeeping, and a factor encoding the genetic abnormalities.
+\item \code{X}: the predictor matrix containing the expression levels of 15 endogenous internal reference genes, called housekeeping, and a factor encoding the cytogenetic abnormalities.
 }
 }
 
@@ -35,7 +35,7 @@ Deregulation of microRNA expression in the different genetic subtypes of multipl
 }
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{to_graph}}, and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{aic}} and \code{\link{bic}}.
+\code{\link{cglasso}}, \code{\link{to_graph}}, and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}.
 }
 
 \examples{

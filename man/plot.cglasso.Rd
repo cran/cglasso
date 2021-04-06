@@ -10,7 +10,7 @@
 \usage{
 \method{plot}{cglasso}(x, what = c("Theta", "diag(Theta)", "b0", "B"), 
      penalty = ifelse(x$nrho >= x$nlambda, "rho", "lambda"), given = NULL,
-     GoF = aic, add.labels, matplot.arg1, matplot.arg2, labels.arg, abline.arg,
+     GoF = AIC, add.labels, matplot.arg1, matplot.arg2, labels.arg, abline.arg,
      mtext.arg, save.plot, grdev = pdf, grdev.arg, digits = 4L, \dots)
 }
 
@@ -18,19 +18,19 @@
 \item{x}{an \R object of class \sQuote{\code{cglasso}}, that is, the output of the fitting function \code{\link{cglasso}}.}
 \item{what}{a character or a formula specifying the required plot. If \code{what} is a character, then it is used to specify the conditional coefficient path. Allowed descriptors are: \sQuote{\code{Theta}}, the off-diagonal entries of the precision matrix, \sQuote{\code{diag(Theta)}}, the diagonal entries of the precision matrix, \sQuote{\code{b0}}, the intercepts of the conditional models, or equivalently the expected values of the response variables, and \sQuote{\code{B}}, the regression coefficients. Optionally, \sQuote{\code{what}} can be a model formula (see sections Description and Examples for more details).}
 \item{penalty}{optional character argument used to specify the tuning parameter needed to plot the conditional coefficient path. Allowed descriptors are \sQuote{\code{rho}} and \sQuote{\code{lambda}}. This argument can be omitted if \code{what} is a model formula.}
-\item{given}{an optional vector of integers identifying the values of the second tuning parameter used to plot the conditional coefficient profile plots. This argument is required only if \sQuote{\code{what}} is a character, otherwise it can be omitted.}
-\item{GoF}{a valid goodness-of-fit function, such as \code{\link{aic}} and \code{\link{bic}}, or an \R object of class \sQuote{\code{GoF}}.}
+\item{given}{an optional vector of integers identifying the conditioning values of the second tuning parameter to be used for the  coefficient profile plots of the parameters identified by the input \sQuote{\code{what}} across their corresponding tuning parameter. This argument is required only if \sQuote{\code{what}} is a character, otherwise it can be omitted.}
+\item{GoF}{a valid goodness-of-fit function, such as \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}, or an \R object of class \sQuote{\code{GoF}}.}
 \item{add.labels}{logical value. Should labels be added to the plot?}
 \item{matplot.arg1}{a named list with the graphical parameters used to plot the paths of the estimates identified by \sQuote{\code{GoF}}.}
 \item{matplot.arg2}{a named list with the graphical parameters used to plot the paths of the remaining estimates.}
 \item{labels.arg}{a named list with the graphical parameters used to plot the labels.}
 \item{abline.arg}{a named list with the graphical parameters used to plot the line identifying the optimal tuning parameter value.}
 \item{mtext.arg}{a named list with the graphical parameters used to plot the text reported on the third axis.}
-\item{save.plot}{logical value. If \sQuote{\code{TRUE}} the required plots are saved on external files.}
+\item{save.plot}{a logical variable or a string specifying the path of the directory where plots will be saved. Letting \sQuote{\code{save.plot = TRUE}}, the required plots will be saved as external files inside the current working directory. User can save these files on a specific working directory passing the absolute path through the argument \code{save.plot}. On exit, working directory will be always set the previous one.}
 \item{grdev}{the graphics device used to save the required histograms on external files. See \sQuote{\code{\link[grDevices]{device}}} for more details.}
 \item{grdev.arg}{additional parameters passed to the graphics device specified by \sQuote{\code{grdev}}.}
 \item{digits}{number of digits used to print the value of the second tuning parameter identified by \sQuote{\code{given}}.}
-\item{\dots}{further arguments passed to the chosen goodness-of-fit function, such as \sQuote{\code{aic}} or \sQuote{\code{bic}}.}
+\item{\dots}{further arguments passed to the chosen goodness-of-fit function, such as \sQuote{\code{AIC}} or \sQuote{\code{BIC}}.}
 }
 
 \details{
@@ -69,7 +69,7 @@ For instance, the previous plot can be specified using the following model formu
 
 In this case, the arguments \code{penalty} and \code{given} must be left unspecified whereas \code{what} is used for the model formula (see also examples below).
 
-The optional argument \code{GoF} can be used to identify the non-zero estimates by the output of a goodness-of-fit function, such as \code{\link{aic}} and \code{\link{bic}}. In this case, a vertical red dashed line is used the identify the optimal value of the tuning parameter reported on the \eqn{x}{x}-axis, whereas the path of the identified non-zero estimates is drawn using a solid black line; the remaining paths are drawn using gray dashed lines. This option is disabled if we let \sQuote{\code{GoF = NULL}}, when all the paths are drawn usign solid black lines.
+The optional argument \code{GoF} can be used to identify the non-zero estimates by the output of a goodness-of-fit function, such as \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}. In this case, a vertical red dashed line is used the identify the optimal value of the tuning parameter reported on the \eqn{x}{x}-axis, whereas the path of the identified non-zero estimates is drawn using a solid black line; the remaining paths are drawn using gray dashed lines. This option is disabled if we let \sQuote{\code{GoF = NULL}}, when all the paths are drawn usign solid black lines.
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
@@ -93,7 +93,7 @@ Missing values: sparse inverse covariance estimation and an extension to sparse 
 }
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{aic}} and \code{\link{bic}}.
+\code{\link{cglasso}}, \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}.
 }
 
 \examples{
@@ -108,7 +108,7 @@ p <- 10L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 
 # coefficient profile plot of the off-diagonal entries of the precision matrix
 plot(out, what = "Theta")
@@ -117,7 +117,7 @@ plot(out, what = "Theta")
 
 # the output of a goodness-of-fit function can be used to identify the 
 # non-zero estimates
-plot(out, what = "Theta", GoF = bic)
+plot(out, what = "Theta", GoF = BIC)
 
 # letting 'GoF = NULL' the previous option is disabled
 plot(out, what = "Theta", GoF = NULL)
@@ -141,7 +141,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 
 # conditional profile plot of the estimater partial correlation coefficients versus
 # the used values of the tunin parameter rho and given the first lambda-value
@@ -165,7 +165,7 @@ plot(out, what = Theta ~ rho)
 
 # the output of a goodness-of-fit function can be used to identify the 
 # non-zero estimates
-plot(out, what = Theta ~ rho | 10, GoF = bic)
+plot(out, what = Theta ~ rho | 10, GoF = BIC)
 
 # letting 'GoF = NULL' the previous option is disabled
 plot(out, what = Theta ~ rho | 10, GoF = NULL)

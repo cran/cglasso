@@ -10,9 +10,9 @@ QFun <- function(object, mle, verbose = FALSE, ...) {
     if (length(mle) > 1L) stop(sQuote("mle"), " is not an object of length ", sQuote(1))
     if (!is.logical(mle)) stop(sQuote("mle"), " is not a logical object")
     if (class(object)[1L] == "cggm" & mle) mle <- FALSE
-    n <- nObs(object$Z)
-    p <- nResp(object$Z)
-    q <- nPred(object$Z)
+    n <- nobs(object$Z)
+    p <- nresp(object$Z)
+    q <- npred(object$Z)
     Adj_yy <- object$InfoStructure$Adj_yy
     Adj_xy <- object$InfoStructure$Adj_xy
     lambda <- object$lambda
@@ -80,8 +80,7 @@ QFun <- function(object, mle, verbose = FALSE, ...) {
     out
 }
 
-aic <- function(object, k = 2, mle, ...){
-    if (!inherits(object, c("cggm", "cglasso"))) stop(sQuote("aic"), "function is not available for an object of class ", sQuote(class(object)))
+AIC.cglasso <- function(object, k = 2, mle, ...){
     if(k <= 0) stop(sQuote("k"), " is not a positive value")
     type <- ifelse(k == 2, "AIC", "GoF")
     out_QFun <- QFun(object, mle, ...)
@@ -95,23 +94,14 @@ aic <- function(object, k = 2, mle, ...){
     out
 }
 
-#bic <- function(object, mle, ...){
-#    if (!inherits(object, c("cggm", "cglasso"))) stop(sQuote("bic"), "function is not available for an object of class ", sQuote(class(object)))
-#    n <- nObs(object$Z)
-#    out <- aic(object, k = log(n), mle, ...)
-#    out$type <- "BIC"
-#    out
-#}
-
-bic <- function(object, g = 0, type, mle, ...) {
-    if (!inherits(object, c("cggm", "cglasso"))) stop(sQuote("bic"), "function is not available for an object of class ", sQuote(class(object)))
+BIC.cglasso <- function(object, g = 0, type, mle, ...) {
     # testing 'g'
     if (!is.vector(g)) stop(sQuote("g"), " is not a vector")
     if (length(g) != 1) stop(sQuote("g"), " is not a vector of length ", sQuote(1))
     if ((g < 0) | (g > 1)) stop(sQuote("g"), " does not belong to the closed interval [0, 1]")
     if (g == 0) {
         # classical BIC measure
-        out <- aic(object, k = log(nObs(object$Z)), mle, ...)
+        out <- AIC(object, k = log(nobs(object$Z)), mle, ...)
         out$type <- "BIC"
     } else {
         out_QFun <- QFun(object, mle, ...)
@@ -147,27 +137,24 @@ bic <- function(object, g = 0, type, mle, ...) {
     out
 }
 
-select.cglasso <- function(object, GoF = aic, ...){
+select.cglasso <- function(object, GoF = AIC, ...){
     if (!is.element(class(GoF), c("function", "GoF")))
-#        stop (sQuote("GoF"), " is not either a goodness-of-fit function (aic, bic or ebic) or an object of class ", sQuote("GoF"))
-        stop (sQuote("GoF"), " is not either a goodness-of-fit function (aic or bic) neither an object of class ", sQuote("GoF"))
+        stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
     dots <- list(...)
-    n <- nObs(object$Z)
-    p <- nResp(object$Z)
-    q <- nPred(object$Z)
+    n <- nobs(object$Z)
+    p <- nresp(object$Z)
+    q <- npred(object$Z)
     nrho <- object$nrho
     nlambda <- object$nlambda
     if (is.function(GoF)) {
         if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
         GoF.name <- deparse(substitute(GoF))
-#        if (!is.element(GoF.name, c("aic", "bic", "ebic")))
-        if (!is.element(GoF.name, c("aic", "bic")))
-#            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), ", ", sQuote("bic"), " or ", sQuote("ebic"))
-            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), " or ", sQuote("bic"))
+        if (!is.element(GoF.name, c("AIC", "BIC")))
+            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
         GoF <- switch(GoF.name,
-                        aic = do.call(function(...) aic(object, ...), dots),
-#                        bic = do.call(function(...) bic(object, ...), dots),
-                        bic = do.call(function(...) bic(object, ...), dots))
+                        AIC = do.call(function(...) AIC(object, ...), dots),
+#                        BIC = do.call(function(...) BIC(object, ...), dots),
+                        BIC = do.call(function(...) BIC(object, ...), dots))
     }
     val <- which(GoF$value_gof == min(GoF$value_gof), arr.ind = TRUE)
     if (is.matrix(val)) val <- val[dim(val)[1L], ]

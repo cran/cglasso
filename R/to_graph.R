@@ -1,20 +1,20 @@
-to_graph <- function(object, GoF = aic, lambda.id, rho.id, weighted = FALSE, simplify = TRUE, ...) {
+to_graph <- function(object, GoF = AIC, lambda.id, rho.id, weighted = FALSE, simplify = TRUE, ...) {
     if (!inherits(object, c("cggm", "cglasso"))) stop(sQuote("to_graph"), "function is not available for an object of class ", sQuote(class(object)))
-    q <- nPred(object$Z)
+    q <- npred(object$Z)
     nlambda <- object$nlambda
     nrho <- object$nrho
     if (missing(lambda.id) & missing(rho.id)) {
         if (!is.element(class(GoF), c("function", "GoF")))
-            stop (sQuote("GoF"), " is not either a goodness-of-fit function (aic or bic) or an object of class ", sQuote("GoF"))
+            stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) or an object of class ", sQuote("GoF"))
         dots <- list(...)
         if (is.function(GoF)) {
             if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
             GoF.name <- deparse(substitute(GoF))
-            if (!is.element(GoF.name, c("aic", "bic")))
-                stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), " or ", sQuote("bic"))
+            if (!is.element(GoF.name, c("AIC", "BIC")))
+                stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
             GoF <- switch(GoF.name,
-                            aic = do.call(function(...) aic(object, ...), dots),
-                            bic = do.call(function(...) bic(object, ...), dots))
+                            AIC = do.call(function(...) AIC(object, ...), dots),
+                            BIC = do.call(function(...) BIC(object, ...), dots))
         }
         object <- select.cglasso(object, GoF = GoF)
         nlambda <- object$nlambda

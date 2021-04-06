@@ -1,15 +1,18 @@
-\name{nObs + nResp + nPred}
+\name{nobs + nresp + npred}
 
-\alias{nObs}
-\alias{nResp}
-\alias{nPred}
+\alias{nobs}
+\alias{nobs.datacggm}
+\alias{nresp}
+\alias{nresp.datacggm}
+\alias{npred}
+\alias{npred.datacggm}
 
 \title{Extract the Number of Observations/Responses/Predictors from a datacggm Object}
 
 \usage{
-nObs(x)
-nResp(x)
-nPred(x)
+\method{nobs}{datacggm}(object, ...)
+\method{nresp}{datacggm}(object, ...)
+\method{npred}{datacggm}(object, ...)
 }
 
 \description{
@@ -17,7 +20,8 @@ Extract the number of observations, response variables and predictors from an ob
 }
 
 \arguments{
-  \item{x}{an object of class \code{datacggm}.}
+  \item{object}{an \R object of class \code{datacggm}.}
+  \item{...}{further arguments to be passed to methods.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
@@ -41,15 +45,15 @@ probna <- 0.05
 
 Z <- rcggm(n = n, b0 = b0, Sigma = Sigma, probl = probl, probr = probr, 
            probna = probna)
-nObs(Z)
-nResp(Z)
-nPred(Z)
+nobs(Z)
+nresp(Z)
+npred(Z)
 
 Z <- rcggm(b0 = b0, X = X, B = B, Sigma = Sigma, probl = probl, probr = probr, 
            probna = probna)
-nObs(Z)
-nResp(Z)
-nPred(Z)
+nobs(Z)
+nresp(Z)
+npred(Z)
 }
 
 \keyword{methods}

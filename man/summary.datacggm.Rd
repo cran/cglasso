@@ -25,7 +25,7 @@ The function \sQuote{\code{summary.datacggm}} extends the results given by \sQuo
 
 For each response variable, the first section reports the standard summary statistics computed using only the observed values, that is the entries of the response matrix whose status indicators are equals to zero (see \sQuote{\code{\link{event}}} for more details), together with the information about the lower and upper censoring values (columns named \code{Lower} and \code{Upper}) and the percentage of missing-at-random, left-censored and right-censored response values (columns named \code{NA\%}, \code{LC\%} and \code{RC\%}, respectively).
 
-For each predictor, the second section shows the summary statistics computed by \sQuote{\code{\link[base]{summary.matrix}()}}.
+The second section is divided into two subsections reporting the main summary statistics computed for numeric and categorical predictors, respectively.
 
 The two sections are printed out in such a way that the readability of the summary statistics is improved in a high-dimensional setting, that is, when the number of predictors and response variables exceeds the sample size. 
 }
@@ -33,7 +33,8 @@ The two sections are printed out in such a way that the readability of the summa
 \value{
 \sQuote{\code{summary.dataccgm}} returns a named list with components
 \item{Y}{a matrix with class \sQuote{\code{table}} obtained by computing the summary measures on the response variables.}
-\item{X}{a matrix with class \sQuote{\code{table}} obtained by computing the summary measures on the predictors.}
+\item{X.numeric}{a matrix with class \sQuote{\code{table}} obtained by computing the summary measures on the numeric predictors.}
+\item{X.categorical}{a list containing the summary measures on the categorical predictors.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}

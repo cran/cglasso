@@ -1,6 +1,6 @@
 print.cglasso <- function (x, digits = 3L, ...){
-    p <- nResp(x$Z)
-    q <- nPred(x$Z)
+    p <- nresp(x$Z)
+    q <- npred(x$Z)
     nrho <- x$nrho
     nlambda <- x$nlambda
     rho <- x$rho
@@ -44,9 +44,9 @@ print.cglasso <- function (x, digits = 3L, ...){
         cat("---\n")
     }
     cat("\nmodel:", sQuote(x$model))
-    cat("\n    n:", nObs(x$Z))
-    cat("\n    p:", p)
-    cat("\n    q:", q, "\n\n")
+    cat("\n    nObs:", x$nobs)
+    cat("\n   nResp:", x$nresp)
+    cat("\n   nPred:", x$npred, "\n\n")
     invisible(tbl)
 }
 
@@ -141,7 +141,7 @@ predict.cglasso <- function(object, type = c("B", "mu", "Sigma", "Theta"), X.new
     rho <- object$rho
     nlambda <- object$nlambda
     lambda <- object$lambda
-    q <- nPred(object$Z)
+    q <- npred(object$Z)
     if (!missing(X.new)) {
         if (q == 0) stop(sQuote("X.new"), " can not be used because no predictors are available in ", sQuote("object"))
         if (type != "mu") stop("type = ", sQuote(type), " can not be used together with ", sQuote("X.new"))
@@ -194,21 +194,21 @@ predict.cglasso <- function(object, type = c("B", "mu", "Sigma", "Theta"), X.new
     out
 }
 
-summary.cglasso <- function(object, GoF = aic, print.all = TRUE, digits = 3L,  ...){
+summary.cglasso <- function(object, GoF = AIC, print.all = TRUE, digits = 3L,  ...){
     if (!is.element(class(GoF), c("function", "GoF")))
-        stop (sQuote("GoF"), " is not a goodness-of-fit function (aic or bic) neither an object of class ", sQuote("GoF"))
+        stop (sQuote("GoF"), " is not a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
     dots <- list(...)
-    n <- nObs(object$Z)
-    p <- nResp(object$Z)
-    q <- nPred(object$Z)
+    n <- nobs(object$Z)
+    p <- nresp(object$Z)
+    q <- npred(object$Z)
     if (is.function(GoF)) {
         if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
         GoF.name <- deparse(substitute(GoF))
-        if (!is.element(GoF.name, c("aic", "bic")))
-        stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), " or ", sQuote("bic"))
+        if (!is.element(GoF.name, c("AIC", "BIC")))
+        stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
         GoF <- switch(GoF.name,
-                      aic = do.call(function(...) aic(object, ...), dots),
-                      bic = do.call(function(...) bic(object, ...), dots))
+                      AIC = do.call(function(...) AIC(object, ...), dots),
+                      BIC = do.call(function(...) BIC(object, ...), dots))
     }
     if (!is.vector(print.all)) stop(sQuote("print.all"), " is not a vector")
     if (length(print.all) != 1L) stop(sQuote("print.all"), " is not a vector of length ", sQuote("1"))
@@ -267,14 +267,14 @@ summary.cglasso <- function(object, GoF = aic, print.all = TRUE, digits = 3L,  .
         tbl.list <- split(tbl, f = rep(seq_len(nlambda), each = nrho))
         if (print.all) do.call(function(...) print.listof(tbl.list, digits = digits, ...), dots)
     }
-    lbl <- c("model", "n", "p", "q", "lambda", "lambda.id", "rho", "rho.id", GoF$type, "df.B", "df.Tht", "df")
+    lbl <- c("model", "nObs", "nResp", "nPred", "lambda", "lambda.id", "rho", "rho.id", GoF$type, "df.B", "df.Tht", "df")
     lbl <- paste("\n", format(lbl, justify = "right"), ":", sep = "")
     cat("\n===============================================================")
     cat("\n\nSummary of the Selected Model\n")
-    cat(lbl[1L], sQuote(object$model))
+    if (!is.null(object$model)) cat(lbl[1L], sQuote(object$model))
     cat(lbl[2L], n)
-    cat(lbl[3L], p)
-    cat(lbl[4L], q)
+    cat(lbl[3L], object$nresp)
+    cat(lbl[4L], object$npred)
     if (q > 0L) {
         cat(lbl[5L], tbl[rnk_min, "lambda"])
         cat(lbl[6L], lambda.id)
@@ -290,14 +290,14 @@ summary.cglasso <- function(object, GoF = aic, print.all = TRUE, digits = 3L,  .
 }
 
 plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty = ifelse(x$nrho >= x$nlambda, "rho", "lambda"),
-                         given = NULL, GoF = aic, add.labels, matplot.arg1, matplot.arg2, labels.arg, abline.arg, mtext.arg, save.plot,
+                         given = NULL, GoF = AIC, add.labels, matplot.arg1, matplot.arg2, labels.arg, abline.arg, mtext.arg, save.plot,
                          grdev = pdf, grdev.arg, digits = 4L, ...) {
-    p <- nResp(x$Z)
-    q <- nPred(x$Z)
+    p <- nresp(x$Z)
+    q <- npred(x$Z)
     nlambda <- x$nlambda
     nrho <- x$nrho
     if (nrho == 1L & nlambda == 1L) stop("plot method is not available because ", sQuote("nlambda = 1"), " and ", sQuote("nrho = 1"))
-    if (class(what) == "formula") {
+    if (inherits(what, "formula")) {
         xy <- function2xy(what)
         penalty <- xy[["penalty"]]
         what <- xy[["what"]]
@@ -352,16 +352,23 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
     }
     # testing 'save.plot'
     if (missing(save.plot)) save.plot <- FALSE
-    if (!is.logical(save.plot)) stop(sQuote("save.plot"), " is not an object of type ", sQuote("logical"))
-    if (length(save.plot) != 1L) stop(sQuote("save.plot"), " is not an object of length ", sQuote("1"))
+    if (length(save.plot) != 1L) stop(sQuote(save.plot), " is not an object of length ", sQuote("1"))
+    if (!inherits(save.plot, c("logical", "character"))) stop(sQuote(save.plot), " is not an object of type ", sQuote("logical"), "or ", , sQuote("character"))
+    if(inherits(save.plot, "character")) {
+        oldPath <- getwd()
+        newPath <- save.plot
+        setwd(newPath)
+        on.exit(setwd(oldPath), add = TRUE, after = TRUE)
+        save.plot <- TRUE
+    }
     # testing 'grdev'
     if (!is.function(grdev)) stop(sQuote("grdev"), " is not a function")
     else {
         grdev.name <- deparse(substitute(grdev))
         if (!is.element(grdev.name, c("pdf", "postscript", "svg", "bmp", "jpeg", "png", "tiff")))
             stop(sQuote(grdev.name), " is not a valid graphics device for exporting plots. Please, use one of the following functions:\n",
-                sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
-                sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
+                 sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
+                 sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
         if (grdev.name == "postscript") grdev.name <- "ps"
     }
     if (missing(grdev.arg)) grdev.arg <- NULL
@@ -378,14 +385,11 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
     if (is.function(GoF)) {
         if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
         GoF.name <- deparse(substitute(GoF))
-#        if (!is.element(GoF.name, c("aic", "bic", "ebic")))
-        if (!is.element(GoF.name, c("aic", "bic")))
-#            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), ", ", sQuote("bic"), " or ", sQuote("ebic"))
-            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), " or ", sQuote("bic"))
+        if (!is.element(GoF.name, c("AIC", "BIC")))
+            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
         GoF <- switch(GoF.name,
-                      aic = do.call(function(...) aic(x, ...), dots),
-#                      bic = do.call(function(...) bic(x, ...), dots),
-                      bic = do.call(function(...) bic(x, ...), dots))
+                      AIC = do.call(function(...) AIC(x, ...), dots),
+                      BIC = do.call(function(...) BIC(x, ...), dots))
     }
     # testing 'add.labels'
     if (missing(add.labels)) add.labels <- !is.null(GoF)
@@ -399,11 +403,12 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
     coef.name <- what
     if (coef.name == "diag(Theta)") coef.name <- "Theta"
     if (coef.name == "b0") coef.name <- "B"
-    if (save.plot) {
+    if(save.plot) {
         nplot <- ifelse(what != "B", ngiven, ngiven * p)
         file.names <- paste0(what, "_path_", formatC(seq_len(nplot), width = nchar(nplot), format = "d", flag = "0"), ".", grdev.name)
         cat("Exporting plots\n")
         pb <- txtProgressBar(min = 0L, max = nplot, style = 3L)
+        on.exit(close(pb), add = TRUE, after = TRUE)
     } else {
         if (ngiven > 1L | what == "B") {
             op <- par(no.readonly = TRUE)
@@ -463,19 +468,17 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
                     arg.name <- setdiff(names(labels.arg), "labels")
                     do.call(what = function(...) text(x = tp[minGoF.id], y = yy[minGoF.id, ], labels = labels, ...), args = labels.arg[arg.name])
                 }
-#                abline.arg$v <- tp[minGoF.id]
-#                do.call(what = abline, args = abline.arg)
+                #                abline.arg$v <- tp[minGoF.id]
+                #                do.call(what = abline, args = abline.arg)
                 abline.arg$v <- tp[minGoF.id]
                 do.call(what = abline, args = abline.arg)
                 mtext.arg$text <- GoF$type
                 mtext.arg$at <- tp[minGoF.id]
                 do.call(what = mtext, args = mtext.arg)
-
+                
             }
-            if (save.plot) {
-                dev.off()
-                setTxtProgressBar(pb, hh)
-            } else dev.flush()
+            if (save.plot) setTxtProgressBar(pb, hh) else dev.flush()
+            if(save.plot) dev.off()
         }
         ##################
         # plotting 'B'
@@ -512,10 +515,8 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
                     mtext.arg$at <- tp[minGoF.id]
                     do.call(what = mtext, args = mtext.arg)
                 }
-                if (save.plot) {
-                    dev.off()
-                    setTxtProgressBar(pb, hh)
-                } else dev.flush()
+                if (save.plot) setTxtProgressBar(pb, hh) else dev.flush()
+                if(save.plot) dev.off()
             }
         }
         ##################
@@ -538,18 +539,16 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
                     arg.name <- setdiff(names(labels.arg), "labels")
                     do.call(what = function(...) text(x = tp[minGoF.id], y = yy[minGoF.id, ], labels = labels, ...), args = labels.arg[arg.name])
                 }
-#                abline.arg$v <- tp[minGoF.id]
-#                do.call(what = abline, args = abline.arg)
+                #                abline.arg$v <- tp[minGoF.id]
+                #                do.call(what = abline, args = abline.arg)
                 abline.arg$v <- tp[minGoF.id]
                 do.call(what = abline, args = abline.arg)
                 mtext.arg$text <- GoF$type
                 mtext.arg$at <- tp[minGoF.id]
                 do.call(what = mtext, args = mtext.arg)
             }
-            if (save.plot) {
-                dev.off()
-                setTxtProgressBar(pb, hh)
-            } else dev.flush()
+            if (save.plot) setTxtProgressBar(pb, hh) else dev.flush()
+            if(save.plot) dev.off()
         }
         ##################
         # plotting 'Theta'
@@ -583,10 +582,8 @@ plot.cglasso <- function(x, what = c("Theta", "diag(Theta)", "b0", "B"), penalty
                 mtext.arg$at <- tp[minGoF.id]
                 do.call(what = mtext, args = mtext.arg)
             }
-            if (save.plot) {
-                dev.off()
-                setTxtProgressBar(pb, hh)
-            } else dev.flush()
+            if (save.plot) setTxtProgressBar(pb, hh) else dev.flush()
+            if(save.plot) dev.off()
         }
     }
     invisible(NULL)

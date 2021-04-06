@@ -16,7 +16,7 @@ datacggm(Y, lo = -Inf, up =  +Inf, X = NULL, control = list(maxit = 1.0E+4,
 \item{Y}{a \eqn{(n\times p)}{(n x p)}-dimensional matrix; each row is an observation from a conditional Gaussian graphical model with censoring vectors \code{lo} and \code{up}. Missing-at-random values are recorded as \sQuote{\code{NA}}.}
 \item{lo}{the lower censoring vector; \code{lo[j]} is used to specify the lower censoring value for the random variable \eqn{Y_j}{Y_j}.}
 \item{up}{the upper censoring vector; \code{up[j]} is used to specify the upper censoring value for the random variable \eqn{Y_j}{Y_j}.}
-\item{X}{an optional \eqn{(n\times q)}{(n x q)}-dimensional matrix of predictors. If missing (default), a dataset from a Gaussian graphical model is returned otherwise a dataset from a conditional Gaussian graphical model is returned.}
+\item{X}{an optional \eqn{(n\times q)}{(n x q)}-dimensional data frame of predictors. If missing (default), a dataset from a Gaussian graphical model is returned otherwise a dataset from a conditional Gaussian graphical model is returned.}
 \item{control}{a named list used to pass the arguments to the EM algorithm (see below for more details). The components are:
 \itemize{
 \item \code{maxit}: maximum number of iterations. Default is \code{1.0E+4}.
@@ -46,7 +46,7 @@ See below for the other functions related to an object of class \sQuote{\code{da
 \sQuote{\code{datacggm}} returns an \R object of S3 class \dQuote{\code{datacggm}}, that is, a nested named list containing the
 following components:
 \item{Y}{the \eqn{(n\times p)}{(n x p)}-dimensional matrix \code{Y}.}
-\item{X}{the \eqn{(n\times q)}{(n x q)}-dimensional matrix \code{X}.}
+\item{X}{the \eqn{(n\times q)}{(n x q)}-dimensional data frame \code{X}.}
 \item{Info}{
 	\itemize{
 		\item \code{lo:} the lower censoring vector;
@@ -58,7 +58,7 @@ following components:
 		\item \code{yv:} the estimated marginal variances of the random variables \eqn{Y_j}{Y_j};
 		\item \code{n:} the sample size;
 		\item \code{p:} the number of response variables;
-		\item \code{q:} the number of predictors.
+		\item \code{q:} the number of columns of the data frame \code{X}.
 	}
 }
 }

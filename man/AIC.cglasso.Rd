@@ -1,14 +1,15 @@
-\name{aic}
-\alias{aic}
+\name{AIC.cglasso}
+\alias{AIC}
+\alias{AIC.cglasso}
 
 \title{Akaike Information Criterion}
 
 \description{
-\sQuote{\code{aic}} computes the \sQuote{Akaike Information Criterion}.
+\sQuote{\code{AIC}} computes the \sQuote{Akaike Information Criterion}.
 }
 
 \usage{
-aic(object, k = 2, mle, ...)
+\method{AIC}{cglasso}(object, k = 2, mle, ...)
 }
 
 \arguments{
@@ -19,19 +20,19 @@ aic(object, k = 2, mle, ...)
 }
 
 \details{
-\sQuote{\code{aic}} computes the following measure of goodness-of-fit (Ibrahim \emph{and other}, 2008): \deqn{-2\,\mbox{Q-function} + k\,\mbox{df},}{-2*Q-function + k*df,} where \eqn{k}{k} is the \emph{penalty} parameter and \eqn{\mbox{df}}{df} represents the number of unique non-zero parameters in the fitted model. 
+\sQuote{\code{AIC}} computes the following measure of goodness-of-fit (Ibrahim \emph{and other}, 2008): \deqn{-2\,\mbox{Q-function} + k\,\mbox{df},}{-2*Q-function + k*df,} where \eqn{k}{k} is the \emph{penalty} parameter and \eqn{\mbox{df}}{df} represents the number of unique non-zero parameters in the fitted model.
 
 The values of the Q-function function are computed using \code{\link{QFun}}. By default, for an object of class \code{cglasso} these values are computed using the penalized estimates whereas maximum likelihood estimates are used if the \code{object} is of class \code{cggm} (see argument \sQuote{\code{mle}} in \code{\link{QFun}}).
 
-The Akaike Information Criterion (AIC) is returned by letting \eqn{k = 2} (default value of the function \code{aic}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is returned by letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
+The Akaike Information Criterion (AIC) is returned by letting \eqn{k = 2} (default value of the function \code{AIC}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is returned by letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
 
-Function \code{aic} can be passed to the functions \code{\link{select.cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
+Function \code{AIC} can be passed to the functions \code{\link{select.cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
 
 The function \code{\link{plot.GoF}} can be used to graphically evaluate the behaviour of the fitted models in terms of goodness-of-fit.
 }
 
 \value{
-\sQuote{\code{aic}} return an \R object of S3 class \dQuote{\code{GoF}}, i.e., a named list containing the following components:
+\sQuote{\code{AIC}} return an \R object of S3 class \dQuote{\code{GoF}}, i.e., a named list containing the following components:
 \item{value_gof}{a matrix storing the values of the measure of goodness-of-fit used to evaluate the fitted models.}
 \item{df}{a matrix storing the number of the estimated non-zero parameters.}
 \item{dfB}{a matrix storing the number of estimated non-zero regression coefficients.}
@@ -39,7 +40,7 @@ The function \code{\link{plot.GoF}} can be used to graphically evaluate the beha
 \item{value}{a matrix storing the values of the Q-function.}
 \item{n}{the sample size.}
 \item{p}{the number of response variables.}
-\item{q}{the number of predictors.}
+\item{q}{the number of columns of the design matrix \code{X} used to fit the model.}
 \item{lambda}{the \eqn{\lambda}{lambda}-values used to fit the model.}
 \item{nlambda}{the number of \eqn{\lambda}{lambda}-values used.}
 \item{rho}{the \eqn{\rho}{rho}-values used to fit the model.}
@@ -65,7 +66,7 @@ All models are wrong...?: an introduction to model uncertainty.
 }
 
 \seealso{
-\code{\link{bic}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{QFun}}, \code{\link{plot.GoF}} and \code{\link{summary.cglasso}}  
+\code{\link{BIC.cglasso}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{QFun}}, \code{\link{plot.GoF}} and \code{\link{summary.cglasso}}  
 }
 
 \examples{
@@ -81,11 +82,11 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
-aic(out)
+out <- cglasso(. ~ ., data = Z)
+AIC(out)
 
 out.mle <- cggm(out, lambda.id = 3L, rho.id = 3L)
-aic(out.mle)
+AIC(out.mle)
 }
 
 \keyword{models}

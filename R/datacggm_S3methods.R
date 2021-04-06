@@ -8,7 +8,7 @@ dim.datacggm <- function(x) {
 dimnames.datacggm <- function(x) {
     Y <- getMatrix(x, "Y")
     out <- list(Y = dimnames(Y), X = NULL)
-    if (x$Info$q != 0) {
+    if (npred(x) != 0) {
         X <- getMatrix(x, "X")
         out$X <- dimnames(X)
     }
@@ -29,7 +29,10 @@ dimnames.datacggm <- function(x) {
             names(x$Info$up) <- colnames(x$Y)
             names(x$Info$ym) <- colnames(x$Y)
             names(x$Info$yv) <- colnames(x$Y)
-        } else dimnames(x$X) <- value$X
+        } else {
+            rownames(x$X) <- value$X[[1L]]
+            colnames(x$X) <- value$X[[2L]]
+        }
     }
     x
 }
@@ -38,14 +41,6 @@ Math.datacggm <- function(...)  stop("Invalid operation on a 'datacggm' object")
 
 Ops.datacggm  <- function(...)  stop("Invalid operation on a 'datacggm' object")
 
-#as.character.datacggm <- function(x, ...) {
-#    Y <- format(getMatrix(x, "Y"), ...)
-#    marker <- event(x)
-#    Y[marker == 1] <- paste0(Y[marker == 1], "+")
-#    Y[marker == -1] <- paste0(Y[marker == -1], "-")
-#    Y
-#}
-
 as.character.datacggm <- function (x, digits, ...) {
     Y <- format(getMatrix(x, "Y"), digits = digits, ...)
     marker <- event(x)
@@ -53,13 +48,6 @@ as.character.datacggm <- function (x, digits, ...) {
     Y[marker == -1] <- paste0(Y[marker == -1], "-")
     Y
 }
-
-#print.datacggm <- function(x, quote = FALSE, ...) {
-#    out <- list(Y = NULL, X = NULL)
-#    out$Y <- as.character.datacggm(x, ...)
-#    if (x$Info$q != 0L) out$X <- format(getMatrix(x, "X"), ...)
-#    invisible(print.listof(out, quote = FALSE, ...))
-#}
 
 print.datacggm <- function(x, digits = 3L, n = 10L, width = getOption("width"), ...) {
     # testing arguments
@@ -74,23 +62,23 @@ print.datacggm <- function(x, digits = 3L, n = 10L, width = getOption("width"), 
     out <- as.character.datacggm(x, digits = digits, ...)
     out <- fit_matrix(out, n = n, width = width)
     cat("Printing", sQuote("datacggm"), "object\n\n")
-    cat("Y:", nObs(x), "x", nResp(x), "matrix\n\n")
+    cat("Y:", nobs(x), "x", nresp(x), "matrix\n\n")
     print(out, quote = FALSE)
-    dn <- nObs(x) - n
-    dp <- nResp(x) - dim(out)[2L]
+    dn <- nobs(x) - n
+    dp <- nresp(x) - dim(out)[2L]
     if (dn > 0 | dp > 0) {
         msg <- paste0("# with ", ifelse(dn > 0, paste0(dn, " more ", ifelse(dn > 1, "rows", "row")), ""),
                     ifelse(dn > 0 & dp > 0, ", and ", ""),
                     ifelse(dp > 0, paste0(dp, " more ", ifelse(dp > 1, "variables", "variable")), ""))
         cat(msg)
     }
-    if (nPred(x) == 0L) cat("\n\nX: NULL")
+    if (npred(x) == 0L) cat("\n\nX: NULL")
     else {
         out <- format(getMatrix(x, "X"), digits = digits, ...)
         out <- fit_matrix(out, n = n, width = width)
-        cat("\n\nX:", nObs(x), "x", nPred(x), "matrix\n\n")
+        cat("\n\nX:", nobs(x), "x", npred(x), "matrix\n\n")
         print(out, quote = FALSE)
-        dq <- nPred(x) - dim(out)[2L]
+        dq <- npred(x) - dim(out)[2L]
         if (dn > 0 | dq > 0) {
             msg <- paste0("# with ", ifelse(dn > 0, paste0(dn, " more ", ifelse(dn > 1, "rows", "row")), ""),
                         ifelse(dn > 0 & dq > 0, ", and ", ""),
@@ -98,6 +86,7 @@ print.datacggm <- function(x, digits = 3L, n = 10L, width = getOption("width"), 
             cat(msg)
         }
     }
+    cat("\n")
 }
 
 summary.datacggm <- function(object, n, quantile.type = 7L, digits = 3L, quote = FALSE, ...) {
@@ -106,11 +95,11 @@ summary.datacggm <- function(object, n, quantile.type = 7L, digits = 3L, quote =
     X <- getMatrix(object, "X")
     R <- event(object)
     ynm <- colNames(object)$Y
-    p <- nResp(object)
-    q <- nPred(object)
+    p <- nresp(object)
+    q <- npred(object)
     lo <- lower(object)
     up <- upper(object)
-    out <- list(Y = NULL, X = NULL)
+    out <- list(Y = NULL, X.numeric = NULL, X.categorical = NULL)
     lcs <- paste0(format(apply(R == -1, 2L, function(x) mean(x) * 100), digits = digits), "%")
     rcs <- paste0(format(apply(R == +1, 2L, function(x) mean(x) * 100), digits = digits), "%")
     nas <- paste0(format(apply(R == +9, 2L, function(x) mean(x) * 100), digits = digits), "%")
@@ -127,40 +116,71 @@ summary.datacggm <- function(object, n, quantile.type = 7L, digits = 3L, quote =
     attr(tbl, "class") <- "table"
     out$Y <- tbl
     if (q > 0L) {
-        tbl <- apply(X, 2L, function(obs) {
-            qq <- stats::quantile(obs, names = FALSE, type = quantile.type)
-            c(qq[1L:3L], mean(obs), qq[4L:5L])
-        })
-        tbl <- apply(t(tbl), 2L, format, digits = digits)
-        colnames(tbl) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
-        attr(tbl, "class") <- "table"
-        out$X <- tbl
+        id.numeric <- sapply(X, is.numeric)
+        if (any(id.numeric)) {
+            tbl <- apply(X[, id.numeric, drop = FALSE], 2L, function(obs) {
+                            qq <- stats::quantile(obs, names = FALSE, type = quantile.type)
+                            c(qq[1L:3L], mean(obs), qq[4L:5L])})
+            if (q == 1L) tbl <- format(t(tbl), digits = digits)
+            else tbl <- apply(t(tbl), 2L, format, digits = digits)
+            colnames(tbl) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+            attr(tbl, "class") <- "table"
+            out$X.numeric <- tbl
+        }
+        if (any(!id.numeric)) {
+            tbl <- lapply(X[, !id.numeric, drop = FALSE], FUN = function(x) {
+                            Freq.x <- table(x)
+                            Perc.x <- prop.table(Freq.x) * 100
+                            out <- cbind(Freq = format(Freq.x, digits = digits), Perc = paste0(format(Perc.x, digits = digits), "%"))
+                            attr(out, "class") <- "table"
+                            out
+                            })
+#            tbl <- apply(X[, !id.numeric, drop = FALSE], 2L, FUN = function(x) {
+#                            Freq.x <- table(x)
+#                            Perc.x <- prop.table(Freq.x) * 100
+#                            out <- cbind(Freq = format(Freq.x, digits = digits), Perc = paste0(format(Perc.x, digits = digits), "%"))
+#                            attr(out, "class") <- "table"
+#                            out
+#                            }, simplify = FALSE)
+            out$X.categorical <- tbl
+        }
     }
-    #print.listof(out, quote = quote, ...)
     dvar <- dim(out$Y)[1L] - n
     cat("Y:\n")
     print(head(out$Y, n), quote = quote, ...)
     if (dvar > 0)
         cat(paste0("# with ", ifelse(dvar > 0, paste0(dvar, " more ", ifelse(dvar > 1, "variables", "variable")))))
-    if (q == 0L) cat("\nX: NULL")
+    if (q == 0L) cat("\n\nX-numeric: NULL\n\nX-categorical: NULL\n\n")
     else {
-        dvar <- dim(out$X)[1L] - n
-        cat("\n\nX:\n")
-        print(head(out$X, n), quote = quote, ...)
-        if (dvar > 0)
-            cat(paste0("# with ", ifelse(dvar > 0, paste0(dvar, " more ", ifelse(dvar > 1, "variables", "variable")))))
+        if (any(id.numeric)) {
+            dvar <- dim(out$X.numeric)[1L] - n
+            cat("\n\nX-numeric:\n")
+            print(head(out$X.numeric, n), quote = quote, ...)
+            if (dvar > 0)
+                cat(paste0("# with ", ifelse(dvar > 0, paste0(dvar, " more ", ifelse(dvar > 1, "variables", "variable")))))
+        }
+        if (any(!id.numeric)) {
+            n <- ifelse(n >= length(out$X.categorical), length(out$X.categorical), n)
+            dvar <- length(out$X.categorical) - n
+            #dvar <- ifelse(dvar <= 0, length(out$X.categorical), dvar)
+            cat("\nX-categorical:\n")
+            print.listof(out$X.categorical[seq_len(n)], quote = quote, ...)
+            if (dvar > 0)
+                cat(paste0("# with ", ifelse(dvar > 0, paste0(dvar, " more ", ifelse(dvar > 1, "variables", "variable")))))
+        }
     }
+    cat("\n")
     invisible(out)
 }
 
 hist.datacggm <- function(x, breaks = "Sturges", include.lowest = TRUE, right = TRUE, nclass = NULL,
-    which, max.hist = 1L, save.hist = FALSE, grdev = pdf, grdev.arg,
-    polygon.col = adjustcolor("grey", alpha.f = 0.25), polygon.border = NA, segments.lwd = 4L, segments.lty = 2L,
-    segments.col = "gray40", points.pch = c(4L, 1L), points.cex = 1.8, points.col = rep("black", 2L),
-    legend = TRUE, ...) {
+                          which, max.hist = 1L, save.hist = FALSE, grdev = pdf, grdev.arg,
+                          polygon.col = adjustcolor("grey", alpha.f = 0.25), polygon.border = NA, segments.lwd = 4L, segments.lty = 2L,
+                          segments.col = "gray40", points.pch = c(4L, 1L), points.cex = 1.8, points.col = rep("black", 2L),
+                          legend = TRUE, ...) {
     dots <- list(...)
     # testing 'which'
-    p <- nResp(x)
+    p <- nresp(x)
     if (missing(which)) which <- seq_len(p)
     else {
         if (!is.vector(which)) stop (sQuote("which"), "is not a vector")
@@ -174,16 +194,23 @@ hist.datacggm <- function(x, breaks = "Sturges", include.lowest = TRUE, right = 
     if (abs(as.integer(max.hist) - max.hist) > 0) stop(sQuote("max.hist"), " is not an object of type ", dQuote("integer"))
     if (max.hist <= 0L) stop(sQuote("max.hist"), " is not a positive integer")
     # testing 'save.hist'
-    if (!is.logical(save.hist)) stop(sQuote(save.hist), " is not an object of type ", sQuote("logical"))
     if (length(save.hist) != 1L) stop(sQuote(save.hist), " is not an object of length ", sQuote("1"))
+    if (!inherits(save.hist, c("logical", "character"))) stop(sQuote(save.hist), " is not an object of type ", sQuote("logical"), "or ", , sQuote("character"))
+    if(inherits(save.hist, "character")) {
+        oldPath <- getwd()
+        newPath <- save.hist
+        setwd(newPath)
+        on.exit(setwd(oldPath), add = TRUE, after = TRUE)
+        save.hist <- TRUE
+    }
     # testing 'grdev'
     if (!is.function(grdev)) stop(sQuote("grdev"), " is not a function")
     else {
         grdev.name <- deparse(substitute(grdev))
         if (!is.element(grdev.name, c("pdf", "postscript", "svg", "bmp", "jpeg", "png", "tiff")))
             stop(sQuote(grdev.name), " is not a valid graphics device for exporting plots. Please, use one of the following functions:\n",
-                sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
-                sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
+                 sQuote("pdf"), ", ", sQuote("postscript"), ", ", sQuote("svg"), ", ", sQuote("bmp"), ", ",
+                 sQuote("jpeg"), ", ", sQuote("png"), " or ", sQuote("tiff"), ", ")
         if (grdev.name == "postscript") grdev.name <- "ps"
     }
     # testing 'grdev.arg'
@@ -191,7 +218,6 @@ hist.datacggm <- function(x, breaks = "Sturges", include.lowest = TRUE, right = 
     else {
         if (!is.list(grdev.arg)) stop(sQuote("grdev.arg"), " is not an object of type ", sQuote("list"))
     }
-#    n <- nObs(x)
     R <- event(x)
     Y <- getMatrix(x, "Y")
     lo <- lower(x)
@@ -204,19 +230,19 @@ hist.datacggm <- function(x, breaks = "Sturges", include.lowest = TRUE, right = 
     op <- par(no.readonly = TRUE)
     op$new <- FALSE
     on.exit(par(op), add = TRUE)
-    if(is.null(dev.list()) & save.hist) on.exit(dev.off(), add = TRUE)
-    if (ngrp > 1L) devAskNewPage(TRUE)
-    grp <- rep(seq_len(ngrp), each = max.hist, length = nwhich)
-    if(legend) par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 7.5))
-    if (save.hist) {
+    if(save.hist) {
         file.names <- paste0("histogram_group_", formatC(seq_len(ngrp), width = nchar(ngrp),
                              format = "d", flag = "0"), ".", grdev.name)
         cat("Exporting plots\n")
         pb <- txtProgressBar(min = 0L, max = nwhich, style = 3L)
+        on.exit(close(pb), add = TRUE, after = TRUE)
         hh <- 0
     }
+    if (ngrp > 1L) devAskNewPage(TRUE)
+    grp <- rep(seq_len(ngrp), each = max.hist, length = nwhich)
+    if(legend) par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 7.5))
     for(h in seq_len(ngrp)) {
-        if (save.hist) {
+        if(save.hist) {
             if (is.null(grdev.arg)) grdev(file = file.names[h])
             else do.call(function(...) grdev(file = file.names[h], ...), grdev.arg)
             if(legend) par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 7.5))
@@ -259,26 +285,26 @@ hist.datacggm <- function(x, breaks = "Sturges", include.lowest = TRUE, right = 
             polygon(seqx, seqy, col = polygon.col, border = polygon.border)
             if (flc != 0) {
                 segments(x0 = lo[i], y0 = 0, x1 = lo[i], y1 = plc,
-                        lwd = segments.lwd, lty = segments.lty, col = segments.col)
+                         lwd = segments.lwd, lty = segments.lty, col = segments.col)
                 points(x = rep(lo[i], 2L), y = c(flc, plc),
-                        pch = points.pch, cex = points.cex, col = points.col)
+                       pch = points.pch, cex = points.cex, col = points.col)
             }
             if (frc != 0) {
                 segments(x0 = up[i], y0 = 0, x1 = up[i], y1 = prc,
-                        lwd = segments.lwd, lty = segments.lty, col = segments.col)
+                         lwd = segments.lwd, lty = segments.lty, col = segments.col)
                 points(x = rep(up[i], 2L), y = c(frc, prc),
-                        pch = points.pch, cex = points.cex, col = points.col)
+                       pch = points.pch, cex = points.cex, col = points.col)
                 
             }
             if ((flc != 0 | frc != 0) & legend)
                 legend(xlim[2L], ylim[2L], pch = c(4L, 1L), bty = "n", pt.cex = 1.8,
-                        c("Proportion of\ncensored values\n", "Probability of a\ncensored value"))
-            if (save.hist) {
+                       c("Proportion of\ncensored values\n", "Probability of a\ncensored value"))
+            if(save.hist) {
                 hh <- hh + 1
                 setTxtProgressBar(pb, hh)
             }
         }
         if(ngrp > 1L) dev.flush()
-        if (save.hist) dev.off()
+        if(save.hist) dev.off()
     }
 }

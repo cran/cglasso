@@ -40,7 +40,7 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.5, 
            probna = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out.mle <- cggm(out, lambda.id = 3L, rho.id = 3L)
 plot(out.mle, type = "Gyy")
 plot(out.mle, type = "Gxy")

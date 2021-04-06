@@ -1,27 +1,24 @@
-cggm <- function(object, GoF = aic, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 100L, maxit.em = 1.0E+4, thr.em = 1.0E-3, maxit.bcd = 1.0E+5,
+cggm <- function(object, GoF = AIC, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 100L, maxit.em = 1.0E+4, thr.em = 1.0E-3, maxit.bcd = 1.0E+5,
                  thr.bcd = 1.0E-4, trace = 0L, ...){
     this.call <- match.call()
     # testing 'object'
-    if (class(object) != "cglasso") stop(sQuote("object"), " is not an object of class ", sQuote("cglasso"))
+    if (!inherits(object, "cglasso")) stop(sQuote("object"), " is not an object of class ", sQuote("cglasso"))
     Z <- object$Z
-    n <- nObs(Z)
-    p <- nResp(Z)
-    q <- nPred(Z)
+    n <- nobs(Z)
+    p <- nresp(Z)
+    q <- npred(Z)
     if (missing(lambda.id) & missing(rho.id)) {
         if (!is.element(class(GoF), c("function", "GoF")))
-#            stop (sQuote("GoF"), " is not either a goodness-of-fit function (aic, bic or ebic) or an object of class ", sQuote("GoF"))
-            stop (sQuote("GoF"), " is not either a goodness-of-fit function (aic or bic) neither an object of class ", sQuote("GoF"))
+            stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
         dots <- list(...)
         if (is.function(GoF)) {
             if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
             GoF.name <- deparse(substitute(GoF))
-#            if (!is.element(GoF.name, c("aic", "bic", "ebic")))
-            if (!is.element(GoF.name, c("aic", "bic")))
-                stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("aic"), " or ", sQuote("bic"))
+            if (!is.element(GoF.name, c("AIC", "BIC")))
+                stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
             GoF <- switch(GoF.name,
-                          aic = do.call(function(...) aic(object, ...), dots),
-#                          bic = do.call(function(...) bic(object, ...), dots),
-                          bic = do.call(function(...) bic(object, ...), dots))
+                          AIC = do.call(function(...) AIC(object, ...), dots),
+                          BIC = do.call(function(...) BIC(object, ...), dots))
         }
         object <- select.cglasso(object, GoF = GoF)
         nlambda <- object$nlambda
@@ -55,33 +52,6 @@ cggm <- function(object, GoF = aic, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
             if (rho.id > nrho) stop("some entry in ", sQuote("rho.id"), " is larger than ", sQuote(nrho))
         }
     }
-#################################################################
-#    Z <- object$Z
-#    q <- nPred(Z)
-#    # testing 'lambda.id'
-#    nlambda <- object$nlambda
-#    if (missing(lambda.id)) {
-#        if (q == 0) lambda.id <- 1L
-#        else stop(sQuote("lambda.id"), " is missing")
-#    }
-#    else {
-#        if (!is.vector(lambda.id)) stop(sQuote("lambda.id"), " is not a vector")
-#        if (length(lambda.id) != 1L) stop(sQuote("lambda.id"), " is not a vector of length ", sQuote("1"))
-#        if (any(abs(as.integer(lambda.id) - lambda.id) > 0)) stop(sQuote("lambda.id"), " is not an object of type ", dQuote("integer"))
-#        if (lambda.id <= 0) stop(sQuote("lambda.id"), " is not a positive integer")
-#        if (lambda.id > nlambda) stop("some entry in ", sQuote("lambda.id"), " is larger than ", sQuote(nlambda))
-#    }
-#    # testing 'rho.id'
-#    nrho <- object$nrho
-#    if (missing(rho.id)) stop(sQuote("rho.id"), " is missing")
-#    else {
-#        if (!is.vector(rho.id)) stop(sQuote("rho.id"), " is not a vector")
-#        if (length(rho.id) != 1L) stop(sQuote("rho.id"), " is not a vector of length ", sQuote("1"))
-#        if (any(abs(as.integer(rho.id) - rho.id) > 0)) stop(sQuote("rho.id"), " is not an object of type ", dQuote("integer"))
-#        if (rho.id <= 0L) stop(sQuote("rho.id"), " is not a positive integer")
-#        if (rho.id > nrho) stop("some entry in ", sQuote("rho.id"), " is larger than ", sQuote(nrho))
-#    }
-#################################################################
     # testing 'tp.min'
     if (!is.vector(tp.min)) stop(sQuote("tp.min"), " is not a vector")
     if (length(tp.min) != 1L) stop(sQuote("tp.min"), " is not a vector of length ", sQuote("1"))
@@ -150,7 +120,7 @@ cggm <- function(object, GoF = aic, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
                      dfB = object$dfB[, lambda.id, rho.id, drop = FALSE], dfTht = object$dfTht[lambda.id, rho.id, drop = FALSE],
                      InfoStructure = InfoStructure, nit = out$nit, Z = Z, nlambda = 1L, lambda = lambda.max, nrho = 1L,
                      rho = rho.max, maxit.em = maxit.em, thr.em = thr.em, maxit.bcd = maxit.bcd, thr.bcd = thr.bcd,
-                     conv = out$conv, subrout = out$subrout, trace = trace)
+                     conv = out$conv, subrout = out$subrout, trace = trace, nobs = object$n, nresp = object$nresp, npred = object$npred)
     
     class(out.cggm) <- c("cggm", "cglasso")
     out.cggm
@@ -158,12 +128,13 @@ cggm <- function(object, GoF = aic, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
 
 cggm.fit <- function(Z, pendiag, lambda.max, rho.max, tp.min, ntp, mask.B, mask.Tht, Yipt.ini, B.ini,
                  mu.ini, R.ini, S.ini, Sgm.ini, Tht.ini, maxit.em, thr.em, maxit.bcd, thr.bcd, trace) {
-    n <- nObs(Z)
-    p <- nResp(Z)
-    q <- nPred(Z)
+    n <- nobs(Z)
+    p <- nresp(Z)
+    q <- npred(Z)
     Y <- getMatrix(Z, "Y", ordered = TRUE)
     Y[is.na(Y)] <- 0
     X <- getMatrix(Z, "X", ordered = TRUE)
+    if (!is.null(X)) X <- as.matrix(X)
     ynames <- colnames(Y)
     xnames <- colnames(X)
     yrnames <- rownames(Y)

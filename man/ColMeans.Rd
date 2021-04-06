@@ -18,7 +18,7 @@ ColVars(x)
 }
 
 \details{
-For an \R object \code{x} of class \sQuote{\code{datacggm}}, \code{ColMeans} (\code{ColVars}) retrieves the column means (variances) of the matrices obtained by \code{getMatrix(x, "Y")} and \code{getMatrix(x, "X")}. For the response variables, marginal means and variances are estimated using a EM-algorithm under the assumption that the \eqn{p}{p} response variables are marginally normally distributed (see also Details section in \code{\link{datacggm}}).
+For an \R object \code{x} of class \sQuote{\code{datacggm}}, \code{ColMeans} (\code{ColVars}) retrieves the column means (variances) of the matrices obtained by \code{getMatrix(x, "Y")} and \code{getMatrix(x, "X")}. For the response variables, marginal means and variances are estimated using a EM-algorithm under the assumption that the \eqn{p}{p} response variables are marginally normally distributed (see also Details section in \code{\link{datacggm}}). For the numeric predictor variables, marginal means and variances are computed by \code{\link{mean}} and \code{\link{var}}, whereas, for categorical data, \code{ColMeans} (\code{ColVars}) retrieves the statistical mode and the Gini-Simpson Index, respectively.
 }
 
 \value{

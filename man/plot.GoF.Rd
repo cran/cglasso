@@ -1,5 +1,4 @@
 \name{plot.GoF}
-\alias{plot}
 \alias{plot.GoF}
 
 \title{Plot for \sQuote{\code{GoF}} Object}
@@ -15,7 +14,7 @@
 }
 
 \arguments{
-\item{x}{an \R object of class \sQuote{\code{GoF}}, that is, the output of a goodness-of-fit function such as \code{\link{aic}} or \code{\link{bic}}.}
+\item{x}{an \R object of class \sQuote{\code{GoF}}, that is, the output of a goodness-of-fit function such as \code{\link{AIC.cglasso}} or \code{\link{BIC.cglasso}}.}
 \item{add.line}{logical; if \sQuote{\code{add.line = TRUE}} then a line is added to identify the optimal value of the tuning parameter.}
 \item{arg.line}{a named list of graphical parameters passed to the function \code{\link[graphics]{abline}} (see also \code{\link[graphics]{par}}).}
 \item{add.text}{logical; if \sQuote{\code{add.text = TRUE}} then a text is added to the line used to identify the optimal value of the tuning parameter.}
@@ -25,7 +24,7 @@
 }
 
 \details{
-\code{plot.GoF} is the plotting method function of an \R object of class \sQuote{\code{GoF}}, that is, the output of a goodness-of-fit function (see \code{\link{aic}}, or \code{\link{bic}}). This function produces a plot aimed both to evaluate the sequence of fitted models in terms of goodness-of-fit and to identify the optimal values of the tuning parameters.
+\code{plot.GoF} is the plotting method function of an \R object of class \sQuote{\code{GoF}}, that is, the output of a goodness-of-fit function (see \code{\link{AIC.cglasso}}, or \code{\link{BIC.cglasso}}). This function produces a plot aimed both to evaluate the sequence of fitted models in terms of goodness-of-fit and to identify the optimal values of the tuning parameters.
 
 If a tuning parameter is held fixed, then \code{plot.GoF} produces a plot showing the chosen measure of goodness-of-fit as a function of the remaining tuning parameter. In this case, the optimal value is identified by a vertical dashed line. The degrees-of-freedom of the selected fitted model are also shown.
 
@@ -35,7 +34,7 @@ If the cglasso model is fitted using both a sequence of \eqn{\rho}{rho} and \eqn
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{aic}}, \code{\link{bic}}, \code{\link{summary.cglasso}} and \code{\link{select.cglasso}}.
+\code{\link{cglasso}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}} and \code{\link{select.cglasso}}.
 }
 
 \examples{
@@ -50,17 +49,17 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
 
-out <- cglasso(Z, nlambda = 1L)
-plot(aic(out))
-plot(bic(out))
+out <- cglasso(. ~ ., data = Z, nlambda = 1L)
+plot(AIC(out))
+plot(BIC(out))
 
-out <- cglasso(Z, nrho = 1L)
-plot(aic(out))
-plot(bic(out))
+out <- cglasso(. ~ ., data = Z, nrho = 1L)
+plot(AIC(out))
+plot(BIC(out))
 
-out <- cglasso(Z)
-plot(aic(out))
-plot(bic(out))
+out <- cglasso(. ~ ., data = Z)
+plot(AIC(out))
+plot(BIC(out))
 }
 
 \keyword{graphs}

@@ -11,8 +11,8 @@
 \tabular{ll}{
 Package: \tab cglasso\cr
 Type: \tab Package\cr
-Version: \tab 2.0.2\cr
-Date: \tab 2021-01-20\cr
+Version: \tab 2.0.3\cr
+Date: \tab 2021-04-06\cr
 License: \tab GPL (>=2)
 }
 }

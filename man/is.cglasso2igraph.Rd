@@ -28,7 +28,7 @@ p <- 3L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out.graph <- to_graph(out)
 is.cglasso2igraph(out.graph )
 }

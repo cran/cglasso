@@ -35,7 +35,7 @@ Single-cell profiling of human megakaryocyte-erythroid progenitors identifies di
 }
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{to_graph}}, and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{aic}} and \code{\link{bic}}.
+\code{\link{cglasso}}, \code{\link{to_graph}}, and the method functions \code{\link{summary}}, \code{\link{coef}}, \code{\link{plot}}, \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}.
 }
 
 \examples{

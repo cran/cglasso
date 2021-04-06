@@ -49,7 +49,7 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05, probna = 0.05)
 
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 rho.new <- mean(out$rho)
 
 # imputing missing values
@@ -76,7 +76,7 @@ Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05, 
            probna = 0.05)
 
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 lambda.new <- mean(out$lambda)
 rho.new <- mean(out$rho)
 

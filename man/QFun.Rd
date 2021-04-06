@@ -21,7 +21,7 @@ QFun(object, mle, verbose = FALSE, ...)
 \details{
 \sQuote{\code{QFun}} returns the value of the Q-function, i.e., the value of the function maximised in the M-step of the EM algorithm. The Q-function is defined as follows: \deqn{\frac{n}{2}\left\{\log det\Theta - tr(S\Theta) - p\log(2\pi)\right\},}{n/2 \{log det Tht - tr(S Tht) - p log(2 pi)\},} where \eqn{S}{S} is the \sQuote{working} empirical covariance matrix computed during the E-step.
 
-\code{QFun} is used as a workhorse function to compute the measures of goodness-of-fit returned by the functions \code{\link{aic}} and \code{\link{bic}}.
+\code{QFun} is used as a workhorse function to compute the measures of goodness-of-fit returned by the functions \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}}.
 
 The function \sQuote{\code{print.QFun}} is used the improve the readability of the results.
 }
@@ -34,7 +34,7 @@ The function \sQuote{\code{print.QFun}} is used the improve the readability of t
 \item{dfTht}{a matrix with the number of estimated non-zero partial correlation coefficients.}
 \item{n}{the sample size.}
 \item{p}{the number of response variables.}
-\item{q}{the number of predictors.}
+\item{q}{the number of columns of the design matrix \code{X} used to fit the model.}
 \item{lambda}{the \eqn{\lambda}{lambda}-values used to fit the model.}
 \item{nlambda}{the number of \eqn{\lambda}{lambda}-values.}
 \item{rho}{the \eqn{\rho}{rho}-values used to fit the model.}
@@ -45,7 +45,7 @@ The function \sQuote{\code{print.QFun}} is used the improve the readability of t
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{aic}}, \code{\link{bic}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}} and \code{\link{to_graph}}.
+\code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}} and \code{\link{to_graph}}.
 }
 
 \examples{
@@ -63,7 +63,7 @@ rho <- 0.3
 Sigma <- outer(1:p, 1:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.5, 
            probna = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 QFun(out)
 
 out.mle <- cggm(out, lambda.id = 3L, rho.id = 3L)

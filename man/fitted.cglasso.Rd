@@ -38,7 +38,7 @@ p <- 3L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 fitted(out, rho.id = 3L, drop = TRUE)
 
 # Y ~ N(b0 + XB, Sigma)  and probability of left/right censored values equal to 0.05
@@ -51,7 +51,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 fitted(out, lambda.id = 3L, rho.id = 3L, drop = TRUE)
 }
 

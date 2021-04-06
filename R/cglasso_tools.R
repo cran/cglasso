@@ -4,7 +4,7 @@ impute <- function(object, type = c("mar", "censored", "both"), lambda.new, rho.
     if ( class(object)[1L] == "cggm") {
         if (!missing(lambda.new)) stop("Argument ", sQuote("lambda.new"), " is not available for an object of class ", sQuote("cggm"))
         if (!missing(rho.new)) stop("Argument ", sQuote("rho.new"), " is not available for an object of class ", sQuote("cggm"))
-        p <- nPred(object$Z)
+        p <- npred(object$Z)
         out <- drop(object$Yipt)
         Id <- event(object$Z)
         if (type == "mar") {
@@ -24,9 +24,9 @@ impute <- function(object, type = c("mar", "censored", "both"), lambda.new, rho.
     rho <- object$rho
     nlambda <- object$nlambda
     lambda <- object$lambda
-    n <- nObs(object$Z)
-    p <- nResp(object$Z)
-    q <- nPred(object$Z)
+    n <- nobs(object$Z)
+    p <- nresp(object$Z)
+    q <- npred(object$Z)
     if (missing(lambda.new)) {
         if (q > 0) stop(sQuote("lambda.new"), " is missing")
         else lambda.new <- lambda

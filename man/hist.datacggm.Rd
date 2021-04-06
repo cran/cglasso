@@ -34,7 +34,7 @@ See \code{\link{hist}} for more details.
 \item{nclass}{numeric (integer). For S(-PLUS) compatibility only, \code{nclass} is equivalent to \code{breaks} for a scalar or character argument.}
 \item{which}{a vector of integers used to specify the response variables for which the histogram is required.}
 \item{max.hist}{the maximum number of histograms drawn in a single figure.}
-\item{save.hist}{logical; if \sQuote{\code{TRUE}} required histograms are saved on external files.}
+\item{save.hist}{a logical variable or a string specifying the path of the directory where plots will be saved. Letting \sQuote{\code{save.plot = TRUE}}, the required plots will be saved as external files inside the current working directory. User can save these files on a specific working directory passing the absolute path through the argument \code{save.plot}. On exit, working directory will be always set the previous one.}
 \item{grdev}{the graphics device used to save the required histograms on external files. See \sQuote{\code{\link[grDevices]{device}}} for more details.}
 \item{grdev.arg}{additional parameters passed to the graphics device specified by \sQuote{\code{grdev}}.}
 \item{polygon.col}{graphical parameter; the colour for filling the area underlying the Gaussian distribution.}

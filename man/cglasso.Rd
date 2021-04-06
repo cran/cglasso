@@ -8,13 +8,17 @@
 }
 
 \usage{
-cglasso(Z, diagonal = FALSE, weights.B = NULL, weights.Tht = NULL, nlambda, 
-        lambda.min.ratio, lambda, nrho, rho.min.ratio, rho, maxit.em = 1.0E+4, 
-        thr.em = 1.0E-3, maxit.bcd = 1.0E+5, thr.bcd = 1.0E-4, trace = 0L)
+cglasso(formula, data, subset, contrasts = NULL, diagonal = FALSE,
+        weights.B = NULL, weights.Tht = NULL, nlambda, lambda.min.ratio,
+        lambda, nrho, rho.min.ratio, rho, maxit.em = 1.0E+4, thr.em = 1.0E-3,
+        maxit.bcd = 1.0E+5, thr.bcd = 1.0E-4, trace = 0L)
 }
 
 \arguments{
-\item{Z}{an \R object of S3 class \sQuote{\code{datacggm}}, that is, the output of the function \code{\link{datacggm}}. See section \sQuote{Description} for more details.}
+\item{formula}{an object of class \sQuote{\code{formula}} (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
+\item{data}{an \R object of S3 class \sQuote{\code{datacggm}}, that is, the output of the function \code{\link{datacggm}}. See section \sQuote{Description} for more details.}
+\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+\item{contrasts}{an optional list. See the \code{contrasts.arg} of \code{\link[stats]{model.matrix.default}}.}
 \item{diagonal}{logical. Should diagonal entries of the concentration matrix be penalized? Default is \sQuote{\code{diagonal = FALSE}}.}
 \item{weights.B}{an optional \eqn{q\times p}{q x p} dimensional matrix of non-negative weights used to penalize the regression coefficients (intercepts are unpenalized). This matrix can be also used to specify the unpenalized regression coefficients (\sQuote{\code{weights.B[i, j] = 0}}) or the structural zeros (\sQuote{\code{weights.B[i, j] = +Inf}}). By default, all weights are set equal to 1, meaning that the penalized regression coefficients are unweighted.}
 \item{weights.Tht}{an optional symmetric matrix of non-negative weights used to penalize the partial regression coefficients. This matrix can be used to specify the unpenalized partial correlation coefficients (\sQuote{\code{weights.Tht[i, j] = 0}}) or the structural zeros in the precision matrix (\sQuote{\code{weights.Tht[i, j] = +Inf}}). By default, the off-diagonal entries of the matrix \sQuote{\code{weights.Tht}}  are set equal to 1, meaning that the partial correlation coefficients are unweighted, whereas the diagonal entries are equal to 0, that is the diagonal entries of the precision matrix are unpenalized.}
@@ -46,7 +50,7 @@ The model-fitting function \code{cglasso} returns an \R object of S3 class \sQuo
 
 The accessor functions \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}} and \code{\link{impute}} can be used to extract various useful features of the object fitted by \code{cglasso}.
 
-For an \R object returned by \code{cglasso}, the functions \code{\link{aic}} and \code{\link{bic}} can be used to evaluate the goodness-of-fit of the fitted models. Usually, these functions are used together with the function \code{\link{summary.cglasso}}, which gives more information about the sequence of fitted models. The plotting function \code{\link{plot.GoF}} can be used to graphically identify the optimal pair of the tuning parameters.
+For an \R object returned by \code{cglasso}, the functions \code{\link{AIC.cglasso}} and \code{\link{BIC.cglasso}} can be used to evaluate the goodness-of-fit of the fitted models. Usually, these functions are used together with the function \code{\link{summary.cglasso}}, which gives more information about the sequence of fitted models. The plotting function \code{\link{plot.GoF}} can be used to graphically identify the optimal pair of the tuning parameters.
 
 Given a pair of the tuning paremeters, the functions \code{\link{to_graph}} and \code{\link{plot.cglasso2igraph}} can be used to analyze and show the selected network. Finally, the function \code{\link{cggm}} can be used to produce post-hoc maximum likelihood refitting of the selected graphical model.  
 }
@@ -84,6 +88,9 @@ following components:
 \item{conv}{a description of the error that has occurred.}
 \item{subrout}{the name of the Fortran subroutine where the error has occurred (for internal debug only).}
 \item{trace}{the integer used for printing information on screen.}
+\item{nobs}{the sample size}
+\item{nresp}{the number of response variables used to fit the model.}
+\item{npred}{the number of predictors used to fit the model.}
 }
 
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
@@ -107,7 +114,7 @@ Missing values: sparse inverse covariance estimation and an extension to sparse 
 }
 
 \seealso{
-\code{\link{datacggm}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}}, \code{\link{impute}}, \code{\link{aic}}, \code{\link{bic}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}}, \code{\link{plot.GoF}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}}, \code{\link{cggm}} and \code{\link{ShowStructure}}.
+\code{\link{datacggm}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}}, \code{\link{impute}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}}, \code{\link{plot.GoF}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}}, \code{\link{cggm}} and \code{\link{ShowStructure}}.
 }
 
 \examples{
@@ -120,7 +127,7 @@ p <- 3L
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out
 
 # Model 2: conditional censored glasso estimator (Augugliaro \emph{and other}, 2020b)
@@ -134,7 +141,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out
 
 # Model 3: missglasso estimator (Stadler \emph{and other}, 2012)
@@ -148,7 +155,7 @@ X <- matrix(rnorm(n * q), nrow = n, ncol = q)
 rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probna = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out
 
 # Model 4: mixed estimator
@@ -165,7 +172,7 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, X = X, b0 = b0, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05,
            probna = 0.05)
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 out
 }
 

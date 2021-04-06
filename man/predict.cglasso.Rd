@@ -1,4 +1,5 @@
 \name{predict}
+\alias{predict}
 \alias{predict.cglasso}
 \alias{predict.cggm}
 
@@ -51,7 +52,7 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, Sigma = Sigma, probl = 0.05, probr = 0.05)
 
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 rho.new <- mean(out$rho)
 Theta.pred <- predict(out, rho.new = rho.new, type = "Theta")
 Theta.pred
@@ -67,7 +68,7 @@ rho <- 0.3
 Sigma <- outer(1L:p, 1L:p, function(i, j) rho^abs(i - j))
 Z <- rcggm(n = n, b0 = b0, X = X, B = B, Sigma = Sigma, probl = 0.05, probr = 0.05)
 
-out <- cglasso(Z)
+out <- cglasso(. ~ ., data = Z)
 rho.new <- mean(out$rho)
 lambda.new <- mean(out$lambda)
 Theta.pred <- predict(out, lambda.new = lambda.new, rho.new = rho.new, type = "Theta")

@@ -1,4 +1,31 @@
 ************************************************************************
+version 2.0.3
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+        Gianluca Sottile <gianluca.sottile@unipa.it>
+
+data: 2021-03-31
+* fixed NAMESPACE
+* added dataset 'Example'
+* 'cglasso' function has been updated to handle 'formula' object
+* 'summary.datacggm' has been updated to handle categorical predictors
+* 'ColVars' has been updated to handle categorical predictors
+* 'ColNames' has been updated to handle categorical predictors
+* 'datacggm' has been updated to accept categorical predictors
+* added function 'formula2datacggm'
+* 'nPred' function has been replaced with the method function 'npred.datacggm'
+* 'nReps' function has been replaced with the method function 'nresp.datacggm'
+* 'nObs' function has been replaced with the method function 'nobs.datacggm'
+* added generic functions 'nreps' and 'npred'
+* 'bic' function has been replaced with the method function 'BIC.cglasso'
+* 'aic' function has been replaced with the method function 'AIC.cglasso'
+* function 'plot.cglasso' has been updated in order to set the directory used to save the resulting plots
+* function 'hist.datacggm' has been updated in order to set the directory used to save the resulting plots
+* function 'qqcnorm' has been updated in order to set the directory used to save the resulting plots
+* method functions are no longer exported
+* bugs fixed in 'print.datacggm'
+* bugs fixed in 'print.cggm'
+
+************************************************************************
 version 2.0.2
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
 

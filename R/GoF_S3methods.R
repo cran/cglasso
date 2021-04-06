@@ -26,6 +26,7 @@ print.QFun <- function (x, digits = 3L, ...){
     if (nrho == 1L | nlambda == 1L) {
         if (x$q == 0L) tbl <- tbl[, -1L, drop = FALSE]
         do.call(function(...) print.data.frame(tbl, digits = digits, ...), dots)
+        cat("\n")
     }
     else {
         if (nlambda <= nrho) f <- rep(seq_len(nlambda), each = nrho)
@@ -65,6 +66,7 @@ print.GoF <- function (x, digits = 3L, ...){
     if (nrho == 1L | nlambda == 1L) {
         if (x$q == 0L) tbl <- tbl[, -1L, drop = FALSE]
         do.call(function(...) print.data.frame(tbl, digits = digits, ...), dots)
+        cat("\n")
     }
     else {
         if (nlambda <= nrho) f <- rep(seq_len(nlambda), each = nrho)

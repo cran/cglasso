@@ -50,7 +50,7 @@ integer :: p,q,maxit,conv,subrout,nit(2),df(p+1),trace
 double precision :: ym(p),xm(q),xtx_n(q,q),xtr_n(q,p),B(0:q,p),Tht(p,p),W(q,p),lmb,thr
 ! internal variables
 integer :: i,j,h,k,i2
-double precision :: Db,bo(0:q),bn(0:q),lmbh,vh(q)
+double precision :: Db,bo(0:q),bn(0:q),lmbh,vh(q),Db_o
 if(trace.eq.2) call trace_cglasso_v2_2_4_1()
 Db = 0.d0
 bo = 0.d0
@@ -58,6 +58,7 @@ bn = 0.d0
 lmbh = 0.d0
 conv = 0
 nit = 0
+Db_o = 99999999999.0d0
 do
     call rchkusr()
 
@@ -100,10 +101,11 @@ do
         exit
     end if
     if(trace.eq.2) call trace_cglasso_v2_2_4_2(nit(1), i, Db)
-    if(Db.le.thr) then
+    if((Db.le.thr).or.(Db_o.lt.Db)) then
         if(trace.eq.2) call trace_cglasso_v2_2_4_3(thr)
         exit
     end if
+    Db_o = Db
 end do
 nit(2) = i
 do h = 1, p

@@ -1,14 +1,85 @@
-cglasso <- function(Z, diagonal = FALSE, weights.B = NULL, weights.Tht = NULL, nlambda, lambda.min.ratio,
-                    lambda, nrho, rho.min.ratio, rho, maxit.em = 1.0E+4, thr.em = 1.0E-3, maxit.bcd = 1.0E+5,
-                    thr.bcd = 1.0E-4, trace = 0L) {
+cglasso <- function(formula, data, subset, contrasts = NULL, diagonal = FALSE, weights.B = NULL,
+                    weights.Tht = NULL, nlambda, lambda.min.ratio, lambda, nrho, rho.min.ratio, rho,
+                    maxit.em = 1.0E+4, thr.em = 1.0E-3, maxit.bcd = 1.0E+5, thr.bcd = 1.0E-4, trace = 0L) {
     this.call <- match.call()
     zero <- 1.0E-6
-    # testing 'Z'
-    if (!is.datacggm(Z)) stop(sQuote("Z"), " is not an object of class ", sQuote("datacggm"))
-    X.null <- is.null(Z$X)
-    n <- nObs(Z)
-    p <- nResp(Z)
-    q <- nPred(Z)
+    # testing 'formula'
+    if (missing(formula)) formula <- . ~ . # stop(sQuote("formula"), " is missing")
+    # testing 'data'
+    if (!is.datacggm(data)) stop(sQuote("data"), " is not an object of class ", sQuote("datacggm"))
+    ####################
+    # formula2datacggm #
+    ####################
+    # testing LHS 'formula'
+    if (deparse1(formula[[2L]]) == ".")
+        formula <- formula(paste0(paste0("cbind(", paste(colNames(data)$Y, collapse = ", "), ")"), " ~ ", deparse1(formula[[3L]])))
+    if (as.character(formula[[2L]])[1L] != "cbind")
+        stop("Please use ", sQuote("cbind"), " to specify LHS in ", sQuote("formula"), " object")
+    Y.LHS <- all.vars(formula[[2L]], unique = FALSE)
+    if (any(table(Y.LHS) > 1L))
+        stop("repeated response variables are not permitted in ", sQuote("formula"), " object")
+    noVars <- !is.element(Y.LHS, colNames(data)$Y)
+    if (any(noVars)) stop("Following variables are not stored as rensponse variables: ", Y.LHS[noVars])
+    # testing RHS 'formula'
+    if (is.null(getMatrix(data, name = "X"))) {
+        if (deparse1(formula[[3L]]) == ".") formula <- update(formula, . ~ 1)
+        mt <- terms(formula)
+        if (length(attr(mt, which = "term.labels")) != 0L)
+            stop("Predictors are not stored in ", sQuote("data"))
+        if (!as.logical(attr(mt, "intercept"))) {
+            warning("Current version does not fit models without intercept term, thus it is added to the current formula.")
+            formula <- update(formula, . ~ 1)
+            mt <- terms(formula)
+        }
+        data.df <- data.frame(getMatrix(data, name = "Y")[, Y.LHS, drop = FALSE])
+        nResp <- length(Y.LHS)
+        nPred <- 0L
+    } else {
+        FML.RHS <- attr(terms(formula, data = getMatrix(data, name = "X")), "term.labels")
+        if (length(FML.RHS) > 0L) {
+            FML.RHS <- paste(FML.RHS, collapse = " + ")
+            formula <- formula(paste0(deparse1(formula[[2L]]), " ~ ", FML.RHS))
+            X.RHS <- all.vars(formula[[3L]])
+            noVars <- !is.element(X.RHS, colNames(data)$X)
+            if (any(noVars)) stop("Following variables are not stored as predictors: ", X.RHS[noVars])
+            data.df <- data.frame(getMatrix(data, name = "Y")[, Y.LHS, drop = FALSE], getMatrix(data, name = "X")[, X.RHS, drop = FALSE])
+            nPred <- length(X.RHS)
+        } else {
+            data.df <- data.frame(getMatrix(data, name = "Y")[, Y.LHS, drop = FALSE])
+            nPred <- 0L
+        }
+        nResp <- length(Y.LHS)
+    }
+    mt <- terms(formula)
+    if (!as.logical(attr(mt, "intercept"))) {
+        warning("Current version does not fit models without intercept term, thus it has been added to the current formula.")
+        formula <- update(formula, . ~ . + 1)
+        mt <- terms(formula)
+    }
+    # creating model.frame
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "subset"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$drop.unused.levels <- TRUE
+    mf$formula <- formula
+    mf$data <- data.df
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval(mf, parent.frame())
+    # updating 'datacggm' obejct
+    Y <- model.response(mf, type = "numeric")
+    lo <- lower(data)[colnames(Y)]
+    up <- upper(data)[colnames(Y)]
+    if (length(attr(mt, which = "term.labels")) == 0L) {
+        Z <- datacggm(Y = Y, lo = lo, up = up)
+    } else {
+        X <- model.matrix(mt, mf, contrasts)[, -1L, drop = FALSE]
+        Z <- datacggm(Y = Y, X = X, lo = lo, up = up)
+    }
+    # starting main code cglasso
+    X.null <- is.null(getMatrix(Z, "X"))
+    n <- nobs(Z)
+    p <- nresp(Z)
+    q <- npred(Z)
     if (p == 1L) stop("number of response variables is equal to ", sQuote(1))
     xnames <- colNames(Z)$X
     ynames <- colNames(Z)$Y
@@ -166,7 +237,7 @@ cglasso <- function(Z, diagonal = FALSE, weights.B = NULL, weights.Tht = NULL, n
                         nlambda = out$nlambda, lambda.min.ratio = out$lambdaratio, lambda = out$lambda,
                         nrho = out$nrho, rho.min.ratio = out$rhoratio, rho = out$rho, model = model, maxit.em = maxit.em,
                         thr.em = thr.em, maxit.bcd = maxit.bcd, thr.bcd = thr.bcd, conv = out$conv,
-                        subrout = out$subrout, trace = trace)
+                        subrout = out$subrout, trace = trace, nobs = n, nresp = nResp, npred = nPred)
     class(out.cglasso) <- "cglasso"
     out.cglasso
 }
@@ -174,12 +245,13 @@ cglasso <- function(Z, diagonal = FALSE, weights.B = NULL, weights.Tht = NULL, n
 # cglasso fitting function
 cglasso.fit <- function(Z, diagonal, weights.B, weights.Tht, nlambda, lambda.min.ratio, lambda, nrho, rho.min.ratio,
                         rho, maxit.em, thr.em, maxit.bcd, thr.bcd, trace) {
-    n <- nObs(Z)
-    p <- nResp(Z)
-    q <- nPred(Z)
+    n <- nobs(Z)
+    p <- nresp(Z)
+    q <- npred(Z)
     Y <- getMatrix(Z, "Y", ordered = TRUE)
     Y[is.na(Y)] <- 0
     X <- getMatrix(Z, "X", ordered = TRUE)
+    if (!is.null(X)) X <- as.matrix(X)
     ynames <- colNames(Z)$Y
     xnames <- colNames(Z)$X
     yrnames <- rownames(Y)

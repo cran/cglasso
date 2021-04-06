@@ -27,7 +27,7 @@ For an object of class \sQuote{\code{datacggm}}, \code{dim} retrieves a named li
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{datacggm}}, \code{\link{rcggm}},\code{\link{nObs}}, \code{\link{nResp}} and \code{\link{nPred}}.
+\code{\link{datacggm}}, \code{\link{rcggm}},\code{\link{nobs}}, \code{\link{nresp}} and \code{\link{npred}}.
 }
 
 \examples{
