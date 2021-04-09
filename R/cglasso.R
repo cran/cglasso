@@ -11,8 +11,11 @@ cglasso <- function(formula, data, subset, contrasts = NULL, diagonal = FALSE, w
     # formula2datacggm #
     ####################
     # testing LHS 'formula'
-    if (deparse1(formula[[2L]]) == ".")
-        formula <- formula(paste0(paste0("cbind(", paste(colNames(data)$Y, collapse = ", "), ")"), " ~ ", deparse1(formula[[3L]])))
+    fmlTerms <- function(fml, pos) paste(deparse(fml[[pos]], width.cutoff = 500L), collapse = " ")
+    if (fmlTerms(formula, 2L) == ".")
+#    if (deparse1(formula[[2L]]) == ".")
+        formula <- formula(paste0(paste0("cbind(", paste(colNames(data)$Y, collapse = ", "), ")"), " ~ ", fmlTerms(formula, 3L)))
+#        formula <- formula(paste0(paste0("cbind(", paste(colNames(data)$Y, collapse = ", "), ")"), " ~ ", deparse1(formula[[3L]])))
     if (as.character(formula[[2L]])[1L] != "cbind")
         stop("Please use ", sQuote("cbind"), " to specify LHS in ", sQuote("formula"), " object")
     Y.LHS <- all.vars(formula[[2L]], unique = FALSE)
@@ -22,7 +25,8 @@ cglasso <- function(formula, data, subset, contrasts = NULL, diagonal = FALSE, w
     if (any(noVars)) stop("Following variables are not stored as rensponse variables: ", Y.LHS[noVars])
     # testing RHS 'formula'
     if (is.null(getMatrix(data, name = "X"))) {
-        if (deparse1(formula[[3L]]) == ".") formula <- update(formula, . ~ 1)
+        if (fmlTerms(formula, 3L) == ".") formula <- update(formula, . ~ 1)
+#        if (deparse1(formula[[3L]]) == ".") formula <- update(formula, . ~ 1)
         mt <- terms(formula)
         if (length(attr(mt, which = "term.labels")) != 0L)
             stop("Predictors are not stored in ", sQuote("data"))
@@ -38,7 +42,8 @@ cglasso <- function(formula, data, subset, contrasts = NULL, diagonal = FALSE, w
         FML.RHS <- attr(terms(formula, data = getMatrix(data, name = "X")), "term.labels")
         if (length(FML.RHS) > 0L) {
             FML.RHS <- paste(FML.RHS, collapse = " + ")
-            formula <- formula(paste0(deparse1(formula[[2L]]), " ~ ", FML.RHS))
+            formula <- formula(paste0(fmlTerms(formula, 2L), " ~ ", FML.RHS))
+#            formula <- formula(paste0(deparse1(formula[[2L]]), " ~ ", FML.RHS))
             X.RHS <- all.vars(formula[[3L]])
             noVars <- !is.element(X.RHS, colNames(data)$X)
             if (any(noVars)) stop("Following variables are not stored as predictors: ", X.RHS[noVars])
@@ -60,6 +65,7 @@ cglasso <- function(formula, data, subset, contrasts = NULL, diagonal = FALSE, w
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "subset"), names(mf), 0L)
     mf <- mf[c(1L, m)]
+    mf$na.action <- na.pass
     mf$drop.unused.levels <- TRUE
     mf$formula <- formula
     mf$data <- data.df

@@ -1,4 +1,13 @@
 ************************************************************************
+version 2.0.4
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+
+data: 2021-04-09
+* bug fixed in cglasso: function 'deparse1' was replaced with function 'flmTerms'
+                        (deparse1 is not available in R < 4.0.0)
+* bug fixed in cglasso function related to the model.frame
+
+************************************************************************
 version 2.0.3
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
         Gianluca Sottile <gianluca.sottile@unipa.it>
