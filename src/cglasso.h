@@ -59,3 +59,8 @@ F77_SUB(cggm_v2)(int *n, int *q, double *X, int *p, double *Y,
                  int *maxit_bcd, double *thr_bcd, double *Yipt, double *B, double *mu,
                  double *R, double *S, double *Sgm, double *Tht, int *nit,
                  int *conv, int *subrout, int *trace);
+
+void
+F77_SUB(e_step_v2)(int *n, int *p, double *Y, double *lo, double *up, int *nP, int *InfoP,
+                   double *T1o, double *T2o, double *mu, double *Sgm, double *Tht, double *Yipt_lo,
+                   double *Yipt_up, double *Yipt, double *T1, double *T2, int *conv);

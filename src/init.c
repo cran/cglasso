@@ -13,6 +13,7 @@ static const R_FortranMethodDef FortEntries[] = {
     {"impute", (DL_FUNC) &F77_SUB(impute), 11},
     {"cggm_v1", (DL_FUNC) &F77_SUB(cggm_v1), 29},
     {"cggm_v2", (DL_FUNC) &F77_SUB(cggm_v2), 33},
+    {"e_step_v2", (DL_FUNC) &F77_SUB(e_step_v2), 18},
     {NULL, NULL, 0}
 };
 

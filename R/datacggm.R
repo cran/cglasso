@@ -46,7 +46,13 @@ datacggm <- function(Y, lo = -Inf, up = +Inf, X = NULL, control = list(maxit = 1
         if (is.vector(X)) X <- matrix(X, ncol = 1)
         if (length(dim(X)) != 2L) stop(sQuote("X"), "is not a matrix like object")
         if (dim(Y)[1L] != dim(X)[1L]) stop(sQuote("X"), " and ", sQuote("Y"), " have a different number of rows")
-        if (is.null(colnames(X))) colnames(X) <- paste0("X", seq_len(dim(X)[2L]), sep = "")
+        xnames <- colnames(X)
+        if (is.null(xnames)) {
+          xnames <- paste0("X", seq_len(dim(X)[2L]), sep = "")
+          colnames(X) <- xnames
+        }
+        noVars <- is.element(xnames, vnames)
+        if (any(noVars)) stop("The following variables are stored, both as responses and as covariates: ", xnames[noVars])
         if (is.null(rownames(X))) rownames(X) <- seq_len(n)
         if (!is.data.frame(X)) X <- as.data.frame(X)
         q <- dim(X)[2L]

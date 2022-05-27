@@ -163,7 +163,7 @@ summary.datacggm <- function(object, n, quantile.type = 7L, digits = 3L, quote =
             n <- ifelse(n >= length(out$X.categorical), length(out$X.categorical), n)
             dvar <- length(out$X.categorical) - n
             #dvar <- ifelse(dvar <= 0, length(out$X.categorical), dvar)
-            cat("\nX-categorical:\n")
+            cat("\n\nX-categorical:\n")
             print.listof(out$X.categorical[seq_len(n)], quote = quote, ...)
             if (dvar > 0)
                 cat(paste0("# with ", ifelse(dvar > 0, paste0(dvar, " more ", ifelse(dvar > 1, "variables", "variable")))))

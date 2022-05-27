@@ -201,15 +201,17 @@ summary.cglasso <- function(object, GoF = AIC, print.all = TRUE, digits = 3L,  .
     n <- nobs(object$Z)
     p <- nresp(object$Z)
     q <- npred(object$Z)
-    if (is.function(GoF)) {
+    if(is.null(object$GoF)) {
+      if (is.function(GoF)) {
         if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
         GoF.name <- deparse(substitute(GoF))
         if (!is.element(GoF.name, c("AIC", "BIC")))
-        stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
+          stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
         GoF <- switch(GoF.name,
                       AIC = do.call(function(...) AIC(object, ...), dots),
                       BIC = do.call(function(...) BIC(object, ...), dots))
-    }
+      }
+    } else GoF <- object$GoF
     if (!is.vector(print.all)) stop(sQuote("print.all"), " is not a vector")
     if (length(print.all) != 1L) stop(sQuote("print.all"), " is not a vector of length ", sQuote("1"))
     if (!is.logical(print.all)) stop(sQuote("print.all"), " is not an object of type ", sQuote("logical"))
@@ -238,6 +240,7 @@ summary.cglasso <- function(object, GoF = AIC, print.all = TRUE, digits = 3L,  .
         tbl <- data.frame(lambda, rho, df.B, df.Tht, df, df.per, val, Rank = rnk)
         names(tbl)[6L] <- "(df%)"
         names(tbl)[7L] <- GoF$type
+        if(nrow(tbl) == 1L) tbl <- tbl[, -8L, drop = FALSE]
         if (q == 0L) tbl <- tbl[, -1L, drop = FALSE]
         cat("\nCall:  ", paste(deparse(object$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
         if (print.all) do.call(function(...) print.data.frame(tbl, digits = digits, ...), dots)
@@ -263,6 +266,7 @@ summary.cglasso <- function(object, GoF = AIC, print.all = TRUE, digits = 3L,  .
         tbl <- data.frame(lambda, rho, df.B, df.Tht, df, df.per, val, Rank = rnk)
         names(tbl)[6L] <- "(df%)"
         names(tbl)[7L] <- GoF$type
+        if(nrow(tbl) == 1L) tbl <- tbl[, -8L, drop = FALSE]
         cat("\nCall:  ", paste(deparse(object$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
         tbl.list <- split(tbl, f = rep(seq_len(nlambda), each = nrho))
         if (print.all) do.call(function(...) print.listof(tbl.list, digits = digits, ...), dots)

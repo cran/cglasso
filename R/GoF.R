@@ -89,7 +89,7 @@ AIC.cglasso <- function(object, k = 2, mle, ...){
     val <- -2 * value + k * df
     out <- list(value_gof = val, df = df, dfB = out_QFun$dfB, dfTht = out_QFun$dfTht, value = value,
                 n = out_QFun$n, p = out_QFun$p, q = out_QFun$q, lambda = out_QFun$lambda, nlambda = out_QFun$nlambda,
-                rho = out_QFun$rho, nrho = out_QFun$nrho, type = type, model = out_QFun$model)
+                rho = out_QFun$rho, nrho = out_QFun$nrho, type = type, model = out_QFun$model, call = match.call())
     class(out) <- "GoF"
     out
 }
@@ -133,6 +133,7 @@ BIC.cglasso <- function(object, g = 0, type, mle, ...) {
                     n = out_QFun$n, p = out_QFun$p, q = out_QFun$q, lambda = out_QFun$lambda, nlambda = out_QFun$nlambda,
                     rho = out_QFun$rho, nrho = out_QFun$nrho, type = type, model = out_QFun$model)
     }
+    out$call <- match.call()
     class(out) <- "GoF"
     out
 }
@@ -182,5 +183,10 @@ select.cglasso <- function(object, GoF = AIC, ...){
     object$nrho <- 1L
     object$rho.min.ratio <- 1
     object$rho <- object$rho[rho.id]
+    object$GoF <- structure(list(value_gof = GoF$value_gof[lambda.id, rho.id], df = GoF$df[lambda.id, rho.id],
+                                 dfB = GoF$dfB[lambda.id, rho.id], dfTht = GoF$dfTht[lambda.id, rho.id], 
+                                 value = GoF$value[lambda.id, rho.id], n = GoF$n, p = GoF$p, q = GoF$q, 
+                                 lambda = GoF$lambda[lambda.id], nlambda = 1L, rho = GoF$rho[rho.id], nrho = 1L,
+                                 type = GoF$type, model = GoF$model, call = GoF$call), class = "GoF")
     object
 }

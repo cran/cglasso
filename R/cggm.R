@@ -7,50 +7,59 @@ cggm <- function(object, GoF = AIC, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
     n <- nobs(Z)
     p <- nresp(Z)
     q <- npred(Z)
-    if (missing(lambda.id) & missing(rho.id)) {
+    if (is.null(object$GoF)) {
+      if (missing(lambda.id) & missing(rho.id)) {
         if (!is.element(class(GoF), c("function", "GoF")))
-            stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
+          stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
         dots <- list(...)
         if (is.function(GoF)) {
-            if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
-            GoF.name <- deparse(substitute(GoF))
-            if (!is.element(GoF.name, c("AIC", "BIC")))
-                stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
-            GoF <- switch(GoF.name,
-                          AIC = do.call(function(...) AIC(object, ...), dots),
-                          BIC = do.call(function(...) BIC(object, ...), dots))
+          if (is.null(dots$type)) dots$type <- ifelse(q == 0L, "FD", "CC")
+          GoF.name <- deparse(substitute(GoF))
+          if (!is.element(GoF.name, c("AIC", "BIC")))
+            stop(sQuote(GoF.name), " is not a valid function. Please, use ", sQuote("AIC"), " or ", sQuote("BIC"))
+          GoF <- switch(GoF.name,
+                        AIC = do.call(function(...) AIC(object, ...), dots),
+                        BIC = do.call(function(...) BIC(object, ...), dots))
         }
         object <- select.cglasso(object, GoF = GoF)
         nlambda <- object$nlambda
         lambda.id <- 1L
         nrho <- object$nrho
         rho.id <- 1L
-    } else {
+      } 
+      else {
         # testing 'lambda.id'
         nlambda <- object$nlambda
         if (missing(lambda.id)) {
-            if (q == 0 | nlambda == 1L) lambda.id <- 1L
-            else stop(sQuote("lambda.id"), " is missing")
+          if (q == 0 | nlambda == 1L) lambda.id <- 1L
+          else stop(sQuote("lambda.id"), " is missing")
         } else {
-            if (!is.vector(lambda.id)) stop(sQuote("lambda.id"), " is not a vector")
-            if (length(lambda.id) != 1L) stop(sQuote("lambda.id"), " is not a vector of length ", sQuote("1"))
-            if (any(abs(as.integer(lambda.id) - lambda.id) > 0)) stop(sQuote("lambda.id"), " is not an object of type ", dQuote("integer"))
-            if (lambda.id <= 0) stop(sQuote("lambda.id"), " is not a positive integer")
-            if (lambda.id > nlambda) stop("some entry in ", sQuote("lambda.id"), " is larger than ", sQuote(nlambda))
+          if (!is.vector(lambda.id)) stop(sQuote("lambda.id"), " is not a vector")
+          if (length(lambda.id) != 1L) stop(sQuote("lambda.id"), " is not a vector of length ", sQuote("1"))
+          if (any(abs(as.integer(lambda.id) - lambda.id) > 0)) stop(sQuote("lambda.id"), " is not an object of type ", dQuote("integer"))
+          if (lambda.id <= 0) stop(sQuote("lambda.id"), " is not a positive integer")
+          if (lambda.id > nlambda) stop("some entry in ", sQuote("lambda.id"), " is larger than ", sQuote(nlambda))
         }
         # testing 'rho.id'
         nrho <- object$nrho
         if (missing(rho.id)) {
-            if (nrho == 1L) rho.id <- 1L
-            else stop(sQuote("rho.id"), " is missing")
+          if (nrho == 1L) rho.id <- 1L
+          else stop(sQuote("rho.id"), " is missing")
         }
         else {
-            if (!is.vector(rho.id)) stop(sQuote("rho.id"), " is not a vector")
-            if (length(rho.id) != 1L) stop(sQuote("rho.id"), " is not a vector of length ", sQuote("1"))
-            if (any(abs(as.integer(rho.id) - rho.id) > 0)) stop(sQuote("rho.id"), " is not an object of type ", dQuote("integer"))
-            if (rho.id <= 0L) stop(sQuote("rho.id"), " is not a positive integer")
-            if (rho.id > nrho) stop("some entry in ", sQuote("rho.id"), " is larger than ", sQuote(nrho))
+          if (!is.vector(rho.id)) stop(sQuote("rho.id"), " is not a vector")
+          if (length(rho.id) != 1L) stop(sQuote("rho.id"), " is not a vector of length ", sQuote("1"))
+          if (any(abs(as.integer(rho.id) - rho.id) > 0)) stop(sQuote("rho.id"), " is not an object of type ", dQuote("integer"))
+          if (rho.id <= 0L) stop(sQuote("rho.id"), " is not a positive integer")
+          if (rho.id > nrho) stop("some entry in ", sQuote("rho.id"), " is larger than ", sQuote(nrho))
         }
+      }  
+    } 
+    else {
+      nlambda <- object$nlambda
+      lambda.id <- 1L
+      nrho <- object$nrho
+      rho.id <- 1L
     }
     # testing 'tp.min'
     if (!is.vector(tp.min)) stop(sQuote("tp.min"), " is not a vector")
@@ -123,6 +132,15 @@ cggm <- function(object, GoF = AIC, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
                      conv = out$conv, subrout = out$subrout, trace = trace, nobs = object$n, nresp = object$nresp, npred = object$npred)
     
     class(out.cggm) <- c("cggm", "cglasso")
+    
+    if(!is.null(object$GoF)) {
+      call <- as.list(getCall(object$GoF))
+      call$object <- out.cggm
+      call$mle <- NULL
+      call <- as.call(call)
+      out.cggm$GoF <- eval(call, envir = environment(cglasso))
+    }
+    
     out.cggm
 }
 

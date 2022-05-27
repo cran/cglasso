@@ -1,4 +1,12 @@
 ************************************************************************
+version 2.0.5
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+
+data: 2022-05-16
+* bug fixed in summary.cglasso
+* bug fixed in select.cglasso
+
+************************************************************************
 version 2.0.4
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
 

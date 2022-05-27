@@ -4,7 +4,7 @@ import(methods, igraph, MASS)
 
 # stats
 importFrom("stats", "optim", "dnorm", "qnorm", "pnorm", "rnorm", "rbinom", "sd", "ppoints", "uniroot", "var", "coef",
-    "terms", "AIC", "BIC", "nobs", "formula", "update", "model.response", "model.matrix", "na.pass")
+    "terms", "AIC", "BIC", "nobs", "formula", "update", "model.response", "model.matrix", "na.pass", "getCall")
 
 # graphics
 importFrom("graphics", "abline", "plot", "matplot", "par", "hist", "points", "polygon", "segments", "image", "axis",
