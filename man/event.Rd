@@ -33,6 +33,10 @@ The \sQuote{\code{event}} function is used to retrieve the status indicator matr
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \references{
+  Augugliaro L., Sottile G., Wit E.C., and Vinciotti V. (2023) <\doi{10.18637/jss.v105.i01}>.
+  cglasso: An R Package for Conditional Graphical Lasso Inference with Censored and Missing Values.
+  \emph{Journal of Statistical Software} \bold{105}(1), 1--58.
+  
 Augugliaro, L., Sottile, G., and Vinciotti, V. (2020) <\doi{10.1007/s11222-020-09945-7}>.
 The conditional censored graphical lasso estimator.
 \emph{Statistics and Computing} \bold{30}, 1273--1289.

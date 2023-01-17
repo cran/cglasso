@@ -96,6 +96,10 @@ following components:
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \references{
+  Augugliaro L., Sottile G., Wit E.C., and Vinciotti V. (2023) <\doi{10.18637/jss.v105.i01}>.
+  cglasso: An R Package for Conditional Graphical Lasso Inference with Censored and Missing Values.
+  \emph{Journal of Statistical Software} \bold{105}(1), 1--58.
+
 Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020a) <\doi{10.1093/biostatistics/kxy043}>.
 \eqn{\ell_1}{l1}-Penalized censored Gaussian graphical model.
 \emph{Biostatistics} \bold{21}, e1--e16.

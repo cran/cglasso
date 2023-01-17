@@ -11,8 +11,8 @@
 \tabular{ll}{
 Package: \tab cglasso\cr
 Type: \tab Package\cr
-Version: \tab 2.0.5\cr
-Date: \tab 2022-05-16\cr
+Version: \tab 2.0.6\cr
+Date: \tab 2023-01-17\cr
 License: \tab GPL (>=2)
 }
 }
@@ -26,25 +26,29 @@ Maintainer: Luigi Augugliaro <\email{luigi.augugliaro@unipa.it}>
 }
 
 \references{
-Augugliaro, L., Sottile, G., and Vinciotti, V. (2020a) <\doi{10.1007/s11222-020-09945-7}>.
-The conditional censored graphical lasso estimator.
-\emph{Statistics and Computing} \bold{30}, 1273--1289.
-
-Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020b) <\doi{10.1093/biostatistics/kxy043}>.
-\eqn{\ell_1}{l1}-Penalized censored Gaussian graphical model.
-\emph{Biostatistics} \bold{21}, e1--e16.
-
-Friedman, J.H., Hastie, T., and Tibshirani, R. (2008) <\doi{10.1093/biostatistics/kxm045}>.
-Sparse inverse covariance estimation with the graphical lasso.
-\emph{Biostatistics} \bold{9}, 432--441.
-
-Yin, J. and Li, H. (2001) <\doi{10.1214/11-AOAS494}>.
-A sparse conditional Gaussian graphical model for analysis of genetical genomics data.
-\emph{The Annals of Applied Statistics} \bold{5}(4), 2630--2650.
-
-Yuan, M., and Lin, Y. (2007) <\doi{10.1093/biomet/asm018}>.
-Model selection and estimation in the Gaussian graphical model.
-\emph{Biometrika} \bold{94}, 19--35.
+  Augugliaro L., Sottile G., Wit E.C., and Vinciotti V. (2023) <\doi{10.18637/jss.v105.i01}>.
+  cglasso: An R Package for Conditional Graphical Lasso Inference with Censored and Missing Values.
+  \emph{Journal of Statistical Software} \bold{105}(1), 1--58.
+  
+  Augugliaro, L., Sottile, G., and Vinciotti, V. (2020a) <\doi{10.1007/s11222-020-09945-7}>.
+  The conditional censored graphical lasso estimator.
+  \emph{Statistics and Computing} \bold{30}, 1273--1289.
+  
+  Augugliaro, L., Abbruzzo, A., and Vinciotti, V. (2020b) <\doi{10.1093/biostatistics/kxy043}>.
+  \eqn{\ell_1}{l1}-Penalized censored Gaussian graphical model.
+  \emph{Biostatistics} \bold{21}, e1--e16.
+  
+  Friedman, J.H., Hastie, T., and Tibshirani, R. (2008) <\doi{10.1093/biostatistics/kxm045}>.
+  Sparse inverse covariance estimation with the graphical lasso.
+  \emph{Biostatistics} \bold{9}, 432--441.
+  
+  Yin, J. and Li, H. (2001) <\doi{10.1214/11-AOAS494}>.
+  A sparse conditional Gaussian graphical model for analysis of genetical genomics data.
+  \emph{The Annals of Applied Statistics} \bold{5}(4), 2630--2650.
+  
+  Yuan, M., and Lin, Y. (2007) <\doi{10.1093/biomet/asm018}>.
+  Model selection and estimation in the Gaussian graphical model.
+  \emph{Biometrika} \bold{94}, 19--35.
 }
 
 \keyword{multivariate}

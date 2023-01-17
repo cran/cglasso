@@ -1,4 +1,12 @@
 ************************************************************************
+version 2.0.6
+Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
+
+data: 2023-01-17
+* added citation to Journal of Statistical Software
+* fixed bug in plot.cglasso2igraph
+
+************************************************************************
 version 2.0.5
 Author: Luigi Augugliaro <luigi.augugliaro@unipa.it>
 

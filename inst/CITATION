@@ -1,0 +1,22 @@
+bibentry(bibtype = "Article",
+  title        = "{cglasso}: An {R} Package for Conditional Graphical Lasso Inference with Censored and Missing Values",
+  author       = c(person(given = "Luigi",
+                          family = "Augugliaro",
+                          email = "luigi.augugliaro@unipa.it"),
+                   person(given = "Gianluca",
+                          family = "Sottile"),
+                   person(given = c("Ernst", "C."),
+                          family = "Wit",
+                          email = "wite@usi.ch"),
+                   person(given = "Veronica",
+                          family = "Vinciotti",
+                          email = "veronica.vinciotti@unitn.it")),
+  journal      = "Journal of Statistical Software",
+  year         = "2023",
+  volume       = "105",
+  number       = "1",
+  pages        = "1--58",
+  doi          = "10.18637/jss.v105.i01",
+  header       = "To cite cglasso in publications use:"
+)
+
