@@ -21,7 +21,7 @@ cggm <- function(object, GoF = AIC, lambda.id, rho.id, tp.min = 1.0E-6, ntp = 10
                         AIC = do.call(function(...) AIC(object, ...), dots),
                         BIC = do.call(function(...) BIC(object, ...), dots))
         }
-        object <- select.cglasso(object, GoF = GoF)
+        object <- select_cglasso(object, GoF = GoF)
         nlambda <- object$nlambda
         lambda.id <- 1L
         nrho <- object$nrho

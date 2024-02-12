@@ -16,7 +16,7 @@ to_graph <- function(object, GoF = AIC, lambda.id, rho.id, weighted = FALSE, sim
                             AIC = do.call(function(...) AIC(object, ...), dots),
                             BIC = do.call(function(...) BIC(object, ...), dots))
         }
-        object <- select.cglasso(object, GoF = GoF)
+        object <- select_cglasso(object, GoF = GoF)
         nlambda <- object$nlambda
         lambda.id <- 1L
         nrho <- object$nrho

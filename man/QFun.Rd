@@ -45,7 +45,7 @@ The function \sQuote{\code{print.QFun}} is used the improve the readability of t
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}} and \code{\link{to_graph}}.
+\code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{cglasso}}, \code{\link{cggm}}, \code{\link{summary.cglasso}}, \code{\link{select_cglasso}} and \code{\link{to_graph}}.
 }
 
 \examples{

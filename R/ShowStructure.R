@@ -26,7 +26,7 @@ ShowStructure <- function(module = c("ALL", "DM", "MF", "MS", "NA"), description
                                         "cglasso" -- "QFun",
                                         "cglasso" -- "AIC.cglasso/BIC.cglasso",
                                         "cglasso" -- "summary.cglasso",
-                                        "cglasso" -- "select.cglasso",
+                                        "cglasso" -- "select_cglasso",
                                         "cglasso" -- "predict.cglasso",
                                         "cglasso" -- "impute",
                                         "cglasso" -- "cggm",
@@ -47,7 +47,7 @@ ShowStructure <- function(module = c("ALL", "DM", "MF", "MS", "NA"), description
                                         "AIC.cglasso/BIC.cglasso" -- "print.GoF",
                                         "AIC.cglasso/BIC.cglasso" -- "plot.GoF",
                                         "AIC.cglasso/BIC.cglasso" -- "summary.cglasso",
-                                        "AIC.cglasso/BIC.cglasso" -- "select.cglasso",
+                                        "AIC.cglasso/BIC.cglasso" -- "select_cglasso",
                                         "AIC.cglasso/BIC.cglasso" -- "plot.cglasso",
                                         "to_graph" -- "is.cglasso2igraph",
                                         "to_graph" -- "getGraph",
@@ -94,7 +94,7 @@ ShowStructure <- function(module = c("ALL", "DM", "MF", "MS", "NA"), description
         "print.GoF" = "Print Method for a GoF Object",
         "summary.cglasso" = "Summarizing cglasso and cggm Fits",
         "plot.GoF" = "Plot Method for a GoF Object",
-        "select.cglasso" = "Model Selection for Conditional", "  Graphical Lasso Estimator")
+        "select_cglasso" = "Model Selection for Conditional", "  Graphical Lasso Estimator")
     class(model.selection) <- "simple.list"
 
     network.analysis <- list(

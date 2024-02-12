@@ -34,7 +34,7 @@ where \eqn{\gamma}{g} is a value belonging to the interval \eqn{[0, 1]}{(0, 1]} 
 If \eqn{q \ne 0}{q != 0} , \code{BIC} computes the measure of goodness-of-fit proposed in Chen \emph{and other} (2008, 2012) (\code{type = "CC"}): %
 \deqn{\mbox{eBIC} = -2\,\mbox{QFun} + (\log n + 2 \, \gamma \, log \, q)\,\mbox{df},}{eBIC = -2*QFun + (log(n) + 2*g*log(q))*df.} %
 
-\code{BIC} can be passed to the functions  \code{\link{select.cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
+\code{BIC} can be passed to the functions  \code{\link{select_cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
 
 The function \code{\link{plot.GoF}} can be used to graphically evaluate the behaviour of the fitted models in terms of goodness-of-fit.
 }

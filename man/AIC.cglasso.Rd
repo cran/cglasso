@@ -26,7 +26,7 @@ The values of the Q-function function are computed using \code{\link{QFun}}. By 
 
 The Akaike Information Criterion (AIC) is returned by letting \eqn{k = 2} (default value of the function \code{AIC}) whereas the \sQuote{Bayesian Information Criterion} (BIC) is returned by letting \eqn{k = \log(n)}{k = log(n)}, where \eqn{n} is the sample size.
 
-Function \code{AIC} can be passed to the functions \code{\link{select.cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
+Function \code{AIC} can be passed to the functions \code{\link{select_cglasso}} and \code{\link{summary.cglasso}} to select and print the optimal fitted model, respectively.
 
 The function \code{\link{plot.GoF}} can be used to graphically evaluate the behaviour of the fitted models in terms of goodness-of-fit.
 }

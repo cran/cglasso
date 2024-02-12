@@ -34,7 +34,7 @@ If the cglasso model is fitted using both a sequence of \eqn{\rho}{rho} and \eqn
 \author{Luigi Augugliaro (\email{luigi.augugliaro@unipa.it})}
 
 \seealso{
-\code{\link{cglasso}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}} and \code{\link{select.cglasso}}.
+\code{\link{cglasso}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}} and \code{\link{select_cglasso}}.
 }
 
 \examples{

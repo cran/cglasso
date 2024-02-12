@@ -19,9 +19,9 @@ importFrom("utils", "head", "tail", "setTxtProgressBar", "txtProgressBar")
 
 export(datacggm, is.datacggm, fit_matrix, getMatrix, event, rowNames, colNames, "rowNames<-", "colNames<-", lower, upper,
     ColMeans, ColVars, nresp, npred, rcggm, qqcnorm, ShowStructure, cglasso, cglasso.fit, impute, function2xy, cggm,
-    cggm.fit, QFun, select.cglasso,  to_graph, is.cglasso2igraph, getGraph)
+    cggm.fit, QFun, select_cglasso,  to_graph, is.cglasso2igraph, getGraph)
 
-S3method(is, datacggm)
+# S3method(is, datacggm)
 S3method(dim, datacggm)
 S3method(dimnames, datacggm)
 S3method("dimnames<-", datacggm)
@@ -54,7 +54,7 @@ S3method(print, GoF)
 S3method(plot, GoF)
 
 S3method(print, cglasso2igraph)
-S3method(is, cglasso2igraph)
+# S3method(is, cglasso2igraph)
 S3method(plot, cglasso2igraph)
 
 

@@ -138,7 +138,7 @@ BIC.cglasso <- function(object, g = 0, type, mle, ...) {
     out
 }
 
-select.cglasso <- function(object, GoF = AIC, ...){
+select_cglasso <- function(object, GoF = AIC, ...){
     if (!is.element(class(GoF), c("function", "GoF")))
         stop (sQuote("GoF"), " is not either a goodness-of-fit function (AIC or BIC) neither an object of class ", sQuote("GoF"))
     dots <- list(...)

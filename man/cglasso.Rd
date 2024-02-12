@@ -118,7 +118,7 @@ Missing values: sparse inverse covariance estimation and an extension to sparse 
 }
 
 \seealso{
-\code{\link{datacggm}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}}, \code{\link{impute}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}}, \code{\link{select.cglasso}}, \code{\link{plot.GoF}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}}, \code{\link{cggm}} and \code{\link{ShowStructure}}.
+\code{\link{datacggm}}, \code{\link{coef.cglasso}}, \code{\link{fitted.cglasso}}, \code{\link{residuals.cglasso}}, \code{\link{predict.cglasso}}, \code{\link{impute}}, \code{\link{AIC.cglasso}}, \code{\link{BIC.cglasso}}, \code{\link{summary.cglasso}}, \code{\link{select_cglasso}}, \code{\link{plot.GoF}}, \code{\link{to_graph}}, \code{\link{plot.cglasso2igraph}}, \code{\link{cggm}} and \code{\link{ShowStructure}}.
 }
 
 \examples{

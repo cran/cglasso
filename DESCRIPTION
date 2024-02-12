@@ -1,6 +1,6 @@
 Package: cglasso
-Version: 2.0.6
-Date: 2023-01-17
+Version: 2.0.7
+Date: 2024-02-10
 Type: Package
 Title: Conditional Graphical LASSO for Gaussian Graphical Models with
         Censored and Missing Values
@@ -14,11 +14,11 @@ Imports: methods, MASS
 License: GPL (>= 2)
 LazyLoad: yes
 NeedsCompilation: yes
-Repository: CRAN
 Author: Luigi Augugliaro [aut, cre] (<https://orcid.org/0000-0002-4603-7541>),
   Gianluca Sottile [aut] (<https://orcid.org/0000-0001-9347-7251>),
   Ernst C. Wit [aut] (<https://orcid.org/0000-0002-3671-9610>),
   Veronica Vinciotti [aut] (<https://orcid.org/0000-0002-2625-7977>)
 Maintainer: Luigi Augugliaro <luigi.augugliaro@unipa.it>
-Packaged: 2023-01-17 15:18:47 UTC; francesca
-Date/Publication: 2023-01-17 17:00:15 UTC
+Packaged: 2024-02-12 08:26:37 UTC; luigiaugugliaro
+Repository: CRAN
+Date/Publication: 2024-02-12 08:40:02 UTC
